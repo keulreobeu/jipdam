@@ -19,4 +19,6 @@
 - [x] Git 공유 대상에 런타임·모델·원천 데이터·원본 gstack Git 저장소가 없다.
 - [x] Codex 스킬 경로에는 고유한 57개 manifest만 있다.
 - [x] 새 checkout에서 고정 commit의 전체 gstack 설치와 브라우저 smoke가 통과한다.
-- [x] GitHub CI가 기본 검증을 실행하도록 설정되어 있다. 실제 GitHub 실행은 미검증이다.
+- [x] GitHub CI가 기본 검증을 실행하고 첫 Windows/Linux × Python 3.11/3.12 실행이 모두 성공했다. 근거는 [검증 기록](team_environment_validation.md#github-게시와-ci)에 있다.
+
+SDD 확장 계약·적용 상태는 별도 [SDD Spec](specs/sdd_workflow_spec.md)과 [도입 Task](tasks/sdd-adoption.md)를 따른다.

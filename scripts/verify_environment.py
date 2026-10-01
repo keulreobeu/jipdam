@@ -9,12 +9,18 @@ import sys
 import tempfile
 from team_tools import WORKSPACE, APP_RELATIVE, SOURCE_RELATIVE, git, load_lock, require_python, run, runtime_env
 from register_gstack import validate_discovery
+from check_sdd import TEST_ROOTS
 
 def verify_base() -> None:
     env = runtime_env()
     app = WORKSPACE / APP_RELATIVE
-    run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tests', '-v'], cwd=app, env=env)
-    run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tests', '-v'], env=env)
+    sdd = [sys.executable, '-X', 'utf8', str(WORKSPACE / 'scripts/check_sdd.py')]
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        sdd.append('--ci')
+    run(sdd, env=env)
+    for test_root in TEST_ROOTS:
+        run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', test_root.name, '-v'],
+            cwd=WORKSPACE / test_root.parent, env=env)
     runtime = WORKSPACE / '.local_runtime'
     runtime.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='team-smoke-', dir=runtime) as temporary:
