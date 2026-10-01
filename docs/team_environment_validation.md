@@ -39,3 +39,7 @@ Windows 이외 플랫폼의 전체 gstack 설치와 실제 모델/데이터 평�
 제품 테스트 22개·설치 도구 테스트 3개, 모델 없는 합성 조회, 고정 gstack·고유 스킬 57개, 문서 상대 링크 검사를 통과했다. 별도 Python 환경에서 패키지 설치와 `jipdam --help`, `budongi --help`를 모두 확인했다. 현재 공유 대상은 71개 파일이다.
 
 공개 게시 전 소스 검사에서 HIGH 항목은 0개였다. 나머지 탐지 항목은 직접 확인한 gstack 버전, 금액·공공 식별번호, 기본 로컬 모델 endpoint, 예시 파일명과 SHA-256 계산 코드였다. 실제 인증키나 개인 연락처는 포함하지 않는다. GitHub 게시와 Actions 결과는 저장소에서 확인한다.
+
+## GitHub 게시와 CI
+
+2026-10-01, `85faaf4`를 [keulreobeu/jipdam](https://github.com/keulreobeu/jipdam)의 `main`에 일반 push하고 로컬·원격 SHA 일치를 확인했다. [첫 CI 실행](https://github.com/keulreobeu/jipdam/actions/runs/36810256416)은 Ubuntu/Windows × Python 3.11/3.12의 4개 job이 모두 성공했다. 각 job은 `python -X utf8 scripts/bootstrap.py --app-only`로 제품·설치 도구 테스트 및 합성 CLI 검증을 수행한다. 전체 gstack·브라우저·모델·실데이터 검증은 이 CI의 범위가 아니다.
