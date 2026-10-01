@@ -4,9 +4,9 @@
 
 ## Local checks
 
-2026-10-01 Windows/Python 3.12에서 `python -X utf8 scripts/bootstrap.py --app-only`를 실행했다. 제품 28개(기존 22 + 평가 집중 6), 팀 16개(기존 3 + SDD 13), 총 44개 테스트와 모델 없는 합성 CLI smoke가 통과했다. SDD 검사에 운영·평가 2개 기능, 12개 AC, 2개 Task를 등록했다.
+2026-10-01 Windows/Python 3.12에서 `python -X utf8 scripts/bootstrap.py --app-only`를 실행했다. 제품 28개(기존 22 + 평가 집중 6), 팀 18개(기존 3 + SDD 15), 총 46개 테스트와 모델 없는 합성 CLI smoke가 통과했다. SDD 검사에 운영·평가 2개 기능, 12개 AC, 2개 Task를 등록했다.
 
-Task 갱신 없는 코드 변경, 범위 누락, draft Spec에 대한 구현 진행, 중복 ID·깨진 문서/테스트/증거 참조, 미등록 메타데이터 문서, verified 근거 누락을 거부하는 회귀 검증을 포함한다. 설명 문서 면제와 계약 문서 면제 거부, PR/push/new-branch 및 rename의 실제 Git 변경 탐지도 확인했다. 로컬 통과가 GitHub CI·main 설정 완료를 의미하지는 않는다.
+Task 갱신 없는 코드 변경, 범위 누락, draft Spec에 대한 구현 진행, 중복 ID·깨진 문서/테스트/증거 참조, 미등록 메타데이터 문서, verified 근거 누락을 거부하는 회귀 검증을 포함한다. 설명 문서 면제와 계약 문서 면제 거부, PR/push/new-branch 및 rename의 실제 Git 변경 탐지도 확인했다. 독립 검토에서 찾은 CI 탐색 밖 테스트 참조와, 변경 경로의 저장소 밖 접근·마지막 실패 기록 누락을 재현했다. 추가 회귀 검사는 수정 전 실패하고 수정 후 통과했다. 로컬 통과가 GitHub CI·main 설정 완료를 의미하지는 않는다.
 
 ## GitHub CI
 

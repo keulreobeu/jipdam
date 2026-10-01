@@ -55,6 +55,11 @@
                   "file": "tests/test_sdd.py",
                   "class": "SDDContractTests",
                   "method": "test_new_metadata_documents_must_be_registered"
+                },
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_test_references_must_be_discovered_by_default_ci"
                 }
               ]
             }
@@ -80,6 +85,11 @@
                   "file": "tests/test_sdd.py",
                   "class": "SDDContractTests",
                   "method": "test_explanatory_docs_are_exempt_but_contracts_are_not"
+                },
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_changed_paths_cannot_escape_repository"
                 }
               ]
             },

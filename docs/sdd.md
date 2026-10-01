@@ -41,9 +41,9 @@ ID는 대문자·숫자·하이픈을 사용한다. 기능 `EVAL-001`, 요구 `E
 
 [추적 원장](sdd/traceability.json)의 `schema_version`은 1이다. `features`에는 `id, spec, requirements`를, 각 requirement에는 `id, acs`를 기록한다. AC의 `tests`는 `{file, class, method}` 배열이고, 수동 검증은 `manual`의 `{command, evidence}` 배열이다. `tasks`는 등록 Task 파일 경로 배열이다. 계약 본문은 Markdown이 원본이며 JSON은 ID·참조·검증 연결만 보관한다.
 
-모든 경로는 저장소 루트 기준 `/` 구분 상대 경로다. Task `scope`는 정확한 파일 경로 또는 `/`로 끝나는 디렉터리 경로다. Spec과 테스트 참조에 glob, 절대 경로, `..`, 저장소 밖 symlink는 허용하지 않는다. 테스트 참조는 실제 unittest TestCase의 `test_` 메서드여야 한다.
+모든 경로는 저장소 루트 기준 `/` 구분 상대 경로다. Task `scope`는 정확한 파일 경로 또는 `/`로 끝나는 디렉터리 경로다. Spec과 테스트 참조에 glob, 절대 경로, `..`, 저장소 밖 symlink는 허용하지 않는다. 테스트 참조는 실제 unittest TestCase의 `test_` 메서드여야 한다. 기본 CI와 검사기가 공유하는 TEST_ROOTS 아래의 `test*.py` 파일만 인정하며 하위 디렉터리는 `__init__.py`가 있는 패키지여야 한다. skip·expectedFailure 테스트는 AC 검증 근거로 인정하지 않는다.
 
-Task `[[verification]]`에는 `command, result, evidence, acs`를 기록한다. result는 `passed / failed / not_run`이다. verified Task는 모든 AC가 체크되고 각각 passed 근거가 있어야 한다. evidence는 존재하는 저장소 파일·제목 anchor 또는 HTTPS 결과 링크다. 실행 로그·DB·비밀값을 Git에 넣지 않고 공유 문서에 필요한 결과와 실행 버전을 요약한다.
+Task `[[verification]]`에는 `command, result, evidence, acs`를 기록한다. result는 `passed / failed / not_run`이다. verified Task는 모든 AC가 체크되고 각 AC의 마지막 검증 기록이 passed여야 한다. 이후 failed·not_run 기록을 과거 passed 기록으로 덮을 수 없다. evidence는 존재하는 저장소 파일·제목 anchor 또는 HTTPS 결과 링크다. 실행 로그·DB·비밀값을 Git에 넣지 않고 공유 문서에 필요한 결과와 실행 버전을 요약한다.
 
 ## 검증과 PR
 

@@ -13,9 +13,10 @@ import sys
 import tomllib
 from urllib.parse import urlsplit
 
-from team_tools import WORKSPACE
+from team_tools import APP_RELATIVE, WORKSPACE
 
 REGISTRY = 'docs/sdd/traceability.json'
+TEST_ROOTS = (APP_RELATIVE / 'tests', Path('tests'))
 SPEC_STATES = {'draft', 'approved', 'baseline', 'superseded'}
 TASK_STATES = {'draft', 'ready', 'in_progress', 'verified', 'blocked'}
 ID = re.compile(r'[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+\Z')
@@ -104,6 +105,16 @@ def test_exists(root: Path, test: dict, cache: dict) -> None:
     require(all(nonempty(x) for x in (name, class_name, method)), 'Incomplete test reference')
     path = file_path(root, name)
     require(path.suffix == '.py' and method.startswith('test_'), f'Invalid unittest reference: {test}')
+    relative = PurePosixPath(name)
+    test_root = next((PurePosixPath(candidate.as_posix()) for candidate in TEST_ROOTS
+                      if relative.is_relative_to(PurePosixPath(candidate.as_posix()))), None)
+    require(test_root is not None and relative.name.startswith('test') and path.stem.isidentifier(),
+            f'Test not discovered by default CI: {name}')
+    parent = root / test_root
+    for part in relative.relative_to(test_root).parts[:-1]:
+        parent /= part
+        require((parent / '__init__.py').is_file(), f'Test not discovered without package __init__.py: {name}')
+        file_path(root, (parent / '__init__.py').relative_to(root).as_posix())
     if name not in cache:
         try:
             cache[name] = ast.parse(path.read_text(encoding='utf-8'), filename=name)
@@ -220,7 +231,7 @@ def validate(root: Path, changed_paths: list[str] | None = None) -> dict:
             require(ac_specs[ac_id] in specs, f'{name}: AC Spec not included: {ac_id}')
         records = meta.get('verification', [])
         require(isinstance(records, list), f'{name}: invalid verification records')
-        covered: set[str] = set()
+        latest: dict[str, str] = {}
         for record in records:
             require(isinstance(record, dict) and nonempty(record.get('command')),
                     f'{name}: missing verification command')
@@ -228,9 +239,9 @@ def validate(root: Path, changed_paths: list[str] | None = None) -> dict:
             evidence_exists(root, record.get('evidence'))
             record_acs = strings(record.get('acs'), f'{name}: verification acs')
             require(set(record_acs).issubset(acs), f'{name}: verification includes undeclared AC')
-            if record['result'] == 'passed':
-                covered.update(record_acs)
+            latest.update({ac: record['result'] for ac in record_acs})
         if meta['status'] == 'verified':
+            covered = {ac for ac, result in latest.items() if result == 'passed'}
             require(set(acs).issubset(covered), f'{name}: verified Task lacks passed evidence for every AC')
             for ac_id in acs:
                 require(re.search(r'^- \[[xX]\]\s+' + re.escape(ac_id) + r'(?:\s|$)', text, re.MULTILINE) is not None,
@@ -242,6 +253,7 @@ def validate(root: Path, changed_paths: list[str] | None = None) -> dict:
     changed = set(changed_paths or [])
     for name in changed:
         relative_path(name)
+        require((root / name).resolve().is_relative_to(root.resolve()), f'Changed path escapes repository: {name}')
     active = [(name, meta) for name, meta in tasks if name in changed
               and meta['status'] in {'ready', 'in_progress', 'verified'}]
     for name in sorted(changed):

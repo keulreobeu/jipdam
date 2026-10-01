@@ -121,6 +121,30 @@ class SDDContractTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'Invalid repository path'):
                     validate(self.root)
 
+    def test_test_references_must_be_discovered_by_default_ci(self):
+        source = (self.root / 'tests/test_demo.py').read_text(encoding='utf-8')
+        for name in ('docs/helper.py', 'tests/contract_checks.py', 'tests/nested/test_demo.py'):
+            with self.subTest(path=name):
+                self.write(name, source)
+                registry = deepcopy(self.registry)
+                registry['features'][0]['requirements'][0]['acs'][0]['tests'][0]['file'] = name
+                self.write_registry(registry)
+                with self.assertRaisesRegex(ValueError, 'not discovered'):
+                    validate(self.root)
+        self.write('tests/nested/__init__.py', '')
+        self.assertEqual(validate(self.root)['status'], 'passed')
+
+    def test_changed_paths_cannot_escape_repository(self):
+        from unittest.mock import patch
+        resolve = Path.resolve
+        def fake_resolve(path, *args, **kwargs):
+            if path == self.root / 'README.md':
+                return self.root.parent / 'outside.md'
+            return resolve(path, *args, **kwargs)
+        with patch.object(Path, 'resolve', fake_resolve):
+            with self.assertRaisesRegex(ValueError, 'escapes repository'):
+                validate(self.root, ['README.md'])
+
     def test_unapproved_spec_cannot_start_implementation(self):
         self.write_spec({**self.spec, 'status': 'draft'})
         with self.assertRaisesRegex(ValueError, 'Spec not ready'):
@@ -184,6 +208,9 @@ class SDDContractTests(unittest.TestCase):
             validate(self.root)
         self.write_task({**verified, 'verification': [record]}, checked=True)
         self.assertEqual(validate(self.root)['status'], 'passed')
+        self.write_task({**verified, 'verification': [record, {**record, 'result': 'failed'}]}, checked=True)
+        with self.assertRaisesRegex(ValueError, 'lacks passed evidence'):
+            validate(self.root)
 
     def test_evidence_anchors_and_manual_checks_are_validated(self):
         registry = deepcopy(self.registry)
