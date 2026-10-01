@@ -1,0 +1,21 @@
+name: Team environment
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  model-free-checks:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Application, tooling, and synthetic CLI checks
+        run: python -X utf8 scripts/bootstrap.py --app-only

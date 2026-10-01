@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.py[cod]
+.local_runtime
+.env
+data/provisional
+data/eval
+data/historical/*
+!data/historical/README.md
+tests
+docs
+outputs
+work

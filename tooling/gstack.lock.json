@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/garrytan/gstack.git",
+  "commit": "96764e80a641e28141ec8297223768029f5bf483",
+  "version": "1.91.9.0",
+  "expected_skills": 56,
+  "minimum_bun": "1.3.14",
+  "minimum_node": "22.0.0"
+}

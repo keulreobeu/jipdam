@@ -1,0 +1,36 @@
+x-budongi-base: &budongi-base
+  build:
+    context: .
+  image: budongi:local
+  init: true
+  working_dir: /app
+  volumes:
+    - ./data:/app/data
+    - ./runs:/app/runs
+    - ./tool_runs:/app/tool_runs
+    - ./reports:/app/reports
+
+services:
+  budongi:
+    <<: *budongi-base
+
+  budongi-llm:
+    <<: *budongi-base
+    profiles: [llm]
+    depends_on:
+      - ollama
+    environment:
+      OLLAMA_ENDPOINT: http://ollama:11434/v1/chat/completions
+      BUDONGI_ALLOW_DOCKER_OLLAMA: "1"
+
+  ollama:
+    image: ollama/ollama:0.34.4
+    profiles: [llm]
+    init: true
+    volumes:
+      - ollama_models:/root/.ollama
+    expose:
+      - "11434"
+
+volumes:
+  ollama_models:

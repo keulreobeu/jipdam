@@ -1,0 +1,16 @@
+.local_runtime/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+node_modules/
+.env
+.env.*
+!.env.example
+.gstack/
+*.log
+work/
+outputs/team-share/
+# gstack is generated from tooling/gstack.lock.json, never vendored here.
+.agents/skills/gstack/
+.agents/skills/gstack-*/
