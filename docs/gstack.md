@@ -49,6 +49,10 @@ gstack 자체를 수정하려면 runtime checkout의 `SKILL.md.tmpl` 또는 sect
 
 ## 지원 범위
 
+제품 코드·Spec·ADR·Task와 Python 검증 명령은 Codex·Claude Code·Antigravity에서 공통으로 사용한다. 도구별 시작 방법은 루트 README에 있다. Claude Code는 루트 `CLAUDE.md`에서 공통 `AGENTS.md`를 import하고, Antigravity는 공식 프로젝트 규칙의 `AGENTS.md`를 사용한다.
+
+현재 bootstrap과 adapter는 Codex용 gstack만 등록한다. Claude Code의 `.claude/skills/` 등록은 구현하지 않았으며, Antigravity가 `.agents/skills/`를 탐색하더라도 생성된 Codex manifest·preamble의 실행 호환성을 검증한 것은 아니다. 이 도구들의 기본 개발은 `--app-only`와 추적되는 `jipdam-workflow`의 공통 절차로 시작한다. host별 네이티브 gstack 연결은 등록·runtime·동작 검증이 필요한 별도 확장이다.
+
 Windows 전체 설치와 브라우저 smoke를 검증한다. Linux/macOS 진입점을 제공하되 해당 OS의 전체 설치 실행 결과는 별도 검증 대상이다. CSO 네이티브 실행에는 추가 C++ toolchain, iOS에는 기기와 관련 플랫폼, 외부 CLI 리뷰와 원격 동기화에는 별도 인증이 필요하다. 실제 모델·실데이터 정확도는 설치 검증에 포함하지 않는다.
 
 현재 결과는 `docs/team_environment_validation.md`에 기록한다. 이 구성이 실제 모델·Golden·Phase 완료를 의미하지 않는다.
