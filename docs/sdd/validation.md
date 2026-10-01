@@ -10,11 +10,23 @@ Task 갱신 없는 코드 변경, 범위 누락, draft Spec에 대한 구현 진
 
 ## GitHub CI
 
-PR CI·Windows/Linux 실행 결과는 확인 후 기록한다.
+커밋 `0b4bc8f2bb5b145f4ae260b666f7e1e22a2f748b`의 [PR CI](https://github.com/keulreobeu/jipdam/actions/runs/36823087083)와 [push CI](https://github.com/keulreobeu/jipdam/actions/runs/36823044007)가 모두 성공했다. Windows/Linux × Python 3.11/3.12의 네 조합에서 SDD 검사·46개 테스트·합성 CLI를 실행했다. [PR #1](https://github.com/keulreobeu/jipdam/pull/1)에 변경과 검증을 공유한다.
 
 ## Main protection
 
-CI 성공 후 필수 검사·리뷰 권장 설정을 적용하고 읽은 결과를 기록한다.
+2026-10-01 PR CI 성공 후 GitHub 보호 설정을 적용하고 `gh api repos/keulreobeu/jipdam/branches/main/protection`으로 다시 읽어 아래 값을 대조했다.
+
+| 설정 | 확인한 값 |
+| --- | --- |
+| 필수 검사 | model-free-checks (ubuntu-latest, 3.11), (ubuntu-latest, 3.12), (windows-latest, 3.11), (windows-latest, 3.12) |
+| 검사 제공 앱 | GitHub Actions, app_id 15368 |
+| 최신 main 반영 | strict = true |
+| 관리자 적용 | enforce_admins.enabled = true |
+| 필수 승인 리뷰 수 | required_approving_review_count = 0 |
+| Code Owner·마지막 push 승인 강제 | 둘 다 false |
+| force push·브랜치 삭제 | 둘 다 false |
+
+필수 검사 목록은 원격 응답과 정확히 일치했다. main 변경은 PR과 필수 CI를 따르고 사람 리뷰는 권장한다. [GitHub 보호 API](https://docs.github.com/en/rest/branches/branch-protection#update-branch-protection)의 `checks` 형식으로 앱 ID를 고정했다.
 
 ## Product evaluation
 
