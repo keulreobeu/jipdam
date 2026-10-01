@@ -13,6 +13,10 @@ from register_gstack import validate_discovery
 def verify_base() -> None:
     env = runtime_env()
     app = WORKSPACE / APP_RELATIVE
+    sdd = [sys.executable, '-X', 'utf8', str(WORKSPACE / 'scripts/check_sdd.py')]
+    if os.environ.get('GITHUB_ACTIONS') == 'true':
+        sdd.append('--ci')
+    run(sdd, env=env)
     run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tests', '-v'], cwd=app, env=env)
     run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tests', '-v'], env=env)
     runtime = WORKSPACE / '.local_runtime'

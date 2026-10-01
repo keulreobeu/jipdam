@@ -1,5 +1,15 @@
 # Evaluation Spec
 
+```toml
+kind = "spec"
+id = "EVAL-001"
+status = "baseline"
+owner = "keulreobeu"
+revision = 1
+```
+
+기존 required-fact coverage 구현을 정리한 baseline이며 과거 승인을 소급하지 않는다. ID별 검증은 루트 `docs/sdd/traceability.json`을 따른다. 실제 데이터 평가와 전체 claim precision은 이 baseline 검증 범위 밖이다.
+
 ## CURRENT
 
 - `tests/`는 합성 입력으로 DB·Tool·Agent의 주요 계약을 검사한다.
@@ -18,7 +28,49 @@
 - `run_id`별 모델·Prompt·Tool schema·snapshot·평가 버전과 오류 유형을 기록한다. 미측정 값을 0 또는 성공으로 취급하지 않는다.
 - Golden의 entity alias 작성 품질을 실제 사람 검수 케이스로 검증하고 alias가 모호한 경우의 평가 규칙을 다듬는다.
 
-## Acceptance Criteria
+## EVAL-001-REQ-01 값과 단위의 비교
+
+숫자는 단위·허용 오차, 문자열과 날짜는 현재 정규화 계약으로 비교한다.
+
+### EVAL-001-AC-01 숫자·단위·허용 오차
+
+현재 단위 정규식 경계에서 원/만원/억원 환산과 m/미터·㎡ alias를 지원하며 허용 오차의 경계는 포함한다. 경계 밖의 값은 missing이다. 원 단위 표기를 한글 서술에 바로 붙인 `900,000,000원입니다`는 현재 미지원이며 `900,000,000원 입니다`는 지원한다.
+
+### EVAL-001-AC-02 문자열·날짜 정규화
+
+문자열은 casefold·공백 정규화 후 substring으로, 유효한 ISO 날짜는 한국어·점 구분 날짜와 비교한다. 다른 날짜는 missing이고 잘못된 Golden 날짜는 not_measured다.
+
+## EVAL-001-REQ-02 entity 문맥
+
+같은 문장에 canonical ID 또는 명시한 alias가 있는 사실만 비교한다.
+
+### EVAL-001-AC-03 entity·alias·문장 경계
+
+다른 entity·ID 접두사가 비슷한 entity·다른 문장에만 있는 값은 성공으로 처리하지 않는다. alias가 없으면 canonical ID를 사용한다.
+
+## EVAL-001-REQ-03 누락과 미측정
+
+답변에 측정 가능한 사실이 없으면 missing이고 지원하지 않는 Golden 입력·단위·alias·tolerance는 not_measured다.
+
+### EVAL-001-AC-04 false pass 방지
+
+비어 있거나 잘못된 required_facts, null·bool·미지원 값, 숫자 단위 누락, 잘못된 alias·tolerance와 prediction 누락은 성공으로 처리하지 않는다. missing이 있으면 표본 실패이며 나머지 미측정만 있으면 표본 not_measured다.
+
+## EVAL-001-REQ-04 집계와 재현 가능한 증거
+
+coverage는 matched/(matched+missing)으로 계산하고 미측정 수를 별도로 보존한다. 기존 지표와 실제 평가 미완료 상태를 유지한다.
+
+### EVAL-001-AC-05 집계·CSV 근거·재현
+
+CSV에 표본 및 fact별 상태·entity·field·value·unit·tolerance·alias·판정 사유를 보존한다. 같은 입력은 같은 결과를 만들며 측정 사실이 없으면 coverage는 null이다.
+
+### EVAL-001-AC-06 기존 지표와 평가 경계
+
+Tool 선택·인자·entity·grounding 지표가 유지된다. generation은 전체 claim precision 보류 상태를 유지하고 합성 coverage를 실측 성능으로 선언하지 않는다.
+
+## 전체 평가 완료 조건
+
+OPEN QUESTION: 단위 뒤 한글 서술이 붙는 표기까지 지원할지 별도 제품 변경에서 정한다. 이번 SDD 도입은 현재 동작을 보존하고 이 제한을 테스트·baseline에 기록한다.
 
 - 합성 테스트와 실제 Golden 평가를 별도로 보고한다.
 - 평가 결과는 같은 입력·버전으로 재실행 가능하며 Tool 선택 → 인자 → 조회 → 답변 중 첫 실패 단계를 구분한다.

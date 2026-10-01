@@ -6,6 +6,8 @@
 
 ## 기본 스킬
 
+SDD 운영과 문서·Task·검증 계약은 [docs/sdd.md](docs/sdd.md)를 따른다. 코드·설정·계약 변경은 같은 변경에서 갱신한 영구 Task와 연결한다. 새 제품 요구는 사용자, 세부 구현과 AC별 증거 기반 완료는 담당자가 책임진다. `python -X utf8 scripts/verify_environment.py`는 SDD 검사도 실행한다. 기존 문서는 시범 적용 범위 밖까지 일괄 승인·전환하지 않는다.
+
 이 프로젝트는 [gstack](https://github.com/garrytan/gstack)을 기본 개발 스킬로 사용한다. Codex용 스킬은 루트 `.agents/skills/gstack-*/SKILL.md`, router는 `.agents/skills/gstack/SKILL.md`에 있다. 원본·템플릿·런타임은 스킬 탐색 경로 밖의 `.local_runtime/tooling/.agents/skills/gstack/`에 있다. 요청에 필요한 Codex용 스킬만 읽는다. 원본과 fixture의 SKILL.md를 호출하지 않는다.
 
 - 모호한 제품 요청: `gstack-office-hours`, 필요하면 `gstack-plan-ceo-review`.

@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "features": [
+    {
+      "id": "SDD-001",
+      "spec": "docs/specs/sdd_workflow_spec.md",
+      "requirements": [
+        {
+          "id": "SDD-001-REQ-01",
+          "acs": [
+            {
+              "id": "SDD-001-AC-01",
+              "tests": [
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_valid_baseline_and_approved_contracts"
+                },
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_duplicate_ids_and_invalid_metadata_are_rejected"
+                },
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_unapproved_spec_cannot_start_implementation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "SDD-001-REQ-02",
+          "acs": [
+            {
+              "id": "SDD-001-AC-02",
+              "tests": [
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_broken_references_are_rejected"
+                },
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_unmapped_and_skipped_tests_are_rejected"
+                },
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_unsafe_paths_are_rejected"
+                },
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_new_metadata_documents_must_be_registered"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "SDD-001-REQ-03",
+          "acs": [
+            {
+              "id": "SDD-001-AC-03",
+              "tests": [
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_changed_code_requires_updated_task"
+                },
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_scope_and_task_state_are_enforced"
+                },
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_explanatory_docs_are_exempt_but_contracts_are_not"
+                }
+              ]
+            },
+            {
+              "id": "SDD-001-AC-04",
+              "tests": [
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_verified_tasks_require_completed_acs_and_passed_evidence"
+                },
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_evidence_anchors_and_manual_checks_are_validated"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "SDD-001-REQ-04",
+          "acs": [
+            {
+              "id": "SDD-001-AC-05",
+              "tests": [
+                {
+                  "file": "tests/test_sdd.py",
+                  "class": "SDDContractTests",
+                  "method": "test_changed_files_handle_pr_push_and_renames"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "python -X utf8 scripts/bootstrap.py --app-only",
+                  "evidence": "docs/sdd/validation.md#github-ci"
+                }
+              ]
+            },
+            {
+              "id": "SDD-001-AC-06",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "gh api repos/keulreobeu/jipdam/branches/main/protection",
+                  "evidence": "docs/sdd/validation.md#main-protection"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EVAL-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/08_evaluation_spec.md",
+      "requirements": [
+        {
+          "id": "EVAL-001-REQ-01",
+          "acs": [
+            {
+              "id": "EVAL-001-AC-01",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_required_facts.py",
+                  "class": "RequiredFactContractTests",
+                  "method": "test_units_money_and_tolerance_boundaries"
+                }
+              ]
+            },
+            {
+              "id": "EVAL-001-AC-02",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_required_facts.py",
+                  "class": "RequiredFactContractTests",
+                  "method": "test_text_and_date_normalization"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "EVAL-001-REQ-02",
+          "acs": [
+            {
+              "id": "EVAL-001-AC-03",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_required_facts.py",
+                  "class": "RequiredFactContractTests",
+                  "method": "test_entity_context_and_aliases"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "EVAL-001-REQ-03",
+          "acs": [
+            {
+              "id": "EVAL-001-AC-04",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_required_facts.py",
+                  "class": "RequiredFactContractTests",
+                  "method": "test_invalid_and_absent_facts_remain_unmeasured"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_storage_tools.py",
+                  "class": "DataToolContractTests",
+                  "method": "test_evaluation_keeps_unmeasured_and_not_run_separate_from_pass"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "EVAL-001-REQ-04",
+          "acs": [
+            {
+              "id": "EVAL-001-AC-05",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_required_facts.py",
+                  "class": "RequiredFactContractTests",
+                  "method": "test_reports_preserve_status_counts_and_fact_evidence"
+                }
+              ]
+            },
+            {
+              "id": "EVAL-001-AC-06",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_required_facts.py",
+                  "class": "RequiredFactContractTests",
+                  "method": "test_existing_metrics_and_unmeasured_generation_are_preserved"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_storage_tools.py",
+                  "class": "DataToolContractTests",
+                  "method": "test_deterministic_evaluation_marks_generation_pending"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    "docs/tasks/sdd-adoption.md",
+    "outputs/budongi_mvp_temp/docs/tasks/current.md"
+  ]
+}

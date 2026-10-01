@@ -126,6 +126,10 @@ python -X utf8 scripts/register_gstack.py --check
 
 ## 5. 함께 작업하는 규칙
 
+- [SDD 작업 안내](docs/sdd.md)와 별도 [Spec](docs/templates/spec.md)·[Task](docs/templates/task.md)·[Plan](docs/templates/plan.md)·[ADR](docs/templates/adr.md) 템플릿을 사용한다. 제품 요구는 사용자가 확정하고 담당자가 AC별 검증 근거로 완료 처리한다.
+- 작업마다 영구 Task ID를 만들고 코드·설정·계약 변경과 연결한다. 단순 설명·오탈자 수정은 면제한다. 기본 검증에 SDD 검사가 포함되며 브랜치 변경은 `python -X utf8 scripts/check_sdd.py --base origin/main`으로 확인한다.
+- main은 네 가지 기본 CI가 필수이며 사람 리뷰는 권장한다. PR 양식에 Task·Spec·AC·검증 결과를 남긴다. 도입 상태와 실제 설정 근거는 [SDD 검증 기록](docs/sdd/validation.md)을 따른다.
+
 - 확정 요구는 Spec, 중요한 결정 이유는 ADR, 실행 단위와 결과는 Task에 기록한다. AI의 계획·리뷰 결과는 초안이다.
 - 각 팀원은 별도 clone 또는 브랜치에서 작업하고 PR로 변경을 공유한다. 다른 AI 도구끼리도 같은 파일의 동시 수정을 피한다.
 - 모델에 SQL·DB 직접 접근 권한을 주지 않는다. 허용된 Data Tool·인자 검증·호출 제한·출처 추적을 유지한다.

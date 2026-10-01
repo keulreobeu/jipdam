@@ -13,6 +13,8 @@
 
 ## 작업 루프
 
+팀 SDD 운영은 루트 `docs/sdd.md`와 별도 템플릿을 따른다. 새 작업은 고유 Task 파일·ID로 보존하고 `current.md`에서 연결한다. 시범 등록된 Spec·Task는 TOML 메타데이터와 루트 추적 원장을 유지한다. 기본 검증은 루트 `python -X utf8 scripts/verify_environment.py`, 브랜치 변경 검사는 `python -X utf8 scripts/check_sdd.py --base origin/main`이다. baseline은 소급 승인이 아니며 verified Task도 실제 제품 평가 완료를 의미하지 않는다.
+
 요청 → 필요한 질문·Plan → Spec 확인/갱신 → 중요한 결정이면 ADR → Task → 구현 → 관련 테스트·평가 → Acceptance Criteria 확인 → Spec과 코드의 차이 확인 → 문서 갱신.
 
 - 워크스페이스 루트의 `.agents/skills/`에 설치된 gstack을 기본 개발 스킬로 사용한다. 먼저 `jipdam-workflow`를 읽고 요청에 맞는 기획·설계·리뷰·디버깅·QA·문서 스킬을 선택한다. 작은 수정에 전체 체인을 실행하지 않는다. gstack 결과 자체는 공식 요구사항이 아니다. 확정된 변경점만 저장소 Spec/ADR에 반영한다. 설치·확장 방법은 워크스페이스의 `docs/gstack.md`에 있다.
