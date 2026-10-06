@@ -5,7 +5,7 @@
 ## 시작 순서
 
 1. 현재 요청과 이 파일을 읽는다.
-2. `docs/specs/00_project_spec.md`와 관련 기능 Spec을 읽는다.
+2. `docs/specs/00_project_spec.md`, `docs/specs/10_rental_recommendation_spec.md`와 관련 기능 Spec을 읽는다.
 3. 관련 `docs/adr/` 및 `docs/tasks/current.md`를 읽는다.
 4. 관련 코드·테스트와 `README.md`의 실제 실행 상태를 확인한다.
 
@@ -25,10 +25,11 @@
 
 ## 이 프로젝트의 필수 경계
 
-- 현재 MVP는 2023년 이하 스냅샷의 적재 계약, 허용된 세 Data Tool, 단일 로컬 4B급 Tool Calling 경로다. 검수된 실제 스냅샷은 아직 없다. Router·RAG·Hybrid·LoRA는 평가 후 결정할 확장안이다.
+- CURRENT는 2023년 이하 스냅샷 적재, 허용된 세 Data Tool, 단일 로컬 4B Tool Calling과 합성 평가, CRED-001의 Windows 계정 보호 API 키 보관함과 RENT-001의 합성 스냅샷 결정적 추천·CLI다. 전월세 Tool은 별도 읽기 전용 허용 목록이며 기존 LLM 세 Tool에 아직 연결하지 않았다. TARGET는 RENT-001의 서울 아파트 전월세 단지 후보·필수/선호·직선거리·추천 웹 비교다. 추천·비교 웹과 최신 임대차 데이터는 별도 경로로 둔다. 2023 Golden 완료를 최신 추천의 선행 조건으로 삼지 않는다. Router·RAG·Hybrid·LoRA는 선택형 후속 연구다.
 - LLM에 SQL·DB 직접 접근·원천 수정 권한을 주지 않는다. Tool 허용 목록, 인자 검증, 호출 5회, 결과 20행, 로컬 엔드포인트 및 타임아웃 제한을 유지한다.
 - `공급액(만원)`은 실거래가가 아니다. 근거 없는 가격·거리·시설·학군·전망을 생성하지 않는다. 원 단위 가격, ㎡ 면적, m 거리를 쓰고 출처 ID·기준일을 추적한다.
+- 신규 전월세 API 키는 CRED-001 보관함으로 암호화해 Windows 사용자 프로필에 관리한다. Windows Credential Manager를 사용할 수 없으면 평문 fallback 없이 fail-closed한다. 키 값은 브라우저 영속 저장소·LLM·로그·응답·Git에 남기지 않는다. 폴더 삭제는 확인 뒤 그 폴더의 키 전체를 연쇄 삭제하되, 키 저장·삭제 자체로 외부 API를 호출하지 않는다. 기존 역사 CLI 환경변수는 그대로 유지한다.
 - 2024년 이후 자료를 2023 역사 스냅샷이나 학습 자료에 섞지 않는다. 데이터 수집·단지 매칭은 사용자의 보류 지시가 유지되는 동안 재개하지 않는다.
 - 실제 역사 스냅샷, 사람 검수 Golden, 전체 생성 사실 평가가 없으면 Phase 0~5 완료 또는 실측 성능으로 보고하지 않는다.
 
-상세 데이터 계약과 단계별 완료 조건은 `docs/specs/` 및 `docs/budongi_advanced_llm_evaluation_plan.md`에 둔다.
+제품 계약·실행 순서는 `docs/specs/10_rental_recommendation_spec.md`, `docs/specs/11_api_credential_vault_spec.md`, `docs/plans/rental-recommendation-mvp.md`, `docs/tasks/current.md`를 따른다. `docs/budongi_advanced_llm_evaluation_plan.md`는 보존된 선택형 연구 계획이다. 문서 Task 완료를 제품 AC·실데이터 품질 완료로 표시하지 않는다.

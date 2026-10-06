@@ -19,6 +19,7 @@ from typing import Callable
 
 
 MOLIT_URL = "https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev"
+MOLIT_RENT_URL = "https://apis.data.go.kr/1613000/RTMSDataSvcAptRent/getRTMSDataSvcAptRent"
 APPLYHOME_URL = "https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1/getAPTLttotPblancDetail"
 APPLYHOME_MODEL_URL = "https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1/getAPTLttotPblancMdl"
 KEY_ENV = "DATA_GO_KR_SERVICE_KEY"
@@ -64,6 +65,15 @@ def _molit_rows(payload: bytes) -> tuple[list[dict[str, str | None]], int]:
     if total_text is None:
         raise PublicDataError("MOLIT response lacks totalCount")
     return rows, int(total_text)
+
+
+def parse_molit_rental_response(payload: bytes) -> tuple[list[dict[str, str | None]], int]:
+    """Parse an archived apartment-rent XML page without fetching or renaming fields.
+
+    Returned mappings preserve the XML tag names and blank values. Rental field
+    mapping and unit conversion remain gated on the detailed source contract.
+    """
+    return _molit_rows(payload)
 
 
 def _applyhome_rows(payload: bytes) -> tuple[list[dict[str, object]], int]:

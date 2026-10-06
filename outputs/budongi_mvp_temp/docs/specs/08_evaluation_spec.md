@@ -23,7 +23,8 @@ revision = 1
 
 ## TARGET
 
-- FACT 50, FILTER 60, COMPARE 60, NO_MATCH 30 안팎의 사람 검수 Golden을 구성하고 Tool 선택·인자·반환 ID·필수 사실·출처·기준일을 단계별로 평가한다.
+- 우선 제품 평가는 [RENT-001](10_rental_recommendation_spec.md)와 [신규 시나리오](../plans/rental-recommendation-mvp.md#product-verification-pending)의 예산 쌍·최신 계약·필수/선호·거리·순위·빈 결과·출처·설명 fallback을 따른다. 기존 EVAL-001 baseline·ID·required-fact 동작은 변경하지 않는다. 신규 제품 AC는 아직 not_run이다.
+- 기존 FACT 50/FILTER 60/COMPARE 60/NO_MATCH 30 안팎의 역사 Golden은 별도 연구로 보존하며 새 추천의 선행 조건이나 승인된 전월세 Golden 수량으로 상속하지 않는다.
 - 단지·거래·사건·질문 재표현 묶음을 Train/Validation/Test에 걸쳐 누출시키지 않는다. 최종 Test는 설정 확정 후 사용한다.
 - `run_id`별 모델·Prompt·Tool schema·snapshot·평가 버전과 오류 유형을 기록한다. 미측정 값을 0 또는 성공으로 취급하지 않는다.
 - Golden의 entity alias 작성 품질을 실제 사람 검수 케이스로 검증하고 alias가 모호한 경우의 평가 규칙을 다듬는다.

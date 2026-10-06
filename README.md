@@ -1,6 +1,6 @@
 # 집담 (Jipdam)
 
-출처와 기준 시점을 추적하는 부동산 정보 질의 프로젝트다. Python·SQLite 기반의 스냅샷 적재, 검증된 Data Tool 3개, 로컬 모델 Tool Calling 경로를 개발한다. 현재 구현과 향후 계획은 [Project Spec](outputs/budongi_mvp_temp/docs/specs/00_project_spec.md)에서 구분한다.
+서울 아파트 전월세 단지 후보를 예산·직장 위치·생활시설 조건으로 추천하고 이유와 포기할 조건을 비교하는 프로젝트다. 승인된 [RENT-001](outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md)과 [전환 Plan](outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md)을 따른다. 현재 구현은 Python·SQLite의 2023 역사 스냅샷·세 Data Tool·로컬 모델·합성 평가 기반에 합성 전월세 추천 CLI와 키 보관함이 추가됐다. 실데이터 추천·웹 비교는 아직 없다. [Project Spec](outputs/budongi_mvp_temp/docs/specs/00_project_spec.md)에서 CURRENT와 TARGET를 구분한다.
 
 팀원은 **Codex, Claude Code, Antigravity 중 익숙한 도구**로 작업할 수 있다. 같은 코드·Spec·ADR·Task·검증 명령을 공유한다. 전체 gstack의 자동 등록은 현재 Codex용으로 구성되어 있다.
 

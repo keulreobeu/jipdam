@@ -34,3 +34,7 @@ gstack이 제안하는 GitHub issue 작성, push/PR/merge/배포, 외부 CLI 리
 공통 프로젝트 규칙은 이 파일과 개발 폴더의 `AGENTS.md`, 집담 전용 절차는 추적되는 `.agents/skills/jipdam-workflow/`에서 발전시킨다. 일반화할 만한 gstack 변경은 runtime 원본의 해당 `SKILL.md.tmpl`에서 수정하고 `python scripts/bootstrap.py`로 재생성한다. 팀 공유에는 그 변경을 별도 fork commit에 보존하고 `tooling/gstack.lock.json`의 repository/commit/version을 함께 갱신한다. 생성된 `gstack-*/SKILL.md`를 직접 수정하면 재설치 때 사라진다. setup의 마지막 등록 단계는 Codex용 router·스킬 ID·팀 runtime 경로를 적용하고 fixture 스킬 유출을 검사한다.
 
 업데이트 전에 원본의 diff와 로컬 수정을 확인하고 커밋 또는 패치로 보존한다. 자동 업데이트는 사용하지 않는다. 설치·사용·확장 경로는 `docs/gstack.md`를 참고한다.
+
+## 현재 제품 방향 — 2026-10-06 승인
+
+[RENT-001](outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md)과 [전환 Plan](outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md)을 따른다. TARGET는 서울 아파트 전월세 단지 후보의 예산·직장/역/마트/공원/병원 직선거리·필수/선호 비교와 로컬 웹 데모다. 백엔드가 조건·순위를 계산하고 로컬 LLM은 설명한다. 현재 전월세 추천·웹은 미구현이며 역사 DB·세 Tool·평가 CURRENT를 보존한다. 최신 rental 경로를 별도로 만들고 기존 2023 연구 완료를 선행 조건으로 삼지 않는다. 실수집·매칭 보류는 유지한다. 매매·청약 확대와 RAG/Hybrid/LoRA/다중 모델 연구는 첫 제품 우선순위에서 제외한다.
