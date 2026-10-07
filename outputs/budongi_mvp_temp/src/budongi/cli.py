@@ -5,10 +5,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sqlite3
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 from .agent import ask
+from .credential_vault import CredentialVaultError
 from .eval import evaluate
 from .storage import connect, import_snapshot, inspect_legacy
 from .tools import execute_tool
@@ -54,16 +57,69 @@ def _parser() -> argparse.ArgumentParser:
     score.add_argument("--golden", type=Path, required=True)
     score.add_argument("--predictions", type=Path, required=True)
     score.add_argument("--report", type=Path, required=True)
+    credentials = sub.add_parser("credentials", help="Manage encrypted API keys in the local browser")
+    credentials.add_argument("--port", type=int, default=8765,
+                             help="Loopback-only local settings server port (default: 8765)")
+    credentials.add_argument("--no-browser", action="store_true", help="Print the local URL without opening a browser")
+    recommend = sub.add_parser("recommend", help="Recommend rental complexes from a sealed rental snapshot")
+    recommend.add_argument("--rental-db", type=Path, required=True)
+    recommend.add_argument("--snapshot-id", required=True)
+    recommend.add_argument("--request", type=Path, required=True, help="UTF-8 JSON conditions file")
+    recommend.add_argument("--allow-synthetic", action="store_true", help="Explicitly allow a fictional demo snapshot")
+    demo = sub.add_parser("rental-demo", help="Create a fictional rental snapshot and sample request; no API calls")
+    demo.add_argument("--directory", type=Path, default=Path("data/rental/synthetic-demo"))
     return parser
 
 
 def main() -> None:
     args = _parser().parse_args()
+    if args.command in {"recommend", "rental-demo"}:
+        from .rental_demo import create_rental_demo
+        from .rental_recommendation import (RentalDataUnavailable, RentalInputError, RentalInternalError,
+                                            open_rental_reader, recommend_rentals)
+        try:
+            if args.command == "rental-demo":
+                _print(create_rental_demo(args.directory))
+            else:
+                try:
+                    request = json.loads(args.request.read_text(encoding="utf-8-sig"))
+                except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                    raise RentalInputError("추천 요청 JSON 파일을 읽을 수 없습니다.") from exc
+                connection = open_rental_reader(args.rental_db)
+                try:
+                    _print(recommend_rentals(connection, snapshot_id=args.snapshot_id, arguments=request,
+                                             allow_synthetic=args.allow_synthetic))
+                finally:
+                    connection.close()
+        except (RentalInputError, ValueError) as exc:
+            _print({"status": "input_error", "error": str(exc)})
+            raise SystemExit(2) from None
+        except RentalDataUnavailable as exc:
+            _print({"status": "data_unavailable", "error": str(exc)})
+            raise SystemExit(3) from None
+        except (RentalInternalError, OSError, sqlite3.Error):
+            _print({"status": "internal_error", "error": "추천 데이터 처리에 실패했습니다."})
+            raise SystemExit(1) from None
+        return
     if args.command == "inspect-legacy":
         _print(inspect_legacy(args.csv))
         return
     if args.command == "evaluate":
         _print(evaluate(args.golden, args.predictions, args.report))
+        return
+    if args.command == "credentials":
+        if not 1024 <= args.port <= 65535:
+            raise SystemExit("--port must be between 1024 and 65535")
+        try:
+            from .credential_server import serve_credentials
+            serve_credentials(port=args.port, open_browser=not args.no_browser)
+        except CredentialVaultError as exc:
+            print(f"집담 API 키 보관함을 시작할 수 없습니다: {exc}", file=sys.stderr)
+            raise SystemExit(2) from exc
+        except OSError as exc:
+            print("집담 API 키 보관함 서버를 시작할 수 없습니다. 포트가 사용 중인지 확인해 주세요.",
+                  file=sys.stderr)
+            raise SystemExit(2) from exc
         return
     connection = connect(args.db)
     try:

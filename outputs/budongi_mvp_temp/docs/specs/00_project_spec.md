@@ -1,6 +1,6 @@
 # Project Spec — 집담
 
-상태: CURRENT와 TARGET을 분리해 관리. 기준: 2026-09-29의 저장소 코드·README·`docs/budongi_advanced_llm_evaluation_plan.md`. 이 문서는 확인되지 않은 과거 결정을 소급해 확정하지 않는다.
+상태: CURRENT는 2026-09-29 기반 구현을 보존하고 TARGET는 2026-10-06 사용자가 승인한 전월세 추천 방향을 따른다. 이 문서는 과거 승인·제품 구현·평가 완료를 소급하지 않는다.
 
 ## 이름과 저장소
 
@@ -8,11 +8,13 @@
 
 ## 목적과 범위
 
-- **TARGET**: 출처와 시점이 추적되는 부동산 정보 질의 시스템을 단계별로 만들고 검증한다. 실행 순서와 단계별 완료 조건은 [실행 계획](../budongi_advanced_llm_evaluation_plan.md)의 Phase 0~17을 따른다.
+- **TARGET**: 신혼·첫집·사회초년생의 예산·직장 위치·생활시설 조건에 맞는 서울 아파트 전월세 단지 후보를 추천·비교하는 로컬 웹 데모다. 공식 계약은 [RENT-001](10_rental_recommendation_spec.md), API 키 보관함은 [CRED-001](11_api_credential_vault_spec.md), 제품 실행 순서는 [PLAN-RENT-001](../plans/rental-recommendation-mvp.md), 결정 이유는 [ADR-003](../adr/ADR-003-rental-recommendation-first.md)·[ADR-004](../adr/ADR-004-local-api-credential-vault.md)다. 기존 [LLM 실행 계획](../budongi_advanced_llm_evaluation_plan.md)은 선택형 연구로 보존한다.
 - **CURRENT**: Python/SQLite 기반 2023년 이하 스냅샷 적재 계약, 세 Data Tool, 단일 로컬 모델 Tool Calling 경로, 합성 데이터 테스트와 1차 결정적 평가기가 있다. 실제 검수된 역사 스냅샷과 약 200건 Golden은 없다.
+- **CURRENT**: 봉인된 합성 rental_v1 스냅샷의 결정적 추천·recommend CLI·rental-demo가 구현됐다. 실제 데이터 정규화·수집·매칭과 추천 HTTP·웹은 아직 없다.
+- **CURRENT**: CRED-001의 Windows loopback API 키 설정 화면·암호화 저장·폴더/별칭 관리가 구현됐다. 2026-10-07 현재 Windows 사용자 세션에서 합성 키의 Windows Credential Manager 저장·읽기·삭제 왕복을 검증했다. 비대화형 hosted CI 세션은 Credential Manager 세션 부재(오류 1312)로 해당 통합 테스트를 건너뛸 수 있다. 공급자 API 호출은 연결되지 않았다.
 - **CURRENT**: `outputs/budongi_mvp_temp`는 임시 작업 폴더다. 이전 Gemma 4 저장소는 출처를 밝힌 참고 자료이며 현재 구현으로 취급하지 않는다.
 - **CURRENT**: 팀 공유는 워크스페이스 루트의 Git 저장소·README·설치 스크립트로 관리하며, 제품의 기존 상대 경로를 유지한다. gstack은 원본 commit을 고정해 로컬 runtime에 설치하고 Codex용 스킬만 등록한다. 계약은 [Team Environment Spec](../../../../docs/team_environment_spec.md)에 있다.
-- **TARGET**: 첫 범위는 FACT/FILTER/COMPARE/NO_MATCH다. 의미 검색, Hybrid, 별도 Router, 최신화, LoRA는 초기 평가 이후 단계다.
+- **TARGET**: 최신 임대차 데이터 계약 → 결정적 추천·CLI → Windows Credential Manager로 암호화 키를 보호하는 로컬 API 키 보관함 → Python 단일 앱의 웹 입력·비교 → 선택형 로컬 4B 설명·제품 평가를 진행한다. 여러 공급자 키와 키별 별칭·분류 폴더를 관리하고 폴더 삭제 시 그 키들을 연쇄 삭제한다. 예산은 보증금·월세 각각, 직장·역·마트·공원·병원은 직선거리와 필수/선호로 처리한다. 현재 매물·총주거비·통근시간·전세안전 판정은 제외한다. 2023 Golden 완료는 선행 조건이 아니며 RAG·Hybrid·Router·LoRA 연구는 후순위다.
 
 ## 사용자와 시스템의 책임
 
@@ -46,15 +48,27 @@
 - [RAG](05_rag_spec.md): 후속 의미 검색 범위
 - [Agent Tools](06_agent_tools_spec.md): 현재 허용 도구와 호출 계약
 - [평가](08_evaluation_spec.md): 테스트와 실측 판정
-- [Runtime and Container](09_runtime_spec.md): CLI 컨테이너, 영속 파일, 선택형 로컬 모델
+- [Runtime and Container](09_runtime_spec.md): 현재 CLI 컨테이너와 전월세 로컬 웹 TARGET
+- [전월세 추천](10_rental_recommendation_spec.md): 승인된 RENT-001 계약, 합성 추천·CLI 구현; 실제 추천·웹 비교는 후속
+- [API 키 보관함](11_api_credential_vault_spec.md): 승인된 CRED-001 계약, 설정 화면·저장소 구현 및 검증 상태
+- [전환 Plan](../plans/rental-recommendation-mvp.md) / [현재 Task](../tasks/current.md): 적용 순서와 실제 완료 경계
 
 ## Acceptance Criteria
 
 - 새 기능의 Spec은 입력·출력·오류·완료 기준을 정하고 Task가 그 Spec을 참조한다.
 - 현재 구현이라고 적은 항목은 코드 또는 재현 가능한 검사로 확인할 수 있다.
-- 단계 완료는 실행 계획의 조건과 실제 데이터·평가 산출물로만 판정한다.
+- 제품 완료는 RENT-001·CRED-001 후속 Task의 실제 검증으로, 보존된 연구 Phase 완료는 기존 연구 계획의 조건으로 각각 판정한다. 합성 데모·문서 완료를 실데이터 MVP 완료로 승격하지 않는다.
 
 ## OPEN QUESTION
 
 - 임시 코드의 최종 저장소 위치와 문서 이관 방식.
 - 보류 중인 실제 데이터 수집·단지 매칭을 언제, 어떤 검수 체계로 재개할지.
+
+## TARGET 데이터 흐름
+
+```text
+별도 검수 rental 스냅샷 → 결정적 필수 조건·선호 순위 → CLI·웹 후보 비교
+                                                   → 선택형 로컬 LLM 설명
+```
+
+새 경로는 아직 미구현이다. 실수집·단지 매칭 보류를 유지하고 역사/최신 DB를 분리한다.

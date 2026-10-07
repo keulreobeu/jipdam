@@ -238,10 +238,531 @@
           ]
         }
       ]
+    },
+    {
+      "id": "RENT-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md",
+      "requirements": [
+        {
+          "id": "RENT-001-REQ-01",
+          "acs": [
+            {
+              "id": "RENT-001-AC-01",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_seoul_scope_default_limit_partial_and_no_match"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_empty_snapshot_and_unverified_data_are_distinct"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_readonly_tool_cli_parity_errors_and_source_evidence"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "RENT-001-REQ-02",
+          "acs": [
+            {
+              "id": "RENT-001-AC-02",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_latest_contract_budget_pair_and_inclusive_boundaries"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_input_validation_rejects_wrong_types_unresolved_workplace_and_duplicate_conditions"
+                }
+              ],
+              "manual": []
+            },
+            {
+              "id": "RENT-001-AC-03",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_filter_before_latest_period_type_area_and_stable_ties"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_cancelled_contract_is_excluded_and_unknown_status_stays_unknown"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_future_contract_is_rejected_before_snapshot_can_be_used"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_unreviewed_correction_status_is_not_silently_applied"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "RENT-001-REQ-03",
+          "acs": [
+            {
+              "id": "RENT-001-AC-04",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_required_unknown_unmet_exclusion_and_preference_states"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_radius_boundary_and_coverage_extent_are_not_assumed"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_input_validation_rejects_wrong_types_unresolved_workplace_and_duplicate_conditions"
+                }
+              ],
+              "manual": []
+            },
+            {
+              "id": "RENT-001-AC-05",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_required_unknown_unmet_exclusion_and_preference_states"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_missing_source_basis_date_never_becomes_facility_met"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_stale_facility_basis_date_is_unknown"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_source_unverified_snapshot_is_not_enabled_by_demo_flag"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "RENT-001-REQ-04",
+          "acs": [
+            {
+              "id": "RENT-001-AC-06",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_rank_preference_then_workplace_then_date_then_id_and_unknown_distance"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_filter_before_latest_period_type_area_and_stable_ties"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_recommendation.py",
+                  "class": "RentalRecommendationTests",
+                  "method": "test_input_validation_rejects_wrong_types_unresolved_workplace_and_duplicate_conditions"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "RENT-001-REQ-05",
+          "acs": [
+            {
+              "id": "RENT-001-AC-07",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_storage.py",
+                  "class": "RentalDataContractTests",
+                  "method": "test_xml_reader_preserves_source_fields_and_does_not_invent_state"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_storage.py",
+                  "class": "RentalDataContractTests",
+                  "method": "test_snapshot_keeps_equal_rows_distinct_and_unknown_status_null"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_storage.py",
+                  "class": "RentalDataContractTests",
+                  "method": "test_complexes_facilities_and_unknown_coverage_keep_separate_provenance"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_storage.py",
+                  "class": "RentalDataContractTests",
+                  "method": "test_bad_row_rolls_back_snapshot_and_confirmed_match_needs_review_evidence"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_storage.py",
+                  "class": "RentalDataContractTests",
+                  "method": "test_manifest_rejects_credentials_and_historical_database_is_not_extended"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_storage.py",
+                  "class": "RentalDataContractTests",
+                  "method": "test_observation_must_match_manifest_file_hash_and_row_count"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "manual: PLAN-RENT-001 product-verification-pending의 RENT-001-AC-07 행에 있는 fixture·절차·예상 결과를 구현 후 실행 (현재 not_run)",
+                  "evidence": "outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md#product-verification-pending"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "RENT-001-REQ-06",
+          "acs": [
+            {
+              "id": "RENT-001-AC-08",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "manual: PLAN-RENT-001 product-verification-pending의 RENT-001-AC-08 행에 있는 fixture·절차·예상 결과를 구현 후 실행 (현재 not_run)",
+                  "evidence": "outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md#product-verification-pending"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "RENT-001-REQ-07",
+          "acs": [
+            {
+              "id": "RENT-001-AC-09",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "manual: PLAN-RENT-001 product-verification-pending의 RENT-001-AC-09 행에 있는 fixture·절차·예상 결과를 구현 후 실행 (현재 not_run)",
+                  "evidence": "outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md#product-verification-pending"
+                }
+              ]
+            },
+            {
+              "id": "RENT-001-AC-10",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "manual: PLAN-RENT-001 product-verification-pending의 RENT-001-AC-10 행에 있는 fixture·절차·예상 결과를 구현 후 실행 (현재 not_run)",
+                  "evidence": "outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md#product-verification-pending"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "RENT-001-REQ-08",
+          "acs": [
+            {
+              "id": "RENT-001-AC-11",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "python -X utf8 scripts/check_sdd.py --base origin/main 및 수동 검토: Plan 확정 방향과 CURRENT/TARGET·링크·보류·문서/제품 상태 비교",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/rental-spec-transition.md#doc-validation"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CRED-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md",
+      "requirements": [
+        {
+          "id": "CRED-001-REQ-01",
+          "acs": [
+            {
+              "id": "CRED-001-AC-01",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_multiple_keys_aliases_and_metadata_survive_reopen"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_replacement_and_alias_edit_change_only_selected_credential"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_provider_can_be_changed_and_secret_is_reencrypted"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
+                  "class": "CredentialServerTests",
+                  "method": "test_api_provider_can_be_changed_through_edit_endpoint"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "manual: 브라우저 편집 창에서 연결 API 선택·저장 후 목록의 연결 대상 갱신 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/credential-provider-edit.md#validation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CRED-001-REQ-02",
+          "acs": [
+            {
+              "id": "CRED-001-AC-02",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_database_contains_ciphertext_not_plaintext_and_provider_is_bound"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_ciphertext_tampering_fails_closed"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_missing_master_key_with_existing_credentials_never_replaces_it"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_unavailable_or_failing_os_store_never_writes_plaintext_or_rows"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "current Windows user-session Credential Manager synthetic-key write/read/delete round-trip passed 2026-10-07; non-interactive hosted sessions may skip on WinCred error 1312",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/api-credential-vault.md#validation"
+                }
+              ]
+            },
+            {
+              "id": "CRED-001-AC-03",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_alias_cannot_echo_secret_in_responses_or_state"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
+                  "class": "CredentialServerTests",
+                  "method": "test_key_api_never_returns_or_logs_secret_and_no_browser_storage"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
+                  "class": "CredentialServerTests",
+                  "method": "test_secret_validation_error_does_not_echo_request_value"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_rotation_rejects_old_secret_in_alias_and_rolls_back"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_folder_name_cannot_echo_key"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_unsupported_method_does_not_echo_input_and_has_security_headers"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "manual: 합성 임시 보관함 브라우저 QA 및 후속 SDD 검사 (TASK-CRED-QA-001 validation 참조)",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/credential-vault-qa.md#validation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CRED-001-REQ-03",
+          "acs": [
+            {
+              "id": "CRED-001-AC-04",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_folder_delete_requires_confirmation_and_cascades"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_folder_delete_database_failure_rolls_back_folder_and_all_keys"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_empty_folder_delete_and_individual_key_delete"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
+                  "class": "CredentialServerTests",
+                  "method": "test_folder_delete_requires_confirmation_and_reports_cascade_count"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_stale_folder_confirmation_preserves_all_keys_even_with_same_count"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_folder_delete_requires_explicit_key_list"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_folder_counts_and_key_ids_share_one_snapshot_during_concurrent_add"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "manual: 합성 임시 보관함 브라우저 QA 및 후속 SDD 검사 (TASK-CRED-QA-001 validation 참조)",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/credential-vault-qa.md#validation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CRED-001-REQ-04",
+          "acs": [
+            {
+              "id": "CRED-001-AC-05",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
+                  "class": "CredentialServerTests",
+                  "method": "test_server_binds_loopback_and_serves_hardened_local_page"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
+                  "class": "CredentialServerTests",
+                  "method": "test_mutation_rejects_wrong_origin_and_missing_csrf"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
+                  "class": "CredentialServerTests",
+                  "method": "test_host_header_rejects_dns_rebinding_names"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
+                  "class": "CredentialServerTests",
+                  "method": "test_key_api_never_returns_or_logs_secret_and_no_browser_storage"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
+                  "class": "CredentialServerTests",
+                  "method": "test_folder_delete_requires_confirmation_and_reports_cascade_count"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_idle_connection_does_not_block_other_requests"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_truncated_body_is_rejected_without_mutation"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_incomplete_body_times_out_without_mutation"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_non_ascii_csrf_is_rejected_without_disconnect"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
+                  "class": "CredentialRegressionTests",
+                  "method": "test_invalid_unicode_label_is_input_error"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "CRED-001-REQ-05",
+          "acs": [
+            {
+              "id": "CRED-001-AC-06",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "python -X utf8 scripts/check_sdd.py 및 수동 검토: CRED-001·RENT-001·ADR·Plan·Task·규칙의 링크, 상태와 API 호출 보류 경계",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/credential-vault-sdd.md#doc-validation"
+                },
+                {
+                  "command": "manual: 합성 임시 보관함 브라우저 QA 및 후속 SDD 검사 (TASK-CRED-QA-001 validation 참조)",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/credential-vault-qa.md#validation"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "tasks": [
     "docs/tasks/sdd-adoption.md",
-    "outputs/budongi_mvp_temp/docs/tasks/current.md"
+    "docs/tasks/environment-repair-20261006.md",
+    "docs/tasks/ci-python-dependencies.md",
+    "outputs/budongi_mvp_temp/docs/tasks/current.md",
+    "outputs/budongi_mvp_temp/docs/tasks/rental-spec-transition.md",
+    "outputs/budongi_mvp_temp/docs/tasks/rental-data-contract.md",
+    "outputs/budongi_mvp_temp/docs/tasks/rental-recommendation-cli.md",
+    "outputs/budongi_mvp_temp/docs/tasks/rental-web-demo.md",
+    "outputs/budongi_mvp_temp/docs/tasks/rental-explanation-evaluation.md",
+    "outputs/budongi_mvp_temp/docs/tasks/rental-real-data.md",
+    "outputs/budongi_mvp_temp/docs/tasks/api-credential-vault.md",
+    "outputs/budongi_mvp_temp/docs/tasks/credential-vault-sdd.md",
+    "outputs/budongi_mvp_temp/docs/tasks/credential-vault-qa.md",
+    "outputs/budongi_mvp_temp/docs/tasks/credential-provider-edit.md",
+    "outputs/budongi_mvp_temp/docs/tasks/credential-vault-ci.md"
   ]
 }

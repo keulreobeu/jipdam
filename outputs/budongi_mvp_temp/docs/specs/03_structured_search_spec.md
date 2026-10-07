@@ -14,10 +14,12 @@
 
 ## TARGET / OPEN QUESTION
 
-- **TARGET**: 실제 역사 스냅샷의 조회 결과를 사람 검수 Golden과 대조한다. 추가 정렬·통계·역 거리·전세 조건은 데이터와 Tool 계약을 확정한 뒤 별도 Spec 변경으로 도입한다.
+- **CURRENT 합성 경로**: 읽기 전용 recommend_rentals는 [RENT-001](10_rental_recommendation_spec.md)의 유형·면적·관측 기간 → 단지별 최신 계약 → 같은 계약의 예산 쌍 → 필수 조건 → 선호 순위를 따른다. 기존 세 매매 중심 Tool의 동작은 보존하며 전월세를 price_krw 인자의 다른 의미로 재사용하지 않는다. 2023 Golden 대조는 새 추천의 선행 조건에서 제외한 연구 작업이다.
 - **OPEN QUESTION**: 거래가 없는 단지의 가격 조건 처리, 다수 거래 중 대표 가격 정의, 동일 날짜 정정 우선순위의 제품 의미를 실제 자료에서 검수해야 한다.
 
 ## Acceptance Criteria
 
 - 합성 fixture에서 필터, 날짜 범위, 정정·취소, 조회 상한, 잘못된 인자 거부, 출처 추적을 검증한다.
 - 실제 검색 정확도는 실제 스냅샷과 사람 검수 Golden이 준비되기 전까지 주장하지 않는다.
+
+합성 추천은 `rental_recommendation.py`와 `recommend` CLI에 구현됐으며 실제 검수 전 데이터는 거부한다. 추천 HTTP·웹은 TARGET다.

@@ -1,12 +1,14 @@
 # 집담 (Jipdam) 애플리케이션
 
-**집담 고도화 및 LLM 평가 실행 계획**의 Phase 0~5를 위한 작은 출발점입니다. 팀 저장소는 [keulreobeu/jipdam](https://github.com/keulreobeu/jipdam)이며 기존 작업 폴더와 `budongi` Python 모듈·CLI는 호환성을 위해 유지합니다. 패키지 설치 후에는 `jipdam` 명령도 사용할 수 있습니다.
+승인된 목표는 **서울 아파트 전월세 단지 후보의 조건별 추천·비교 웹 데모**입니다. 현재 실행 가능한 기능은 기존 역사 스냅샷·세 Data Tool·로컬 모델·합성 평가, 합성 전월세 추천 CLI와 Windows 계정 기반 암호화 API 키 보관함입니다. 전월세 추천 HTTP API와 비교 화면은 아직 구현되지 않았습니다. 팀 저장소는 [keulreobeu/jipdam](https://github.com/keulreobeu/jipdam)이며 기존 작업 폴더와 `budongi` Python 모듈·CLI는 호환성을 위해 유지합니다. 패키지 설치 후에는 `jipdam` 명령도 사용할 수 있습니다.
 
 ## 개발 문서와 작업 순서
 
 새 기능은 요구사항 질문·Plan → 확정 Spec → 필요 시 ADR → Task → 구현 → 테스트·평가 → 문서 동기화 순서로 진행합니다. 워크스페이스에 설치된 gstack을 기본 개발 스킬로 사용하고, 집담 전용 `jipdam-workflow`로 기존 Spec·ADR·데이터·평가 계약에 연결합니다. 확정된 내용만 프로젝트 문서에 반영합니다. 작업 규칙은 [AGENTS.md](AGENTS.md), 설치·확장 방법은 [gstack 안내](../../docs/gstack.md)에 있습니다.
 
 - [Project Spec](docs/specs/00_project_spec.md): 현재 구현, 목표, 공통 제약
+- [전월세 추천 RENT-001](docs/specs/10_rental_recommendation_spec.md) / [전환 Plan](docs/plans/rental-recommendation-mvp.md) / [전환 ADR](docs/adr/ADR-003-rental-recommendation-first.md): 승인된 추천 계약·제품 순서·결정 이유
+- [API 키 보관함 CRED-001](docs/specs/11_api_credential_vault_spec.md) / [ADR-004](docs/adr/ADR-004-local-api-credential-vault.md) / [구현 Task](docs/tasks/api-credential-vault.md): Windows 보호 키·암호화 저장·검증 상태
 - [Structured Search](docs/specs/03_structured_search_spec.md), [Router](docs/specs/04_router_spec.md), [RAG](docs/specs/05_rag_spec.md), [Agent Tools](docs/specs/06_agent_tools_spec.md): 기능별 현재 상태와 도입 조건
 - [Data Model](docs/specs/02_data_model_spec.md), [Evaluation](docs/specs/08_evaluation_spec.md): 데이터·검증 계약
 - [ADR](docs/adr/ADR-001-structured-tools-first.md): 중요한 설계 선택과 이유
@@ -23,6 +25,7 @@ Spec의 `CURRENT`는 확인된 구현, `TARGET`은 계획, `OPEN QUESTION`은 �
 - 로컬 OpenAI 호환 채팅 엔드포인트의 Tool Calling 연결, 최대 5회 호출, 호출 로그
 - Tool 선택·인자·반환 ID의 첫 결정적 평가기
 - 기존 저장소의 주소 분리·CSV 인코딩 탐지 로직을 작은 호환 모듈로 재구성
+- Windows Credential Manager가 보호하는 암호화 키와 별도 사용자 로컬 SQLite를 사용하는 API 키 보관함·loopback 설정 화면
 
 기존 저장소의 [README](https://github.com/keulreobeu/Real_estate_Chatbot_by_gemma4)와 ZIP을 확인했습니다. GitHub 저장소에는 `data/original` 원본 CSV와 실제 평가 CSV가 들어 있지 않습니다. 따라서 여기에는 실거래 기록이나 200건 Golden을 임의로 만들지 않았습니다. 이전 파이프라인의 `공급액(만원)`은 분양/공급액이며 실거래가가 아닙니다.
 
@@ -51,16 +54,42 @@ CPU 실행을 기본으로 둡니다. GPU 전달은 개발 환경별 설정이 �
 
 ### Python 직접 실행
 
-이 폴더에서 Python 3.11 이상을 사용합니다. 표준 라이브러리만 필요합니다.
+이 폴더에서 Python 3.11 이상을 사용합니다. API 키 암호화에는 `cryptography` 패키지가 필요합니다.
 
 ```powershell
+python -m pip install -e .
 $env:PYTHONPATH = (Resolve-Path .\src).Path
 python -m budongi.cli --db .\data\historical\serving.sqlite3 init-db
 python -m budongi.cli --db .\data\historical\serving.sqlite3 doctor
 python -m unittest discover -s tests -v
 ```
 
-실제 2023 자료를 준비한 뒤 다음을 실행합니다. `snapshot_id`는 같은 파일·정제 규칙에 대해 고정하고, 수정 자료는 새 ID로 가져옵니다.
+### 합성 전월세 추천 CLI
+
+실제 키 없이 모델과 외부 호출 없이 실행합니다. 이 폴더에서 다음을 실행하세요.
+
+```powershell
+python -X utf8 -m budongi.cli rental-demo
+python -X utf8 -m budongi.cli recommend --rental-db data/rental/synthetic-demo/serving.sqlite3 --snapshot-id synthetic_rental_demo_v1 --request data/rental/synthetic-demo/request.json --allow-synthetic
+```
+
+첫 명령은 허구 단지 3개와 요청 JSON을 만듭니다. 둘째 명령은 예산·직장 직선거리 필수 조건으로 2곳을 반환합니다. 역 선호는 확인되지 않은 조건으로 표시합니다. 데모가 이미 있으면 첫 명령을 다시 실행하지 않고 둘째 명령만 실행하거나 `rental-demo --directory 다른폴더`를 사용하세요.
+
+`request.json`에서 원 정수 예산·면적·자치구·확인한 직장 좌표·필수/선호를 바꿀 수 있습니다. 실제 데이터로 받아들이지 않도록 합성 허용 옵션을 명시해야 합니다. 실데이터 수집·매칭과 웹 비교는 후속 범위입니다. [추천 Task](docs/tasks/rental-recommendation-cli.md#validation)에서 실제 검증과 한계를 확인할 수 있습니다.
+
+### API 키 보관함 (Windows)
+
+패키지 설치 후 다음 명령으로 로컬 설정 화면을 엽니다. 기본 주소는 `http://127.0.0.1:8765/`이며, 종료할 때는 실행한 터미널에서 `Ctrl+C`를 누릅니다.
+
+```powershell
+jipdam credentials
+# 또는
+python -m budongi.cli credentials
+```
+
+화면에서 폴더, API 제공자, 키 별칭과 키 원문을 입력합니다. 원문은 등록 응답·목록에 다시 나타나지 않으며, `%LOCALAPPDATA%\Jipdam\credentials.sqlite3`에 AES-256-GCM 암호문으로 저장됩니다. 암호화 키는 Windows 자격 증명 관리자에 사용자 계정 범위로 저장합니다. Windows 보안 저장소를 쓸 수 없는 실행 세션에서는 키 등록이 차단됩니다. 설정의 저장·수정·삭제는 외부 API를 호출하지 않습니다. 현재 지원 제공자는 국토교통부 전월세, Kakao Local, 서울 열린데이터광장입니다.
+
+아래는 보존된 역사 조회 경로의 사용 예시입니다. 새 전월세 추천의 선행 조건이 아니며, 실제 자료 수집·매칭은 보류 중입니다. 검수된 실제 2023 자료를 준비한 뒤 다음을 실행합니다. `snapshot_id`는 같은 파일·정제 규칙에 대해 고정하고, 수정 자료는 새 ID로 가져옵니다.
 
 ```powershell
 python -m budongi.cli --db .\data\historical\serving.sqlite3 import-snapshot `
@@ -121,12 +150,16 @@ FACT, FILTER, NO_MATCH, COMPARE 네 질문에서 모델의 도구 호출과 답�
 
 ## 입력 데이터 계약
 
-### 공공 API에서 원본 받기
+### 기존 매매·청약 API 명령 (현재 수집 보류)
+
+아래 명령은 기존 코드의 참고 사용법이며 지금 실행하라는 안내가 아닙니다. 전월세는 XML 원문 태그 파서와 합성 정규화 입력을 위한 분리 저장 기반만 구현됐습니다. 공식 응답 필드·단위 확인, 원천 필드 매핑·환산, 실제 API 수집은 아직 구현하지 않았습니다. 진행 상태는 [데이터 Task](docs/tasks/rental-data-contract.md)를 따릅니다. [실제 수집 Task](docs/tasks/rental-real-data.md)는 사용자 보류 해제까지 blocked입니다.
 
 `scripts/fetch_public_data.py`는 [국토교통부 아파트 매매 실거래가 상세 자료](https://www.data.go.kr/data/15126468/openapi.do)와
 [한국부동산원 청약홈 분양정보 조회 서비스](https://www.data.go.kr/data/15098547/openapi.do)를 조회합니다.
-두 서비스 모두 공공데이터포털에서 **각각 활용신청**이 승인되어야 합니다. 인증키는
-`DATA_GO_KR_SERVICE_KEY` 환경변수에서만 읽으며 파일과 출력에 남기지 않습니다.
+두 서비스 모두 공공데이터포털에서 **각각 활용신청**이 승인되어야 합니다. 이 기존 역사
+수집 명령은 `DATA_GO_KR_SERVICE_KEY` 환경변수에서만 키를 읽으며 파일과 출력에 남기지 않습니다.
+신규 전월세 연동용 키 보관함은 [CRED-001](docs/specs/11_api_credential_vault_spec.md)에
+따르며 위의 Windows 로컬 설정 화면에서 관리합니다. 이 기능은 API 키를 보관하지만 실제 공급자 API 호출은 아직 연결하지 않았습니다.
 공공데이터포털의 인코딩된 일반 인증키도 그대로 입력할 수 있습니다.
 
 ```powershell
@@ -202,16 +235,22 @@ python -m budongi.cli --db .\data\historical\serving.sqlite3 run-eval `
 
 결과는 `tool_runs/`, `runs/`, `reports/`에 저장됩니다. 실험의 모델 버전·데이터 해시·생성 설정을 보강하고, 답변 사실 추출 평가를 완성한 뒤에만 Phase 5 완료를 선언합니다.
 
-## 다음 작업
+## 보존된 자료와 후속 제품 작업
 
 사용자가 제공한 `apartment_20230905 - apartment_20230905.csv.csv`를 출처·기준일 미확인
 **임시 단지 자료**로 `data/provisional/apartment_20230905/`에 복사했습니다. 재생성 명령과
 제약은 [임시 자료 안내](data/provisional/README.md)에 있습니다. 이 자료는 단지·주소·좌표·역 거리
 매핑 개발에 사용합니다. 현재 카탈로그는 실거래 기반 가격 조회나 실제 평가용 스냅샷이 아닙니다.
 
+### 제품 실행 순서
+
+[현재 Task](docs/tasks/current.md)와 [Plan](docs/plans/rental-recommendation-mvp.md)을 따라 문서 전환 → 합성 전월세·위치·시설 적재 → 결정적 추천·CLI → [암호화 API 키 보관함](docs/tasks/api-credential-vault.md) → 로컬 웹 비교 → 선택형 LLM 설명·평가를 진행합니다. 보관함 설정 화면은 구현됐으며, 수집·단지 매칭·사람 Golden은 별도 보류 해제 후 검수합니다. 추천 결과는 현재 매물이 아닌 단지 후보이며, 직선거리와 보증금/월세 각각의 상한을 사용하고 관리비·대출비용은 포함하지 않습니다.
+
+### 선택형 역사 평가 연구 (제품 선행 조건 아님)
+
 1. 검수 Golden의 `required_facts.entity_aliases`를 채우고 단지명·ID 별칭의 사람 검수 기준을 확정합니다.
 2. 실제 자료 작업을 다시 시작할 때 임시 단지 자료의 원천·기준일과 거래 식별자·정정 이력을 검수합니다.
 3. 검수된 실제 스냅샷을 만든 뒤 FACT/FILTER/COMPARE/NO_MATCH 약 200건을 사람 검수해 분할합니다.
 4. 답변 전체의 근거 없는 추가 주장까지 재는 평가기를 확장해 실제 Tool 결과와 답변 사실을 단계별로 평가합니다.
 
-의미 검색, 최신화, Judge, LoRA, Adapter/Model Routing은 초기 평가 이후에 도입합니다.
+최신 임대차 데이터 계약은 제품 첫 단계로 앞당깁니다. 의미 검색·Judge·LoRA·Adapter/Model Routing은 제품 평가에서 필요성이 확인된 경우 별도 계약으로 검토할 후속 연구입니다. 기존 2023 역사 자료·평가 미완료 기록은 보존합니다.

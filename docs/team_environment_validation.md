@@ -43,3 +43,49 @@ Windows 이외 플랫폼의 전체 gstack 설치와 실제 모델/데이터 평�
 ## GitHub 게시와 CI
 
 2026-10-01, `85faaf4`를 [keulreobeu/jipdam](https://github.com/keulreobeu/jipdam)의 `main`에 일반 push하고 로컬·원격 SHA 일치를 확인했다. [첫 CI 실행](https://github.com/keulreobeu/jipdam/actions/runs/36810256416)은 Ubuntu/Windows × Python 3.11/3.12의 4개 job이 모두 성공했다. 각 job은 `python -X utf8 scripts/bootstrap.py --app-only`로 제품·설치 도구 테스트 및 합성 CLI 검증을 수행한다. 전체 gstack·브라우저·모델·실데이터 검증은 이 CI의 범위가 아니다.
+
+## Environment repair 2026-10-06
+
+[TASK-ENV-001](tasks/environment-repair-20261006.md)의 로컬 환경 후속 검증이다. 이전 검수는 새 Windows PATH와 일반 Git Bash에서 bunx가 없음을 확인했다. Bun 1.4.2는 있었고 Chromium은 별도 Playwright CLI로 설치되어 있었다.
+
+### 변경과 재현
+
+저장된 Windows Machine/User PATH를 읽은 셸에서 기존 Bun의 `bun completions` 설치 마무리 명령을 실행했다. 공식 [Windows 설치 스크립트](https://bun.com/install.ps1)는 이 명령으로 bunx 연결을 생성한다. 이번 실행은 `BUN_NO_INSTALL_COMPLETIONS=1`, `IS_BUN_AUTO_UPDATE=1`을 해당 프로세스에만 설정했고, 기존 설치 폴더에 bunx.exe가 생성된 뒤 두 환경 변수를 제거했다. 전역 Codex 설정이나 PowerShell 프로필은 편집하지 않았다. PowerShell 자동완성 미지원 안내가 출력됐으나 명령은 exit 0이고 bunx 연결과 실행은 확인됐다.
+
+- 원래 실패했던 새 Windows PATH의 bunx 확인: 수정 전 exit 127, 수정 후 `bunx --version`이 1.4.2와 exit 0을 반환했다.
+- 저장된 PATH를 읽은 일반 Git Bash에서도 bunx 경로와 1.4.2 실행을 확인했다.
+- 프로젝트 runtime 원본 폴더에서 `bunx playwright install chromium`이 exit 0, `bunx --no-install playwright --version`이 1.62.1을 반환했다. 기존 프로젝트-local Chromium을 사용했다.
+
+### 가상환경과 CLI
+
+루트에서 `python -m venv .venv`, `.venv/Scripts/python.exe -m pip install --no-cache-dir -e outputs/budongi_mvp_temp`를 실행했다. Python은 3.12.10, 설치된 jipdam은 0.1.0이다. 패키지 빌드 의존성은 가상환경 설치 절차에서 내려받았다.
+
+`.venv/Scripts/jipdam.exe --help`, `.venv/Scripts/budongi.exe --help`가 정상 help와 exit 0을 반환했고 `.venv/Scripts/python.exe -m pip check`도 `No broken requirements found`와 exit 0이었다. 새 Git Bash에서 `.venv/Scripts/activate`를 source한 뒤 두 CLI가 `.venv/Scripts/`에서 선택되어 실행되는 것도 확인했다.
+
+PowerShell에서 활성화 없이도 다음 명령으로 설치한 CLI를 사용할 수 있다.
+
+```powershell
+.venv/Scripts/jipdam.exe --help
+```
+
+### 최종 로컬 검증
+
+`.venv/Scripts/python.exe -X utf8 scripts/verify_environment.py --gstack --browser`가 exit 0이었다.
+
+- SDD 구조·변경 경로 Task 연결 통과: 등록 Task 3개.
+- 제품 테스트 28개 및 SDD·설치 테스트 18개 통과.
+- 합성 스냅샷 doctor·Data Tool 조회 통과; 실측 평가 준비 완료로 판정하지 않았다.
+- 고정 gstack commit 및 고유·중첩 없는 manifest 57개 확인.
+- Chromium 빈 화면 탐색·클릭·DOM 조회·스크린샷·서버 종료 통과.
+
+원본 capture 001~003은 Git 제외 `.local_runtime/gstack/qa-reports/environment-repair-20261006T045305Z/`에 보존한다. 사용자별 환경·원본 로그는 공유 Git 대상에 포함하지 않는다.
+
+이 기록은 현재 Windows의 기본 개발·설치형 CLI·Codex gstack 실행 범위다. CSO C++ 도구 체인, Docker daemon·Ollama·모델 및 실제 데이터·Golden 평가를 완료했다고 판정하지 않는다.
+
+## 모델 없는 CI 앱 의존성 보완 — 2026-10-07
+
+전월세·자격증명 기능 PR #2의 최초 CI에서 Ubuntu/Windows 및 Python 3.11/3.12 job이 제품 모듈을 가져올 때 `cryptography` 누락으로 실패했다. 원인은 `pyproject.toml`에는 앱 의존성이 선언됐지만 CI workflow가 editable 앱 패키지를 설치하지 않은 것이었다. [TASK-CI-DEPS-001](tasks/ci-python-dependencies.md)에서 추적한다.
+
+workflow에 `python -m pip install -e outputs/budongi_mvp_temp` 단계를 추가해 검증 전에 앱 런타임 의존성을 설치한다. 루트 README도 새 checkout에서 패키지를 설치한 뒤 `--app-only`를 실행하도록 고쳤다.
+
+저장소 `.local_runtime/` 아래 임시 가상환경을 새로 만들고 workflow와 같은 editable 설치를 실행했다. `cryptography 50.0.2`와 그 의존성이 설치된 뒤 `python -X utf8 scripts/bootstrap.py --app-only`가 통과했다. 제품 테스트 82개, 팀/SDD 테스트 18개, 합성 CLI smoke가 모두 성공했다. `python -X utf8 scripts/check_sdd.py --base origin/main`도 통과했다. PR #2 수정 후 [GitHub Actions run 37599609319](https://github.com/keulreobeu/jipdam/actions/runs/37599609319)에서 네 OS/Python 조합이 모두 성공했다.

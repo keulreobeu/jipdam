@@ -19,5 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install application dependencies
+        run: python -m pip install -e outputs/budongi_mvp_temp
       - name: Application, tooling, and synthetic CLI checks
         run: python -X utf8 scripts/bootstrap.py --app-only

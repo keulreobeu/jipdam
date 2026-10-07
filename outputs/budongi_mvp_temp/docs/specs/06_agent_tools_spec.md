@@ -21,7 +21,7 @@
 ## CURRENT / TARGET / OPEN QUESTION
 
 - **CURRENT**: `answer_grounding_v2`가 가격·ISO 날짜·명시 ID·출처 쌍의 근거 일치를 기록한다. 실패 답변은 안전 요약으로 교체된다.
-- **TARGET**: 질의별 필수 사실 coverage와 더 넓은 자유 서술의 사실 추출 평가를 Golden으로 검증한다.
+- **CURRENT 합성 백엔드**: [RENT-001](10_rental_recommendation_spec.md)의 recommend_rentals는 별도 RENTAL_ALLOWED_TOOLS에서 하나의 읽기 전용 호출로 구현했다. 기존 LLM agent에는 연결하지 않았다. **TARGET**: 후속 LLM Task에서 전월세 Tool schema·인자·설명 검증과 호출 제한을 연결한다. 지금의 세 Tool·인자·CLI는 보존한다. 백엔드가 후보·순위·기본 설명을 결정하며 선택형 LLM 설명이 숫자 역할·조건·거리 종류·순위·출처를 바꾸면 기본 설명을 사용한다. 기존 answer_grounding_v2가 이 신규 계약까지 검증한다고 주장하지 않는다. 호출 5회·결과 20행·로컬 모델·타임아웃 경계를 유지한다.
 - **OPEN QUESTION**: 장래 Tool의 서비스 분리, 통계·비교 계산 Tool, 도구별 타임아웃과 오류 노출 방식은 평가 후 결정한다.
 
 ## Acceptance Criteria

@@ -1,6 +1,6 @@
 # 집담 (Jipdam)
 
-출처와 기준 시점을 추적하는 부동산 정보 질의 프로젝트다. Python·SQLite 기반의 스냅샷 적재, 검증된 Data Tool 3개, 로컬 모델 Tool Calling 경로를 개발한다. 현재 구현과 향후 계획은 [Project Spec](outputs/budongi_mvp_temp/docs/specs/00_project_spec.md)에서 구분한다.
+서울 아파트 전월세 단지 후보를 예산·직장 위치·생활시설 조건으로 추천하고 이유와 포기할 조건을 비교하는 프로젝트다. 승인된 [RENT-001](outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md)과 [전환 Plan](outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md)을 따른다. 현재 구현은 Python·SQLite의 2023 역사 스냅샷·세 Data Tool·로컬 모델·합성 평가 기반에 합성 전월세 추천 CLI와 키 보관함이 추가됐다. 실데이터 추천·웹 비교는 아직 없다. [Project Spec](outputs/budongi_mvp_temp/docs/specs/00_project_spec.md)에서 CURRENT와 TARGET를 구분한다.
 
 팀원은 **Codex, Claude Code, Antigravity 중 익숙한 도구**로 작업할 수 있다. 같은 코드·Spec·ADR·Task·검증 명령을 공유한다. 전체 gstack의 자동 등록은 현재 Codex용으로 구성되어 있다.
 
@@ -29,12 +29,13 @@ cd jipdam
 AI 도구와 관계없이 저장소 루트의 터미널에서 실행한다.
 
 ```sh
+python -m pip install -e outputs/budongi_mvp_temp
 python -X utf8 scripts/bootstrap.py --app-only
 ```
 
-Linux/macOS에서 `python` 명령이 없으면 `python3`를 사용한다. 이 검증은 Python 표준 라이브러리만 사용하며 네트워크·API 키·모델·GPU 없이 제품 테스트, 설치 도구 테스트, 합성 스냅샷 조회를 확인한다.
+Linux/macOS에서 `python` 명령이 없으면 `python3`를 사용한다. 첫 명령은 `cryptography`를 포함한 앱의 선언 의존성을 설치하며 패키지를 다운로드할 수 있다. `--app-only`는 gstack·브라우저 설치를 건너뛰고 제품·설치 도구 테스트와 합성 스냅샷 조회를 실행한다. 검증에는 외부 API 키, 모델, GPU가 필요하지 않다.
 
-CLI를 설치해서 개발하려면 가상 환경을 만든다.
+전역 Python 환경을 바꾸지 않고 의존성을 설치하려면 가상 환경을 사용한다.
 
 Windows PowerShell:
 
@@ -43,6 +44,7 @@ python -m venv .venv
 .venv/Scripts/Activate.ps1
 python -m pip install -e outputs/budongi_mvp_temp
 jipdam --help
+python -X utf8 scripts/bootstrap.py --app-only
 ```
 
 Linux/macOS Bash:
@@ -52,9 +54,10 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e outputs/budongi_mvp_temp
 jipdam --help
+python -X utf8 scripts/bootstrap.py --app-only
 ```
 
-패키지 설치 시에는 빌드 의존성을 다운로드할 수 있다. 모델 없이 개발할 때는 첫 번째 `--app-only` 검증만으로도 시작할 수 있다. 제품 명령·Docker·Ollama 사용법은 [애플리케이션 README](outputs/budongi_mvp_temp/README.md)에 있다.
+패키지 설치 시에는 빌드·앱 의존성을 다운로드할 수 있다. 제품 명령·Docker·Ollama 사용법은 [애플리케이션 README](outputs/budongi_mvp_temp/README.md)에 있다.
 
 ## 3. 사용하는 AI 도구 연결
 
