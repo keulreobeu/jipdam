@@ -751,6 +751,7 @@
   "tasks": [
     "docs/tasks/sdd-adoption.md",
     "docs/tasks/environment-repair-20261006.md",
+    "docs/tasks/ci-python-dependencies.md",
     "outputs/budongi_mvp_temp/docs/tasks/current.md",
     "outputs/budongi_mvp_temp/docs/tasks/rental-spec-transition.md",
     "outputs/budongi_mvp_temp/docs/tasks/rental-data-contract.md",

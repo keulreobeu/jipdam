@@ -81,3 +81,11 @@ PowerShell에서 활성화 없이도 다음 명령으로 설치한 CLI를 사용
 원본 capture 001~003은 Git 제외 `.local_runtime/gstack/qa-reports/environment-repair-20261006T045305Z/`에 보존한다. 사용자별 환경·원본 로그는 공유 Git 대상에 포함하지 않는다.
 
 이 기록은 현재 Windows의 기본 개발·설치형 CLI·Codex gstack 실행 범위다. CSO C++ 도구 체인, Docker daemon·Ollama·모델 및 실제 데이터·Golden 평가를 완료했다고 판정하지 않는다.
+
+## 모델 없는 CI 앱 의존성 보완 — 2026-10-07
+
+전월세·자격증명 기능 PR #2의 최초 CI에서 Ubuntu/Windows 및 Python 3.11/3.12 job이 제품 모듈을 가져올 때 `cryptography` 누락으로 실패했다. 원인은 `pyproject.toml`에는 앱 의존성이 선언됐지만 CI workflow가 editable 앱 패키지를 설치하지 않은 것이었다. [TASK-CI-DEPS-001](tasks/ci-python-dependencies.md)에서 추적한다.
+
+workflow에 `python -m pip install -e outputs/budongi_mvp_temp` 단계를 추가해 검증 전에 앱 런타임 의존성을 설치한다. 루트 README도 새 checkout에서 패키지를 설치한 뒤 `--app-only`를 실행하도록 고쳤다.
+
+저장소 `.local_runtime/` 아래 임시 가상환경을 새로 만들고 workflow와 같은 editable 설치를 실행했다. `cryptography 50.0.2`와 그 의존성이 설치된 뒤 `python -X utf8 scripts/bootstrap.py --app-only`가 통과했다. 제품 테스트 82개, 팀/SDD 테스트 18개, 합성 CLI smoke가 모두 성공했다. `python -X utf8 scripts/check_sdd.py --base origin/main`도 통과했다. 수정 후 PR matrix는 현재 실행을 기다리고 있으며 결과가 확보되면 여기에 추가한다.
