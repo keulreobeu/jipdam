@@ -3,7 +3,7 @@
 ```toml
 kind = "task"
 id = "TASK-CI-DEPS-001"
-status = "in_progress"
+status = "verified"
 owner = "keulreobeu"
 specs = ["docs/team_environment_spec.md", "docs/specs/sdd_workflow_spec.md"]
 scope = [".github/workflows/verify.yml", "README.md", "docs/tasks/ci-python-dependencies.md", "docs/team_environment_validation.md", "docs/sdd/traceability.json"]
@@ -29,8 +29,8 @@ acs = ["SDD-001-AC-05"]
 
 [[verification]]
 command = "PR #2 수정 후 GitHub Actions model-free-checks matrix"
-result = "not_run"
-evidence = "https://github.com/keulreobeu/jipdam/pull/2/checks"
+result = "passed"
+evidence = "https://github.com/keulreobeu/jipdam/actions/runs/37599609319"
 acs = ["SDD-001-AC-05"]
 ```
 
@@ -40,8 +40,8 @@ acs = ["SDD-001-AC-05"]
 
 ## 완료 기준
 
-- [ ] SDD-001-AC-05 CI가 검증 전에 editable 앱 패키지를 설치하고 네 OS/Python 조합이 모두 통과한다.
+- [x] SDD-001-AC-05 CI가 검증 전에 editable 앱 패키지를 설치하고 네 OS/Python 조합이 모두 통과한다.
 
 ## Validation
 
-PR #2 최초 실행의 완료된 세 job은 앱 `pyproject.toml`에 선언된 `cryptography`가 깨끗한 runner에 설치되지 않아 실패했다. 제품 테스트가 시작되기 전에 앱 패키지와 의존성을 설치하도록 workflow를 보완했다. 로컬 전체 모델 없는 검증은 앱 의존성이 설치된 환경에서 통과했다. 수정 후 원격 matrix 결과는 재실행 뒤 이 문서와 Task 상태에 반영한다.
+PR #2 최초 실행은 앱 `pyproject.toml`에 선언된 `cryptography`가 깨끗한 runner에 설치되지 않아 실패했다. 제품 테스트가 시작되기 전에 앱 패키지와 의존성을 설치하도록 workflow를 보완했다. 로컬 전체 모델 없는 검증은 앱 의존성이 설치된 임시 환경에서 통과했다. 수정 후 GitHub Actions run 37599609319에서 Ubuntu/Windows × Python 3.11/3.12 네 job이 모두 성공했다.

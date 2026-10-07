@@ -566,7 +566,7 @@
               ],
               "manual": [
                 {
-                  "command": "manual: interactive Windows user-session Credential Manager synthetic-key write/read/delete round-trip (managed test session skipped after WinCred error 1312)",
+                  "command": "current Windows user-session Credential Manager synthetic-key write/read/delete round-trip passed 2026-10-07; non-interactive hosted sessions may skip on WinCred error 1312",
                   "evidence": "outputs/budongi_mvp_temp/docs/tasks/api-credential-vault.md#validation"
                 }
               ]

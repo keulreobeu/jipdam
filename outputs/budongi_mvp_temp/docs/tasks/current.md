@@ -33,7 +33,7 @@ ID는 기존 작업을 계속 추적하기 위해 부여했다. 실제 Golden의
 | 1 | [TASK-RENT-DOC-001 문서 전환](rental-spec-transition.md) | 문서 적용·검증 기록 참조 |
 | 2 | [TASK-RENT-DATA-001 데이터 계약](rental-data-contract.md) | in_progress, 합성 저장 테스트 통과·공식 필드/단위 확인 대기 |
 | 3 | [TASK-RENT-REC-001 추천·CLI](rental-recommendation-cli.md) | verified, 합성 추천·CLI AC-01~06 검증; 실제 데이터·웹 별도 |
-| 4 | [TASK-CRED-001 암호화 API 키 보관함](api-credential-vault.md) | in_progress, 보관함·loopback 설정 화면 구현; interactive WinCred round-trip 확인 남음; 실제 API 호출 제외 |
+| 4 | [TASK-CRED-001 암호화 API 키 보관함](api-credential-vault.md) | verified, 보관함·loopback 설정 화면 및 현재 Windows 사용자 세션의 합성 WinCred round-trip 검증; 실제 API 호출 제외 |
 | 5 | [TASK-RENT-WEB-001 웹 비교](rental-web-demo.md) | draft, 보관함 Task 뒤에 설정 화면과 추천 비교를 통합 |
 | 6 | [TASK-RENT-LLM-001 설명·평가](rental-explanation-evaluation.md) | draft |
 | 별도 | [TASK-RENT-REAL-001 실데이터](rental-real-data.md) | blocked, 수집·매칭 보류 |

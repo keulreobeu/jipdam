@@ -13,7 +13,7 @@ approval_ref = "사용자가 API 키 암호화 저장, 키별 별칭, 폴더 그
 
 ## 목표·현재 상태·범위
 
-로컬 집담 앱에서 국토교통부·Kakao Local·서울 열린데이터광장 등 여러 API 자격증명을 등록하고 구분한다. CRED-001 요구사항은 **approved**이며, Windows loopback 설정 화면·HTTP API·암호화 저장소가 구현됐다. [제품 Task](../tasks/api-credential-vault.md)는 구현을 추적하며, OS Credential Manager의 실제 영속 round-trip 검증은 현재 자동 실행 세션의 로그온 저장소 제약으로 미완료다. 제품 검증 상태와 문서 적용 Task는 각각 해당 Task에서 관리한다.
+로컬 집담 앱에서 국토교통부·Kakao Local·서울 열린데이터광장 등 여러 API 자격증명을 등록하고 구분한다. CRED-001 요구사항은 **approved**이며, Windows loopback 설정 화면·HTTP API·암호화 저장소가 구현됐다. [제품 Task](../tasks/api-credential-vault.md)는 구현을 추적하며, 2026-10-07 현재 Windows 사용자 세션에서 합성 키의 OS Credential Manager 저장·읽기·삭제 왕복을 검증했다. 비대화형 자동 실행 세션에서는 OS 저장소가 없을 수 있어 fail-closed하며 평문 fallback을 하지 않는다. 제품 검증 상태와 문서 적용 Task는 각각 해당 Task에서 관리한다.
 
 사용자가 만든 평면 폴더 안에 여러 연결 API 키를 저장한다. 폴더는 사용자가 정한 정리 위치이고, 연결 API는 키가 사용될 연동 대상을 구분한다. 같은 연결 API에 키를 여러 개 저장할 수 있고 각 키에는 사용자가 정한 별칭이 있다. 각 키는 폴더 ID·공급자 ID·불투명한 자격증명 ID로 참조한다. 별칭은 표시용이지 인증값이나 파일 경로가 아니다.
 
@@ -79,4 +79,4 @@ Spec, ADR, Plan, Task, runtime·데이터 계약, 개발 규칙과 루트 SDD �
 
 구현 Task는 합성 키로 다중 공급자·별칭·폴더·재시작·암호화 검증을 수행한다. 테스트에서만 OS Credential Manager adapter를 주입할 수 있지만 제품 실행 경로는 실제 보안 저장소 없이는 fail-closed여야 한다. 폴더 삭제 취소·성공·DB 오류 롤백, 고아 레코드, 암호문 tamper, OS 계정/키 저장소 접근 실패, secret redaction, 외부 네트워크 미호출을 검증한다.
 
-제품 AC-01, AC-03~05는 구현된 테스트로 검증한다. AC-02의 AES-GCM·fail-closed 동작은 합성 테스트로 확인하며, Windows Credential Manager의 합성 master-key 영속 round-trip은 사용자 로그온 Credential Manager를 사용할 수 있는 인터랙티브 세션에서 추가 확인한다. 문서 적용 AC-06은 [문서 Task](../tasks/credential-vault-sdd.md#doc-validation)에서 검증한다.
+제품 AC-01~05는 구현된 테스트로 검증한다. AC-02의 AES-GCM·fail-closed 동작은 합성 테스트로, Windows Credential Manager의 합성 master-key 영속 round-trip은 현재 Windows 사용자 세션에서 `test_native_credential_manager_round_trip_uses_synthetic_key`로 2026-10-07 확인했다. 문서 적용 AC-06은 [문서 Task](../tasks/credential-vault-sdd.md#doc-validation)에서 검증한다.

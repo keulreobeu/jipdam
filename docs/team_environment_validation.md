@@ -88,4 +88,4 @@ PowerShell에서 활성화 없이도 다음 명령으로 설치한 CLI를 사용
 
 workflow에 `python -m pip install -e outputs/budongi_mvp_temp` 단계를 추가해 검증 전에 앱 런타임 의존성을 설치한다. 루트 README도 새 checkout에서 패키지를 설치한 뒤 `--app-only`를 실행하도록 고쳤다.
 
-저장소 `.local_runtime/` 아래 임시 가상환경을 새로 만들고 workflow와 같은 editable 설치를 실행했다. `cryptography 50.0.2`와 그 의존성이 설치된 뒤 `python -X utf8 scripts/bootstrap.py --app-only`가 통과했다. 제품 테스트 82개, 팀/SDD 테스트 18개, 합성 CLI smoke가 모두 성공했다. `python -X utf8 scripts/check_sdd.py --base origin/main`도 통과했다. 수정 후 PR matrix는 현재 실행을 기다리고 있으며 결과가 확보되면 여기에 추가한다.
+저장소 `.local_runtime/` 아래 임시 가상환경을 새로 만들고 workflow와 같은 editable 설치를 실행했다. `cryptography 50.0.2`와 그 의존성이 설치된 뒤 `python -X utf8 scripts/bootstrap.py --app-only`가 통과했다. 제품 테스트 82개, 팀/SDD 테스트 18개, 합성 CLI smoke가 모두 성공했다. `python -X utf8 scripts/check_sdd.py --base origin/main`도 통과했다. PR #2 수정 후 [GitHub Actions run 37599609319](https://github.com/keulreobeu/jipdam/actions/runs/37599609319)에서 네 OS/Python 조합이 모두 성공했다.
