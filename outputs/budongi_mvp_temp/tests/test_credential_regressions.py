@@ -139,41 +139,72 @@ class CredentialRegressionTests(unittest.TestCase):
                          {'confirm': True, 'credential_ids': [current['id']]})[0], 200)
 
     def test_folder_counts_and_key_ids_share_one_snapshot_during_concurrent_add(self):
-        self.vault.list_state()  # Initialize the synthetic master key before concurrent work.
-        reader_thread = current_thread()
-        original_connect = self.vault._connect
-        writer_done = Event()
-        writer_errors = []
-        writers = []
+        for journal_mode in ('DELETE', 'WAL'):
+            with self.subTest(journal_mode=journal_mode):
+                vault = CredentialVault(Path(self.temp.name) / f'snapshot-{journal_mode}.sqlite3', MemoryKeyStore())
+                folder = vault.create_folder('QA')['id']
+                vault.list_state()  # Initialize the synthetic master key before concurrent work.
+                reader_thread = current_thread()
+                original_connect = vault._connect
+                connection = original_connect()
+                try:
+                    mode = connection.execute(f'PRAGMA journal_mode = {journal_mode}').fetchone()[0]
+                    self.assertEqual(mode, journal_mode.lower())
+                finally:
+                    connection.close()
+                writer_done = Event()
+                writer_at_commit = Event()
+                writer_errors = []
+                coordination_errors = []
+                writers = []
 
-        def write_key():
-            try:
-                self.add_key()
-            except Exception as error:
-                writer_errors.append(error)
-            finally:
-                writer_done.set()
+                def write_key():
+                    try:
+                        vault.add_credential(folder_id=folder, provider_id='kakao_local',
+                                             alias='QA key', api_key='synthetic-snapshot-key')
+                    except Exception as error:
+                        writer_errors.append(error)
+                    finally:
+                        writer_done.set()
 
-        def trace(sql):
-            if sql.startswith('SELECT c.id,'):
-                writer = Thread(target=write_key)
-                writers.append(writer)
-                writer.start()
-                writer_done.wait(0.2)
+                def writer_trace(sql):
+                    if sql == 'COMMIT':
+                        writer_at_commit.set()
 
-        def connect():
-            connection = original_connect()
-            if current_thread() is reader_thread:
-                connection.set_trace_callback(trace)
-            return connection
+                def reader_trace(sql):
+                    if sql.startswith('SELECT c.id,') and not writers:
+                        writer = Thread(target=write_key)
+                        writers.append(writer)
+                        writer.start()
+                        # DELETE blocks COMMIT behind this reader. WAL permits the
+                        # commit between queries, proving the reader keeps its snapshot.
+                        reached = writer_done if journal_mode == 'WAL' else writer_at_commit
+                        if not reached.wait(10):
+                            # sqlite trace callbacks swallow exceptions; assert after closing.
+                            coordination_errors.append('Writer did not reach the required event')
 
-        with patch.object(self.vault, '_connect', side_effect=connect):
-            state = self.vault.list_state()
-        for writer in writers:
-            writer.join(2)
-            self.assertFalse(writer.is_alive())
-        self.assertFalse(writer_errors)
-        self.assertEqual(state['folders'][0]['credential_count'], len(state['credentials']))
+                def connect():
+                    connection = original_connect()
+                    connection.set_trace_callback(reader_trace if current_thread() is reader_thread else writer_trace)
+                    return connection
+
+                try:
+                    with patch.object(vault, '_connect', side_effect=connect):
+                        state = vault.list_state()
+                finally:
+                    # Drain workers even when the read fails, before temporary DB cleanup.
+                    # This watchdog exceeds SQLite's five-second lock timeout.
+                    for writer in writers:
+                        writer.join(10)
+                self.assertEqual(len(writers), 1)
+                self.assertFalse(any(writer.is_alive() for writer in writers))
+                self.assertFalse(coordination_errors)
+                self.assertFalse(writer_errors)
+                self.assertEqual(state['folders'][0]['credential_count'], 0)
+                self.assertEqual(state['credentials'], [])
+                fresh_state = vault.list_state()
+                self.assertEqual(fresh_state['folders'][0]['credential_count'], 1)
+                self.assertEqual(len(fresh_state['credentials']), 1)
 
 
 if __name__ == '__main__':

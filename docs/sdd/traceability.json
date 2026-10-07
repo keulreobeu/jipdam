@@ -762,6 +762,7 @@
     "outputs/budongi_mvp_temp/docs/tasks/api-credential-vault.md",
     "outputs/budongi_mvp_temp/docs/tasks/credential-vault-sdd.md",
     "outputs/budongi_mvp_temp/docs/tasks/credential-vault-qa.md",
-    "outputs/budongi_mvp_temp/docs/tasks/credential-provider-edit.md"
+    "outputs/budongi_mvp_temp/docs/tasks/credential-provider-edit.md",
+    "outputs/budongi_mvp_temp/docs/tasks/credential-vault-ci.md"
   ]
 }

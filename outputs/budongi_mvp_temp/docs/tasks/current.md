@@ -44,6 +44,8 @@ ID는 기존 작업을 계속 추적하기 위해 부여했다. 실제 Golden의
 
 보관함의 폴더와 제공자 구분, 저장 후 제공자 변경은 [TASK-CRED-PROVIDER-001](credential-provider-edit.md)에서 추적한다.
 
+Windows CI 동시성 테스트의 차단 해결은 [TASK-CRED-CI-001](credential-vault-ci.md)에서 추적한다.
+
 ## Goal
 
 Evaluate each Golden `required_facts` item against its generated answer deterministically, report matched/missing/unmeasured facts without treating unsupported formats as success, and keep full claim precision distinct from required fact coverage.
