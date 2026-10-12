@@ -1,0 +1,90 @@
+name: 데이터 수집 기록
+description: 수집 전 범위를 예약하고 ZIP 업로드 전에 짧게 결과를 기록합니다.
+title: "[수집] 출처 | 종류 | 지역 | 기간"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        [기존 기록 검색](https://github.com/keulreobeu/jipdam/issues?q=is%3Aissue%20%22%5B%EC%88%98%EC%A7%91%5D%22) → 범위 예약 → 이 Issue 결과 갱신 → Drive 업로드.
+        각 항목은 1~2줄로 적으세요. 예약 때는 미수집/미생성/업로드 대기로 명시하고 같은 Issue를 갱신하세요. 원본·키·개인정보는 붙이지 마세요.
+  - type: input
+    id: source
+    attributes:
+      label: 출처·데이터 종류
+      placeholder: "서비스/공식 URL · 아파트 전월세 또는 시설 종류"
+    validations:
+      required: true
+  - type: input
+    id: scope
+    attributes:
+      label: 범위·담당자
+      placeholder: "지역 코드/영역 · 조회 기간 · 필터 · @담당자"
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: 상태
+      options:
+        - 예약
+        - 수집 중
+        - 부분 완료
+        - 수집 완료 / 업로드 대기
+        - 업로드 완료
+        - 실패 / 중단
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: 어디까지·몇 건
+      placeholder: "성공 범위(전체 페이지 완료) / 성공 0건 범위 / 실패·미수집·누락 페이지 / 총 건수. 예약은 미수집."
+    validations:
+      required: true
+  - type: input
+    id: method
+    attributes:
+      label: 수집 방법·단위·가공
+      placeholder: "지역×월×페이지 XML · 만원→원 · 정규화 버전/매칭 여부. 미확인은 미확인."
+    validations:
+      required: true
+  - type: dropdown
+    id: quality
+    attributes:
+      label: 데이터 검수 구분
+      options:
+        - 실제 / 원천 미검수
+        - 실제 / 원천 검수됨 (매칭·시설은 결과란에 별도 표시)
+        - 합성 데모 (실제 수집 범위로 계산하지 않음)
+    validations:
+      required: true
+  - type: input
+    id: duplicates
+    attributes:
+      label: 중복 확인·재조회 이유
+      placeholder: "확인한 기존 #번호와 제외 범위 / 검색 후 겹침 없음 / 재조회 이유·새 기준 시각"
+    validations:
+      required: true
+  - type: textarea
+    id: artifact
+    attributes:
+      label: 파일·해시·수집 시각·manifest
+      placeholder: "배치ID / ZIP명 / SHA-256 / 조회 시각 ISO-8601 / manifest.json. 예약은 미생성. 누락은 누락."
+    validations:
+      required: true
+  - type: input
+    id: drive
+    attributes:
+      label: Drive 파일
+      placeholder: "업로드 전에는 업로드 대기, 완료 후에는 개별 ZIP 파일 링크"
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 필수 확인
+      options:
+        - label: "완료·닫힌 기록과 진행/예약 범위까지 검색했고 겹치는 범위를 제외했습니다. 갱신 재조회는 이유를 기록했습니다."
+          required: true
+        - label: "실제/합성·0건/실패를 구분했으며, 업로드 전에 실제 결과와 최종 ZIP 해시를 기록하겠습니다."
+          required: true

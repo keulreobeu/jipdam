@@ -37,6 +37,8 @@ ID는 기존 작업을 계속 추적하기 위해 부여했다. 실제 Golden의
 | 5 | [TASK-RENT-WEB-001 웹 비교](rental-web-demo.md) | draft, 보관함 Task 뒤에 설정 화면과 추천 비교를 통합 |
 | 6 | [TASK-RENT-LLM-001 설명·평가](rental-explanation-evaluation.md) | draft |
 | 별도 | [TASK-RENT-REAL-001 실데이터](rental-real-data.md) | blocked, 수집·매칭 보류 |
+| 첨부 점검 | [TASK-RENT-RESTORE-001 DB 복원](rental-upload-restore-20261012.md) | verified, 첨부 합성 DB 복원·조회·수집 범위 점검; 실제 수집 자료 없음 |
+| 수집 기록 | [TASK-COLLECT-001](../../../../docs/tasks/data-collection-record.md) | verified, GitHub 수집 예약·필수 요약·Drive 업로드 전 기록; 첨부 합성 배치 #3 게시 |
 
 합성 추천·CLI의 AC-01~06은 추천 Task 검증을 따르며 실제 추천 데이터·웹·모델 평가는 미완료다. CRED-001의 미완료 OS 저장소 검증은 해당 Task를 따른다. 문서 완료·합성 성공을 실제 추천 품질로 승격하지 않는다.
 
