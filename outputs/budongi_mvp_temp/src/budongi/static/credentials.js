@@ -95,7 +95,6 @@
     for (const credential of state.credentials) {
       const row = document.createElement("tr");
       appendTextCell(row, credential.alias, "alias-cell");
-      appendTextCell(row, credential.provider_name);
       appendTextCell(row, credential.folder_name);
       appendTextCell(row, credential.masked, "masked-cell");
       const actions = document.createElement("td");
@@ -174,7 +173,15 @@
 
   function openEdit(credential) {
     document.getElementById("edit-id").value = credential.id;
-    document.getElementById("edit-provider-id").value = credential.provider_id;
+    const editFolder = document.getElementById("edit-folder");
+    editFolder.replaceChildren();
+    for (const folder of state.folders) {
+      const option = document.createElement("option");
+      option.value = folder.id;
+      option.textContent = folder.name;
+      editFolder.append(option);
+    }
+    editFolder.value = credential.folder_id;
     document.getElementById("edit-alias").value = credential.alias;
     document.getElementById("edit-api-key").value = "";
     dialog.showModal();
@@ -204,7 +211,6 @@
     const secret = keyInput.value;
     const payload = {
       folder_id: folderSelect.value,
-      provider_id: document.getElementById("provider-id").value,
       alias: document.getElementById("credential-alias").value,
       api_key: secret,
     };
@@ -222,11 +228,11 @@
   document.getElementById("edit-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     const id = document.getElementById("edit-id").value;
-    const providerId = document.getElementById("edit-provider-id").value;
+    const folderId = document.getElementById("edit-folder").value;
     const alias = document.getElementById("edit-alias").value;
     const secretInput = document.getElementById("edit-api-key");
     const secret = secretInput.value;
-    const payload = { provider_id: providerId, alias };
+    const payload = { folder_id: folderId, alias };
     if (secret) payload.api_key = secret;
     secretInput.value = "";
     try {
@@ -235,7 +241,7 @@
       });
       dialog.close();
       await refresh();
-      showMessage("연결 API와 보관함 정보를 변경했습니다.", "success-text");
+      showMessage("별칭·폴더와 보관함 정보를 변경했습니다.", "success-text");
     } catch (error) {
       showMessage(error.message, "error-text");
     }

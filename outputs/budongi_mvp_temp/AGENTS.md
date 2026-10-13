@@ -1,5 +1,11 @@
 # Codex 작업 프로토콜 — 집담
 
+2026-10-13 공유 승인: 사용자의 현재 요청에 따라 PORTABLE-001/TASK-PORTABLE-001로 기존 MOLIT/제공 통계 원본의 Drive 패키지 공유·오프라인 DB 재구성과 구현 코드의 새 브랜치 푸시를 수행한다. COLLECT-001의 사전 기록/해시/개별 링크는 유지하며 새 원격 수집·키 조회·매칭 확정은 포함하지 않는다.
+
+2026-10-13 제공 통계 파일 승인: 사용자가 이미 내려받아 제공한 30개 엑셀은 [STATS-001](docs/specs/14_statistics_storage_spec.md)·[TASK-STATS-001](docs/tasks/statistics-import.md)로 별도 `data/statistics/`에 오프라인 적재한다. 사용자 업데이트 날짜/일반 기준월 메모와 실제 파일의 기간은 구분하고 심리 dashboard/상세표 중복을 검수한다. 새 외부 수집·API·키·업로드·추천 연결은 해당 승인에 포함하지 않는다.
+
+2026-10-13 후속 승인: [통합 후속 Plan](docs/plans/canonical-db-continuation-20261013.md)에 대한 사용자 진행 선택을 [CANONICAL-001](docs/specs/13_canonical_integration_spec.md)·[TASK-CANONICAL-001](docs/tasks/canonical-integration.md)로 추적한다. 기존 세 API 원본 기반 엔터티/공식ID근거 관계·미확정 후보·배치/버전/증분·등록 파일 입력 계약만 추가 승인한다. 후보 자동 승격·거래 병합·새출처 수집·좌표·시설·추천·Drive 업로드·Git자격증명 접근은 포함하지 않는다. 다른 보류 경계는 유지한다.
+
 이 폴더는 진행 중인 임시 프로젝트다. 이전 저장소 `work/source_archive`는 참고 자료이며 그곳의 활성 단계·모델·성과를 이 프로젝트에 상속하지 않는다.
 
 ## 시작 순서
@@ -35,3 +41,5 @@
 - 실제 역사 스냅샷, 사람 검수 Golden, 전체 생성 사실 평가가 없으면 Phase 0~5 완료 또는 실측 성능으로 보고하지 않는다.
 
 제품 계약·실행 순서는 `docs/specs/10_rental_recommendation_spec.md`, `docs/specs/11_api_credential_vault_spec.md`, `docs/plans/rental-recommendation-mvp.md`, `docs/tasks/current.md`를 따른다. `docs/budongi_advanced_llm_evaluation_plan.md`는 보존된 선택형 연구 계획이다. 문서 Task 완료를 제품 AC·실데이터 품질 완료로 표시하지 않는다.
+
+2026-10-12 한정 예외: 현재 사용자의 실행 요청과 세 API 등록 완료 통보는 [MOLIT-001](docs/specs/12_molit_collection_spec.md)의 서울 25구·202510~202610 전월세/매매 일반/매매 상세 원본 수집·오프라인 관측 DB/staging·로컬 ZIP을 승인한다. [TASK-MOLIT-001](docs/tasks/molit-collection.md), Source Registry와 GitHub #5 예약을 따른다. 단지 매칭·좌표·시설·추천 연결·Drive 업로드는 별도이며 기존 역사 DB는 보존한다. 키 선택은 CRED-001의 명시적 서비스→자격증명 ID이고 별칭/폴더/종전 공급자 메타데이터로 서비스 종류를 추측하지 않는다.

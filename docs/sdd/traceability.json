@@ -530,12 +530,26 @@
                   "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
                   "class": "CredentialServerTests",
                   "method": "test_api_provider_can_be_changed_through_edit_endpoint"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_alias_only_registration_and_legacy_folder_move_preserve_secret"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credential_server.py",
+                  "class": "CredentialServerTests",
+                  "method": "test_alias_only_http_registration_and_folder_move"
                 }
               ],
               "manual": [
                 {
                   "command": "manual: 브라우저 편집 창에서 연결 API 선택·저장 후 목록의 연결 대상 갱신 확인",
                   "evidence": "outputs/budongi_mvp_temp/docs/tasks/credential-provider-edit.md#validation"
+                },
+                {
+                  "command": "manual: 합성 보관함에서 공급자 선택 없이 등록·기존 키 별칭 변경·폴더 이동·입력 초기화·연결 API 항목 없음·콘솔 오류 없음·데스크톱/모바일 화면 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/credential-alias-only.md#validation"
                 }
               ]
             }
@@ -566,6 +580,11 @@
                   "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
                   "class": "CredentialVaultTests",
                   "method": "test_unavailable_or_failing_os_store_never_writes_plaintext_or_rows"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_invalid_folder_move_rolls_back_and_does_not_expose_secret"
                 }
               ],
               "manual": [
@@ -724,6 +743,11 @@
                   "file": "outputs/budongi_mvp_temp/tests/test_credential_regressions.py",
                   "class": "CredentialRegressionTests",
                   "method": "test_invalid_unicode_label_is_input_error"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_explicit_key_id_reused_across_services_without_provider_inference"
                 }
               ],
               "manual": []
@@ -801,9 +825,569 @@
           ]
         }
       ]
+    },
+    {
+      "id": "MOLIT-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/12_molit_collection_spec.md",
+      "requirements": [
+        {
+          "id": "MOLIT-001-REQ-01",
+          "acs": [
+            {
+              "id": "MOLIT-001-AC-01",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_reflected_key_not_saved_and_transient_retry_is_bounded"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_explicit_key_id_reused_across_services_without_provider_inference"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "MOLIT-001-REQ-02",
+          "acs": [
+            {
+              "id": "MOLIT-001-AC-02",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_failed_response_saved_and_resume_calls_only_missing_page"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_atomic_manifest_replace_survives_transient_reader_lock"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_journalled_response_recovers_after_manifest_commit_failure_without_api_or_vault"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_interrupted_http_error_response_cannot_be_promoted_to_success"
+                }
+              ],
+              "manual": []
+            },
+            {
+              "id": "MOLIT-001-AC-03",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_zero_partial_mismatch_and_tampering_are_distinct"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_external_cache_is_verified_and_reused_without_credentials"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_partial_external_cache_reuses_pages_and_fetches_only_missing_page"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "MOLIT-001-REQ-03",
+          "acs": [
+            {
+              "id": "MOLIT-001-AC-04",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_offline_mapping_database_rebuild_and_source_separation"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_invalid_required_values_roll_back_and_record_row_error"
+                }
+              ],
+              "manual": []
+            },
+            {
+              "id": "MOLIT-001-AC-05",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_offline_mapping_database_rebuild_and_source_separation"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_period_exclusions_remain_in_staging_with_row_lineage"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "MOLIT-001-REQ-04",
+          "acs": [
+            {
+              "id": "MOLIT-001-AC-06",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection.py",
+                  "class": "CollectionTests",
+                  "method": "test_partial_build_package_and_cli"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CANONICAL-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/13_canonical_integration_spec.md",
+      "requirements": [
+        {
+          "id": "CANONICAL-001-REQ-01",
+          "acs": [
+            {
+              "id": "CANONICAL-001-AC-01",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "IntegrationInputTests",
+                  "method": "test_current_normalized_input_binding_rejects_changed_raw_with_same_count"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "IntegrationInputTests",
+                  "method": "test_partial_inputs_require_explicit_policy_and_changed_plan_is_rejected"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "IntegrationInputTests",
+                  "method": "test_database_manifest_requires_exact_declared_outputs_and_hashes"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "CANONICAL-001-REQ-02",
+          "acs": [
+            {
+              "id": "CANONICAL-001-AC-02",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "CanonicalSnapshotTests",
+                  "method": "test_canonical_pk_fk_not_null_and_check_are_enforced_before_sealing"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "CanonicalSnapshotTests",
+                  "method": "test_official_entities_share_address_evidence_but_labels_only_create_pending_candidates"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "CanonicalSnapshotTests",
+                  "method": "test_previous_v2_migrates_only_new_copy_and_preserves_every_table_value"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "실제 canonical SQL: 전체 관측의 출처/행정구역/원본/공식 ID 관계와 PK/FK/UNIQUE/NOT NULL/CHECK 검증",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/canonical-integration.md#validation"
+                }
+              ]
+            },
+            {
+              "id": "CANONICAL-001-AC-03",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "CanonicalSnapshotTests",
+                  "method": "test_official_entities_share_address_evidence_but_labels_only_create_pending_candidates"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "CanonicalSnapshotTests",
+                  "method": "test_region_conflict_is_recorded_and_not_promoted_to_an_official_link"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "실제 canonical 후보 SQL: 미확정 근거/다중 후보/출처 독립성 및 자동 확정 금지 검증",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/canonical-integration.md#validation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CANONICAL-001-REQ-03",
+          "acs": [
+            {
+              "id": "CANONICAL-001-AC-04",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "CanonicalSnapshotTests",
+                  "method": "test_identical_replay_and_overlapping_batch_keep_facts_and_separate_membership"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "CanonicalSnapshotTests",
+                  "method": "test_new_normalization_version_keeps_previous_facts_and_reuses_raw_rows"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "CanonicalSnapshotTests",
+                  "method": "test_changed_same_batch_rolls_back_and_previous_snapshot_hash_is_preserved"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_file_canonical.py",
+                  "class": "FileCanonicalTests",
+                  "method": "test_repeat_new_batch_and_mapping_version_reuse_raw_and_preserve_previous"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_file_canonical.py",
+                  "class": "FileCanonicalTests",
+                  "method": "test_replay_after_new_entity_batch_does_not_rewrite_old_candidate_snapshot"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_file_canonical.py",
+                  "class": "FileCanonicalTests",
+                  "method": "test_same_batch_changed_input_rolls_back_and_quality_domains_do_not_mix"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "동일 배치 반복/새 배치/버전/충돌/rollback의 실제 canonical 증분 처리 검증",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/canonical-integration.md#validation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CANONICAL-001-REQ-04",
+          "acs": [
+            {
+              "id": "CANONICAL-001-AC-05",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_file_canonical.py",
+                  "class": "FileCanonicalTests",
+                  "method": "test_all_formats_keep_equal_rows_scope_exclusions_exact_won_and_lineage"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_file_canonical.py",
+                  "class": "FileCanonicalTests",
+                  "method": "test_rejected_count_contract_and_raw_changes_block_publication"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_file_canonical.py",
+                  "class": "FileCanonicalTests",
+                  "method": "test_sale_and_official_complex_building_ids_are_distinct_from_source_transaction"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_file_canonical.py",
+                  "class": "FileCanonicalTests",
+                  "method": "test_different_json_selections_reuse_blob_but_keep_distinct_file_views_and_rows"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_file_canonical.py",
+                  "class": "FileCanonicalTests",
+                  "method": "test_unregistered_and_unapproved_inputs_never_publish"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_source_files.py",
+                  "class": "FileSourceTests",
+                  "method": "test_json_nested_unknown_raw_values_and_explicit_field_path_are_preserved"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_source_files.py",
+                  "class": "FileSourceTests",
+                  "method": "test_xlsx_all_sheets_including_empty_sections_and_equal_rows_are_distinct"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_source_files.py",
+                  "class": "FileSourceTests",
+                  "method": "test_strict_date_number_and_blank_required_values_leave_rejected_row_reasons"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_source_files.py",
+                  "class": "FileSourceTests",
+                  "method": "test_structural_parse_failure_preserves_raw_and_is_not_success_zero"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_source_files.py",
+                  "class": "FileSourceTests",
+                  "method": "test_json_decimal_currency_does_not_round_before_integer_krw_mapping"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "등록 CSV/JSON/XLSX 원본 보존부터 canonical 적재/행 사유/섹션 대사 검증",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/canonical-integration.md#validation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CANONICAL-001-REQ-05",
+          "acs": [
+            {
+              "id": "CANONICAL-001-AC-06",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "975query 실제 입력의 canonical 전체 건수/lineage/재생성/증분 SQL 감사",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/canonical-integration.md#validation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CANONICAL-001-REQ-06",
+          "acs": [
+            {
+              "id": "CANONICAL-001-AC-07",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_file_canonical.py",
+                  "class": "FileCanonicalTests",
+                  "method": "test_cli_staging_and_canonical_publication"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "CanonicalSnapshotTests",
+                  "method": "test_cli_previous_snapshot_and_modified_previous_db"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "python -X utf8 scripts/verify_environment.py 및 scripts/check_sdd.py --base origin/main; 사용법/품질/회귀 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/canonical-integration.md#validation"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "STATS-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/14_statistics_storage_spec.md",
+      "requirements": [
+        {
+          "id": "STATS-001-REQ-01",
+          "acs": [
+            {
+              "id": "STATS-001-AC-01",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_statistics_storage.py",
+                  "class": "StatisticsStorageTests",
+                  "method": "test_exact_source_cells_missing_zero_and_raw_archive"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "30개 제공 엑셀 원본 해시·기간·셀·DB/재실행·심리 중복 SQL 감사",
+                  "evidence": "outputs/budongi_mvp_temp/docs/statistics-validation-20261013.md#actual-import-audit"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "STATS-001-REQ-02",
+          "acs": [
+            {
+              "id": "STATS-001-AC-02",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_statistics_storage.py",
+                  "class": "StatisticsStorageTests",
+                  "method": "test_pir_monthly_quintiles_and_raw_time_are_not_quarterly"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "STATS-001-REQ-03",
+          "acs": [
+            {
+              "id": "STATS-001-AC-03",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_statistics_storage.py",
+                  "class": "StatisticsStorageTests",
+                  "method": "test_replay_new_batch_and_revised_history_preserve_previous_values"
+                }
+              ],
+              "manual": []
+            }
+          ]
+        },
+        {
+          "id": "STATS-001-REQ-04",
+          "acs": [
+            {
+              "id": "STATS-001-AC-04",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_statistics_storage.py",
+                  "class": "StatisticsStorageTests",
+                  "method": "test_wrong_db_and_source_archive_tampering_are_rejected"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "30개 제공 엑셀 원본 해시·기간·셀·DB/재실행·심리 중복 SQL 감사",
+                  "evidence": "outputs/budongi_mvp_temp/docs/statistics-validation-20261013.md#actual-import-audit"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "STATS-001-REQ-05",
+          "acs": [
+            {
+              "id": "STATS-001-AC-05",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_statistics_storage.py",
+                  "class": "StatisticsStorageTests",
+                  "method": "test_cli_import_list_and_readonly_status_leave_historical_db_absent"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_statistics_storage.py",
+                  "class": "StatisticsStorageTests",
+                  "method": "test_audit_rounding_overlap_and_evidence_do_not_modify_source_observations"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "30개 제공 엑셀 원본 해시·기간·셀·DB/재실행·심리 중복 SQL 감사",
+                  "evidence": "outputs/budongi_mvp_temp/docs/statistics-validation-20261013.md#actual-import-audit"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PORTABLE-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/15_data_portability_spec.md",
+      "requirements": [
+        {
+          "id": "PORTABLE-001-REQ-01",
+          "acs": [
+            {
+              "id": "PORTABLE-001-AC-01",
+              "tests": [
+                {
+                  "file": "tests/test_shared_data.py",
+                  "class": "SharedDataTests",
+                  "method": "test_manifest_tamper_and_path_escape_are_rejected"
+                },
+                {
+                  "file": "tests/test_shared_data.py",
+                  "class": "SharedDataTests",
+                  "method": "test_parts_restore_exact_zip_and_reject_corruption_and_overwrite"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "실제 ZIP/새 출력 재구성/Issue/Drive/원격 브랜치 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/shared-data-validation-20261013.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "PORTABLE-001-REQ-02",
+          "acs": [
+            {
+              "id": "PORTABLE-001-AC-02",
+              "tests": [
+                {
+                  "file": "tests/test_shared_data.py",
+                  "class": "SharedDataTests",
+                  "method": "test_logical_digest_detects_changed_data_and_separates_environment_fields"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "실제 ZIP/새 출력 재구성/Issue/Drive/원격 브랜치 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/shared-data-validation-20261013.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "PORTABLE-001-REQ-03",
+          "acs": [
+            {
+              "id": "PORTABLE-001-AC-03",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "실제 ZIP/새 출력 재구성/Issue/Drive/원격 브랜치 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/shared-data-validation-20261013.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "PORTABLE-001-REQ-04",
+          "acs": [
+            {
+              "id": "PORTABLE-001-AC-04",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "실제 ZIP/새 출력 재구성/Issue/Drive/원격 브랜치 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/shared-data-validation-20261013.md"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "tasks": [
+    "outputs/budongi_mvp_temp/docs/tasks/credential-alias-only.md",
+    "docs/tasks/environment-setup-20261012.md",
     "docs/tasks/sdd-adoption.md",
     "docs/tasks/environment-repair-20261006.md",
     "docs/tasks/ci-python-dependencies.md",
@@ -820,6 +1404,10 @@
     "outputs/budongi_mvp_temp/docs/tasks/credential-provider-edit.md",
     "outputs/budongi_mvp_temp/docs/tasks/credential-vault-ci.md",
     "outputs/budongi_mvp_temp/docs/tasks/rental-upload-restore-20261012.md",
-    "docs/tasks/data-collection-record.md"
+    "docs/tasks/data-collection-record.md",
+    "outputs/budongi_mvp_temp/docs/tasks/molit-collection.md",
+    "outputs/budongi_mvp_temp/docs/tasks/canonical-integration.md",
+    "outputs/budongi_mvp_temp/docs/tasks/statistics-import.md",
+    "outputs/budongi_mvp_temp/docs/tasks/data-portability.md"
   ]
 }

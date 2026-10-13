@@ -1,5 +1,7 @@
 # Codex workspace — 집담
 
+2026-10-13 공유 승인: 현재 사용자의 GitHub 브랜치 푸시·DB 원본 Drive 보관/재구성 요청은 PORTABLE-001/TASK-PORTABLE-001의 기존 MOLIT/제공 통계 원본 패키지 업로드와 코드의 새 브랜치 제출을 승인한다. 수집 Issue의 사전 결과/최종 ZIP 해시·후속 개별 링크 기록은 유지한다. 새 원격 수집·키 조회·매칭 확정 승인은 아니다.
+
 현재 개발 대상은 `outputs/budongi_mvp_temp/`다. 작업 전에 그 폴더의 `AGENTS.md`와 관련 Spec·ADR·Task를 읽는다. `work/source_archive/`는 이전 프로젝트의 참고 자료다.
 
 이 파일과 개발 폴더의 `AGENTS.md`는 AI 도구에 관계없이 공통 계약이다. Claude Code는 루트 `CLAUDE.md`가 두 파일을 import하고, Antigravity는 `AGENTS.md`를 프로젝트 규칙으로 사용한다. 아래 전체 gstack 자동 등록은 현재 Codex용이다. 다른 host의 네이티브 스킬 등록·실행은 지원된다고 가정하지 않으며 공통 개발·검증 진입점은 루트 README를 따른다.
@@ -42,3 +44,11 @@ gstack이 제안하는 GitHub issue 작성, push/PR/merge/배포, 외부 CLI 리
 ## 현재 제품 방향 — 2026-10-06 승인
 
 [RENT-001](outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md)과 [전환 Plan](outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md)을 따른다. TARGET는 서울 아파트 전월세 단지 후보의 예산·직장/역/마트/공원/병원 직선거리·필수/선호 비교와 로컬 웹 데모다. 백엔드가 조건·순위를 계산하고 로컬 LLM은 설명한다. 현재 전월세 추천·웹은 미구현이며 역사 DB·세 Tool·평가 CURRENT를 보존한다. 최신 rental 경로를 별도로 만들고 기존 2023 연구 완료를 선행 조건으로 삼지 않는다. 실수집·매칭 보류는 유지한다. 매매·청약 확대와 RAG/Hybrid/LoRA/다중 모델 연구는 첫 제품 우선순위에서 제외한다.
+
+## 원시 데이터 수집의 한정 승인 — 2026-10-12
+
+2026-10-13 제공 통계 파일 예외: 사용자가 Downloads의 이전 12개+신규 18개 엑셀을 함께 저장하고 통계 전용 DB를 만들도록 요청했다. [STATS-001](outputs/budongi_mvp_temp/docs/specs/14_statistics_storage_spec.md)·[TASK-STATS-001](outputs/budongi_mvp_temp/docs/tasks/statistics-import.md)의 제공 파일 원본 보존/오프라인 통계 적재/중복 대사와 사용자 업데이트 메타데이터 기록을 승인한다. 새 외부 수집·API/키 접근·Drive/GitHub 업로드·추천 연결을 포함하지 않는다.
+
+2026-10-13 후속 한정 승인: 사용자가 [통합 후속 Plan](outputs/budongi_mvp_temp/docs/plans/canonical-db-continuation-20261013.md) 진행을 선택했다. [CANONICAL-001](outputs/budongi_mvp_temp/docs/specs/13_canonical_integration_spec.md)·[TASK-CANONICAL-001](outputs/budongi_mvp_temp/docs/tasks/canonical-integration.md)의 기존 세 API 원본 기반 공통 엔터티/공식 출처 ID 관계/미확정 후보/반복·증분·버전/등록 파일 입력 계약 구현·검증을 승인한다. 후보 자동 확정/거래 병합은 금지한다. 새 실제 출처 수집·좌표·시설·추천·Drive 업로드·별도 Git 자격증명 접근은 승인하지 않는다. 이 예외는 아래2026-10-12보류 중 공식 ID 관계와 미확정 후보에만 추가 적용한다.
+
+현재 사용자의 세 API 계획 검토·보완 후 진행 요청과 API 등록 완료 통보에 따라 [MOLIT-001](outputs/budongi_mvp_temp/docs/specs/12_molit_collection_spec.md)의 서울 25구·202510~202610 전월세/매매 일반/매매 상세 원본 수집·오프라인 정규화·관측 DB·staging·로컬 ZIP만 수집 보류에서 해제했다. Source Registry와 [TASK-MOLIT-001](outputs/budongi_mvp_temp/docs/tasks/molit-collection.md)로 범위·증거를 추적한다. 기존 완료 원본은 검증 후 재사용하고 GitHub #5 예약을 이어서 사용한다. 다른 데이터셋·단지 매칭·좌표·시설·추천 연결·Drive 업로드의 보류/별도 승인 경계는 유지한다. 이 첫 단계 성공은 통합 DB Goal 전체 완료가 아니다.

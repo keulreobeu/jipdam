@@ -1,0 +1,17 @@
+{
+  "schema_version": "source_registry_v1",
+  "approved_at": "2026-10-12",
+  "approval_ref": "User approved MOLIT XML plan and expanded integrated-data goal",
+  "sources": [
+    {"source_id": "molit_apt_rent", "service": "rental", "dataset_id": "15126474", "format": "xml", "transport": "molit_http", "mapping": "molit_rental_v1", "scope": "Seoul 25 districts; 202510-202610; all pages", "status": "approved", "required": true, "documentation": "https://www.data.go.kr/data/15126474/openapi.do"},
+    {"source_id": "molit_apt_trade_general", "service": "trade", "dataset_id": "15126469", "format": "xml", "transport": "molit_http", "mapping": "molit_trade_v1", "scope": "Seoul 25 districts; 202510-202610; all pages", "status": "approved", "required": true, "approval_ref": "2026-10-12 user approved three-API XML plan and reported general sale API registration complete", "documentation": "https://www.data.go.kr/data/15126469/openapi.do"},
+    {"source_id": "molit_apt_trade_detail", "service": "trade-detail", "dataset_id": "15126468", "format": "xml", "transport": "molit_http", "mapping": "molit_trade_v1", "scope": "Seoul 25 districts; 202510-202610; all pages", "status": "approved", "required": true, "documentation": "https://www.data.go.kr/data/15126468/openapi.do"}
+  ],
+  "excluded": [
+    {"name": "synthetic_rental_demo", "reason": "fictional, not actual collection coverage"},
+    {"name": "facility/location datasets", "reason": "not approved as collection sources in this implementation; matching and recommendation are separate work"},
+    {"name": "old 2023 catalog collection plans", "reason": "historical/research scope, no verified raw collection present in this checkout"}
+  ],
+  "file_adapters": ["csv", "json", "xlsx"],
+  "file_source_policy": "New file sources must be explicitly registered with source ID, scope, format, sheet/item selection and mapping version before ingestion. No inferred source approval."
+}

@@ -191,7 +191,7 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
                 return
             if method == "POST" and path == "/api/credentials":
                 result = self.server.vault.add_credential(
-                    folder_id=body.get("folder_id"), provider_id=body.get("provider_id"),
+                    folder_id=body.get("folder_id"), provider_id=body.get("provider_id", "generic"),
                     alias=body.get("alias"), api_key=body.get("api_key"),
                 )
                 self._json(201, result)
@@ -201,6 +201,7 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
                 result = self.server.vault.update_credential(
                     credential_id, alias=body.get("alias"), api_key=body.get("api_key"),
                     provider_id=body.get("provider_id"),
+                    folder_id=body.get("folder_id"),
                 )
                 self._json(200, result)
                 return

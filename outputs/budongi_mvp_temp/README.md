@@ -2,13 +2,20 @@
 
 승인된 목표는 **서울 아파트 전월세 단지 후보의 조건별 추천·비교 웹 데모**입니다. 현재 실행 가능한 기능은 기존 역사 스냅샷·세 Data Tool·로컬 모델·합성 평가, 합성 전월세 추천 CLI와 Windows 계정 기반 암호화 API 키 보관함입니다. 전월세 추천 HTTP API와 비교 화면은 아직 구현되지 않았습니다. 팀 저장소는 [keulreobeu/jipdam](https://github.com/keulreobeu/jipdam)이며 기존 작업 폴더와 `budongi` Python 모듈·CLI는 호환성을 위해 유지합니다. 패키지 설치 후에는 `jipdam` 명령도 사용할 수 있습니다.
 
+2026-10-13 추가 구현: 서울 세 API의 확정된 원본 수집과 오프라인 통합 DB, 공식 ID 관계·미확정 후보·반복/증분 적재 및 등록 파일 입력을 구현·검증했습니다. [실행 문서](docs/canonical-db.md)와 [실제 검증](docs/canonical-validation-20261013.md)을 따릅니다. 실제 추천·웹·좌표·시설의 별도 상태는 유지합니다.
+
+사용자가 제공한 통계 엑셀 30개는 별도 `data/statistics/statistics.sqlite3`에 오프라인 보존·적재했습니다. `jipdam statistics import/status/audit`는 원본 셀 계보·기간·결측·재실행·심리 반올림 중복과 후속 메타데이터 근거를 관리합니다. [사용·조회·추가 자료 후보](docs/statistics-storage.md)와 [실제 수입 검증](docs/statistics-validation-20261013.md)을 따릅니다.
+
 ## 개발 문서와 작업 순서
+
+다른 PC에서 원본만으로 DB를 재구성하는 [공유 패키지·복원 명령](docs/shared-data.md)과 [실제 검증](docs/shared-data-validation-20261013.md)을 제공합니다. ZIP/DB/원본은 공유 Drive에, 코드·설정·수집 기록은 GitHub에 보관합니다.
 
 새 기능은 요구사항 질문·Plan → 확정 Spec → 필요 시 ADR → Task → 구현 → 테스트·평가 → 문서 동기화 순서로 진행합니다. 워크스페이스에 설치된 gstack을 기본 개발 스킬로 사용하고, 집담 전용 `jipdam-workflow`로 기존 Spec·ADR·데이터·평가 계약에 연결합니다. 확정된 내용만 프로젝트 문서에 반영합니다. 작업 규칙은 [AGENTS.md](AGENTS.md), 설치·확장 방법은 [gstack 안내](../../docs/gstack.md)에 있습니다.
 
 - [Project Spec](docs/specs/00_project_spec.md): 현재 구현, 목표, 공통 제약
 - [전월세 추천 RENT-001](docs/specs/10_rental_recommendation_spec.md) / [전환 Plan](docs/plans/rental-recommendation-mvp.md) / [전환 ADR](docs/adr/ADR-003-rental-recommendation-first.md): 승인된 추천 계약·제품 순서·결정 이유
 - [API 키 보관함 CRED-001](docs/specs/11_api_credential_vault_spec.md) / [ADR-004](docs/adr/ADR-004-local-api-credential-vault.md) / [구현 Task](docs/tasks/api-credential-vault.md): Windows 보호 키·암호화 저장·검증 상태
+- [통합 DB 실행·조회·출처 확장](docs/canonical-db.md) / [검증 기록](docs/canonical-validation-20261013.md) / [Task](docs/tasks/canonical-integration.md): 보존 XML과 등록 CSV/JSON/XLSX의 오프라인 적재·재실행·증분 계약
 - [Structured Search](docs/specs/03_structured_search_spec.md), [Router](docs/specs/04_router_spec.md), [RAG](docs/specs/05_rag_spec.md), [Agent Tools](docs/specs/06_agent_tools_spec.md): 기능별 현재 상태와 도입 조건
 - [Data Model](docs/specs/02_data_model_spec.md), [Evaluation](docs/specs/08_evaluation_spec.md): 데이터·검증 계약
 - [ADR](docs/adr/ADR-001-structured-tools-first.md): 중요한 설계 선택과 이유
@@ -87,7 +94,7 @@ jipdam credentials
 python -m budongi.cli credentials
 ```
 
-화면에서 폴더, API 제공자, 키 별칭과 키 원문을 입력합니다. 원문은 등록 응답·목록에 다시 나타나지 않으며, `%LOCALAPPDATA%\Jipdam\credentials.sqlite3`에 AES-256-GCM 암호문으로 저장됩니다. 암호화 키는 Windows 자격 증명 관리자에 사용자 계정 범위로 저장합니다. Windows 보안 저장소를 쓸 수 없는 실행 세션에서는 키 등록이 차단됩니다. 설정의 저장·수정·삭제는 외부 API를 호출하지 않습니다. 현재 지원 제공자는 국토교통부 전월세, Kakao Local, 서울 열린데이터광장입니다.
+화면에서 폴더, 키 별칭과 키 원문을 입력합니다. 별칭은 `공공데이터포털 공통 인증키`처럼 알아볼 수 있는 이름으로 정하고, 수정 창에서 별칭 변경·폴더 이동·키 교체를 할 수 있습니다. 연결 API 선택 목록은 사용하지 않습니다. API 사용 작업에서는 API 종류와 저장된 키 ID를 명시적으로 지정하며 별칭·폴더명으로 API 종류를 추측하지 않습니다. 기존 키도 재등록 없이 그대로 사용할 수 있습니다. 원문은 등록 응답·목록에 다시 나타나지 않으며, `%LOCALAPPDATA%\Jipdam\credentials.sqlite3`에 AES-256-GCM 암호문으로 저장됩니다. 암호화 키는 Windows 자격 증명 관리자에 사용자 계정 범위로 저장합니다. Windows 보안 저장소를 쓸 수 없는 실행 세션에서는 키 등록이 차단됩니다. 설정의 저장·수정·삭제는 외부 API를 호출하지 않습니다.
 
 아래는 보존된 역사 조회 경로의 사용 예시입니다. 새 전월세 추천의 선행 조건이 아니며, 실제 자료 수집·매칭은 보류 중입니다. 검수된 실제 2023 자료를 준비한 뒤 다음을 실행합니다. `snapshot_id`는 같은 파일·정제 규칙에 대해 고정하고, 수정 자료는 새 ID로 가져옵니다.
 
@@ -241,6 +248,28 @@ python -m budongi.cli --db .\data\historical\serving.sqlite3 run-eval `
 **임시 단지 자료**로 `data/provisional/apartment_20230905/`에 복사했습니다. 재생성 명령과
 제약은 [임시 자료 안내](data/provisional/README.md)에 있습니다. 이 자료는 단지·주소·좌표·역 거리
 매핑 개발에 사용합니다. 현재 카탈로그는 실거래 기반 가격 조회나 실제 평가용 스냅샷이 아닙니다.
+
+### 원시 MOLIT 수집과 오프라인 DB
+
+[MOLIT-001](docs/specs/12_molit_collection_spec.md)·[실행 Task](docs/tasks/molit-collection.md)는 서울 전월세·매매 일반·매매 상세의 최근 12개월 원본 수집을 다룹니다. 단지 매칭·시설·추천 연결의 보류는 유지합니다. API 키는 보관함에서 등록하고 서비스별 자격증명 ID를 명시적으로 선택합니다. 별칭·폴더에서 API 종류를 추측하지 않습니다.
+
+다음 명령은 제품 폴더에서 실행합니다. 배치 시작 시 기준일을 고정하며 새 기준일의 갱신은 새 디렉터리를 사용합니다. 수집 전 GitHub의 완료·닫힌·예약 범위를 검색하고 담당자·범위를 예약해야 합니다.
+
+```powershell
+python -m budongi.cli collection plan --directory data/collection/my-batch --batch-id my-batch --snapshot-date 2026-10-12 --services rental trade trade-detail --record-url https://github.com/keulreobeu/jipdam/issues/5
+python -m budongi.cli collection fetch --directory data/collection/my-batch --credential rental=<전월세-자격증명-ID> --credential trade=<매매일반-자격증명-ID> --credential trade-detail=<매매상세-자격증명-ID>
+python -m budongi.cli collection status --directory data/collection/my-batch
+python -m budongi.cli collection build-db --directory data/collection/my-batch --output data/collection/my-batch/db
+python -m budongi.cli collection pack --directory data/collection/my-batch --db-directory data/collection/my-batch/db --output data/collection/my-batch/my-batch.zip
+```
+
+`plan/status/build-db/pack`은 키·네트워크를 사용하지 않습니다. `fetch`도 검증된 완료 범위는 키 접근·추가 호출 없이 재사용합니다. 다른 배치의 완료 원본은 `--cache-dir <배치폴더>`로 검증해 재사용합니다. 월별 조회는 관측 기간의 경계 월을 포함하며 기간 밖 행도 원본/staging에 남깁니다.
+
+출력은 `rental.sqlite3`, `sales.sqlite3`, `staging.sqlite3`, `normalized-manifest.json`입니다. `staging_items`와 `raw_files`로 원본 파일·해시·행 위치·기간 제외 사유를 조회합니다. 매니페스트는 원본/유효/기간 제외/거부 건수와 실제 원본 조인·무결성 검사 결과를 기록합니다. 잘못된 필수 값이 있으면 DB를 게시하지 않고 `normalization-errors.json`에 모든 발견 오류를 남깁니다. 완료된 DB와 staging은 불변이며 기존 출력은 덮어쓰지 않습니다.
+
+기본 DB 생성·pack은 전체 완료를 요구합니다. `--allow-partial`은 검증된 완료 query만 대상으로 하며 미조회·실패 범위를 명시합니다. 부분 성공을 전체 수집/Goal 완료로 표시하지 않습니다. 부분 DB 생성 뒤 수집이 추가되면 새 출력으로 DB를 재생성해야 pack이 허용됩니다. ZIP에는 XML까지 포함하며 최종 해시와 결과를 같은 수집 Issue에 기록합니다. Drive 자동 업로드는 없습니다.
+
+실제 실행 결과와 미완료 조건은 [2026-10-12 검증 기록](docs/molit-validation-20261012.md)을 참조합니다. 금액은 원 정수, 면적은 ㎡이며 일반·상세 매매 건수는 출처별 관측입니다. 같은 실제 계약이라고 자동 연결하거나 합산하지 않습니다. 최신 DB는 `source_unverified`이고 기존 역사 DB의 2023 cutoff·추천 검수 경계를 유지합니다.
 
 ### 제품 실행 순서
 

@@ -89,6 +89,23 @@ class CredentialServerTests(unittest.TestCase):
         self.assertIn("default-src 'self'", headers["Content-Security-Policy"])
         self.assertEqual(headers["X-Frame-Options"], "DENY")
 
+    def test_alias_only_http_registration_and_folder_move(self) -> None:
+        source = self.vault.create_folder("기존 폴더")["id"]
+        target = self.vault.create_folder("공공데이터 API")["id"]
+        secret = "synthetic-alias-only-http-secret"
+        status, body, _ = self._mutating_request("POST", "/api/credentials", {
+            "folder_id": source, "alias": "공공데이터 인증키", "api_key": secret,
+        })
+        self.assertEqual(status, 201)
+        identifier = json.loads(body)["id"]
+        status, body, _ = self._mutating_request("PATCH", f"/api/credentials/{identifier}", {
+            "folder_id": target, "alias": "국토부 공통 인증키",
+        })
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body)["folder_id"], target)
+        self.assertNotIn(secret.encode(), body)
+        self.assertEqual(self.vault.get_secret(identifier), secret)
+
     def test_mutation_rejects_wrong_origin_and_missing_csrf(self) -> None:
         status, body, _ = self._request("POST", "/api/folders", {"name": "차단 폴더"},
                                         origin="http://evil.example", token=self.token)

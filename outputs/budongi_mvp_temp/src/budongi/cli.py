@@ -68,11 +68,23 @@ def _parser() -> argparse.ArgumentParser:
     recommend.add_argument("--allow-synthetic", action="store_true", help="Explicitly allow a fictional demo snapshot")
     demo = sub.add_parser("rental-demo", help="Create a fictional rental snapshot and sample request; no API calls")
     demo.add_argument("--directory", type=Path, default=Path("data/rental/synthetic-demo"))
+    from .collection_cli import add_collection_parser
+    add_collection_parser(sub)
+    from .statistics_cli import add_statistics_parser
+    add_statistics_parser(sub)
     return parser
 
 
 def main() -> None:
     args = _parser().parse_args()
+    if args.command == "statistics":
+        from .statistics_cli import run_statistics
+        run_statistics(args)
+        return
+    if args.command == "collection":
+        from .collection_cli import run_collection
+        run_collection(args)
+        return
     if args.command in {"recommend", "rental-demo"}:
         from .rental_demo import create_rental_demo
         from .rental_recommendation import (RentalDataUnavailable, RentalInputError, RentalInternalError,

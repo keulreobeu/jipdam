@@ -24,6 +24,8 @@
 
 ## 현재 데이터 흐름
 
+2026-10-12 추가 CURRENT: [MOLIT-001](12_molit_collection_spec.md)의 전월세/매매 일반/상세 원본 수집·재개·완료 재사용·오프라인 두 관측 DB·행별 staging·원본 조인/건수/무결성 검사·ZIP 생성이 구현됐다. 실제 범위 완료 여부는 [TASK-MOLIT-001](../tasks/molit-collection.md)·[검증 기록](../molit-validation-20261012.md)을 따른다. 원천 미검수 관측 DB는 추천 검수 데이터가 아니며 단지/시설 매칭·추천 연결은 후속이다. 기존 CURRENT의 역사/합성 평가·추천 경계는 보존한다.
+
 ```text
 검수된 정규화 CSV → 불변 SQLite snapshot → 검증된 Data Tool 3개
                                            ↑
@@ -72,3 +74,7 @@
 ```
 
 새 경로는 아직 미구현이다. 실수집·단지 매칭 보류를 유지하고 역사/최신 DB를 분리한다.
+
+## 2026-10-13 통합 데이터 경로
+
+사용자가 승인한 [CANONICAL-001](13_canonical_integration_spec.md)은 보존된 서울 세 API 자료의 오프라인 공통 DB, 공식 ID 관계·미확정 후보, 반복/증분/버전 적재와 등록 파일 형식 확장을 제공한다. 기존 역사·합성 추천·평가 경계는 유지한다. 실제 추천·웹·좌표·시설·Golden 완료를 뜻하지 않는다. 실행·스키마·품질은 [canonical-db.md](../canonical-db.md), 검증의 최종 상태는 [통합 Task](../tasks/canonical-integration.md)를 따른다.
