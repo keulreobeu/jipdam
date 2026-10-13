@@ -3,7 +3,7 @@
 ```toml
 kind = "task"
 id = "TASK-PORTABLE-001"
-status = "in_progress"
+status = "verified"
 owner = "Codex"
 specs = ["outputs/budongi_mvp_temp/docs/specs/15_data_portability_spec.md", "docs/specs/data_collection_record_spec.md"]
 scope = ["scripts/shared_data.py", "scripts/join_shared_parts.py", "tests/test_shared_data.py", "outputs/budongi_mvp_temp/docs/specs/15_data_portability_spec.md", "outputs/budongi_mvp_temp/docs/tasks/data-portability.md", "outputs/budongi_mvp_temp/docs/shared-data.md", "outputs/budongi_mvp_temp/docs/shared-data-validation-20261013.md", "outputs/budongi_mvp_temp/docs/tasks/current.md", "outputs/budongi_mvp_temp/README.md", "AGENTS.md", "outputs/budongi_mvp_temp/AGENTS.md", "docs/data-collection.md", "docs/sdd/traceability.json"]
@@ -26,13 +26,19 @@ command = "Issue5/6 업로드 전 결과 기록 및 후속 개별 링크, Drive7
 result = "passed"
 evidence = "outputs/budongi_mvp_temp/docs/shared-data-validation-20261013.md#remote-state"
 acs = ["PORTABLE-001-AC-03"]
+
+[[verification]]
+command = "git push -u origin codex/data-portability-20261013; git ls-remote --heads origin refs/heads/codex/data-portability-20261013; 커밋 트리 원본/DB/ZIP/키 제외 확인"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/shared-data-validation-20261013.md#branch-and-checks"
+acs = ["PORTABLE-001-AC-04"]
 ```
 
 - [x] PORTABLE-001-AC-01 원본/manifest/ZIP 해시
 - [x] PORTABLE-001-AC-02 실제 새 폴더 재구성/논리 대사
 - [x] PORTABLE-001-AC-03 Issue 기록/Drive 업로드/원격 확인
-- [ ] PORTABLE-001-AC-04 새 원격 브랜치 코드/데이터 제외
+- [x] PORTABLE-001-AC-04 새 원격 브랜치 코드/데이터 제외
 
 ## 승인과 현재 결과
 
-사용자의 현재 요청과 구체적 GitHub 게시/ZIP·Drive 목적지 후속 명시 승인에 따라 작업했다. 두 실제 재구성·검증·Drive 공유/읽기 SHA 대사 완료. 원격 main/codex/data-collection-records 확인 후 codex/data-portability-20261013 생성, 최신 origin/main 병합 완료. 원본/DB/ZIP/키를 제외하고 코드 푸시와 원격 커밋 확인을 마무리한다.
+사용자의 현재 요청과 구체적 GitHub 게시/ZIP·Drive 목적지/코드·완료 기록 push 후속 명시 승인에 따라 작업했다. 두 실제 재구성·검증·Drive 공유/읽기 SHA 대사 완료. 기존 브랜치에서 codex/data-portability-20261013 생성, origin/main 병합 후 코드64개 파일을 push했다. 원격 SHA가 로컬 618f9c7fdbf68d08ab5176d5eb3b5ccb2401a7fd와 일치했고 원본/DB/ZIP/키 파일0개를 확인했다. 이 완료 기록도 같은 브랜치에 보존한다.

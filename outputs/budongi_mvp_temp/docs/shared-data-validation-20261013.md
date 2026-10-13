@@ -14,7 +14,7 @@
 
 ## Branch and checks
 
-fetch/ls-remote에서 main=f5c356c0773af136d160b245cc548cb784d8d075 및 codex/data-collection-records=8d70e41ac23898d4e4aea1c0ec4633cd8a1de9fb 확인. 기존 브랜치에서 codex/data-portability-20261013 생성, origin/main 병합 완료. Git 명령에만 Codex/codex@openai.com 작성자를 사용했고 전역 설정은 변경하지 않았다. push 미실행.
+fetch/ls-remote에서 main=f5c356c0773af136d160b245cc548cb784d8d075 및 codex/data-collection-records=8d70e41ac23898d4e4aea1c0ec4633cd8a1de9fb 확인. 기존 브랜치에서 codex/data-portability-20261013 생성, origin/main 병합 완료. Git 명령에만 Codex/codex@openai.com 작성자를 사용했고 전역 설정은 변경하지 않았다. 사용자가 새 브랜치의 코드·완료 기록 push를 명시 승인한 뒤 일반 push를 수행했다. ls-remote의 원격 커밋 618f9c7fdbf68d08ab5176d5eb3b5ccb2401a7fd가 로컬과 같고 변경64개 파일에 원본/DB/ZIP/XML/키 파일이0개임을 확인했다. 워킹 트리는 clean이다. [제출 브랜치](https://github.com/keulreobeu/jipdam/tree/codex/data-portability-20261013)에 구현·복원 명령·Spec/Task/검증 기록을 보존한다.
 
 최종 코드의 verify_environment에서 제품137개·팀22개·합성 CLI 통과(.local_runtime/ship-environment-parts-final-20261013.log). 패키지 검사4개는 변조/경로 탈출, ZIP CRC/기존 출력 보존, 논리 값 변경 탐지/환경경로 구분, 실제 분할 ZIP 재조립/변조 거부를 다룬다. SDD 기본/--base origin/main 통과(features9/AC54/tasks23), git diff --check 통과.
 
