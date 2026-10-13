@@ -29,6 +29,10 @@ Bash에서는 `source scripts/enter-gstack.sh`를 사용한다. 스킬이 없으
 
 gstack이 제안하는 GitHub issue 작성, push/PR/merge/배포, 외부 CLI 리뷰, 자동화·원격 동기화는 현재 요청이 해당 동작을 포함할 때만 실행한다. 원격·인증·실데이터를 있는 것으로 가정하지 않는다. 브라우저 QA를 위해 실제 데이터 수집 보류를 해제하지 않는다.
 
+## 데이터 수집·Drive 업로드 기록 (필수)
+
+[수집 현황·절차](docs/data-collection.md)와 [COLLECT-001](docs/specs/data_collection_record_spec.md)을 따른다. 데이터 수집 전 GitHub의 `[수집]` Issue에서 완료·닫힌 기록과 예약·진행 범위를 검색하고 출처/종류/지역/기간·필터가 겹치는 범위를 제외한 뒤 담당자와 범위를 예약한다. 동시 예약은 재확인하고 중복 담당을 정리한 뒤 시작한다. ZIP을 공유 Drive에 올리기 전 같은 Issue에 실제 성공/0건/실패 범위·건수·방법·단위/가공·검수/합성 구분·수집 시각·manifest·최종 ZIP SHA-256을 반드시 기록한다. 기록이 없으면 수집/업로드를 진행하지 않는다. 업로드 뒤 개별 파일 링크를 추가한다. 원본·ZIP·DB·API 키는 Git에 넣지 않는다. 기존 실수집·매칭 보류는 별도 해제 전까지 유지한다.
+
 ## 확장과 업데이트
 
 공통 프로젝트 규칙은 이 파일과 개발 폴더의 `AGENTS.md`, 집담 전용 절차는 추적되는 `.agents/skills/jipdam-workflow/`에서 발전시킨다. 일반화할 만한 gstack 변경은 runtime 원본의 해당 `SKILL.md.tmpl`에서 수정하고 `python scripts/bootstrap.py`로 재생성한다. 팀 공유에는 그 변경을 별도 fork commit에 보존하고 `tooling/gstack.lock.json`의 repository/commit/version을 함께 갱신한다. 생성된 `gstack-*/SKILL.md`를 직접 수정하면 재설치 때 사라진다. setup의 마지막 등록 단계는 Codex용 router·스킬 ID·팀 runtime 경로를 적용하고 fixture 스킬 유출을 검사한다.

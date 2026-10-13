@@ -435,6 +435,10 @@
                 {
                   "command": "manual: PLAN-RENT-001 product-verification-pending의 RENT-001-AC-07 행에 있는 fixture·절차·예상 결과를 구현 후 실행 (현재 not_run)",
                   "evidence": "outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md#product-verification-pending"
+                },
+                {
+                  "command": "manual: TASK-RENT-RESTORE-001 첨부 합성 DB의 분리 복원, 원본 해시·무결성·합성 거부와 명시 허용 추천 확인; 실제 원천 검수는 미완료",
+                  "evidence": "outputs/budongi_mvp_temp/docs/rental-upload-audit-20261012.md#validation"
                 }
               ]
             }
@@ -746,6 +750,57 @@
           ]
         }
       ]
+    },
+    {
+      "id": "COLLECT-001",
+      "spec": "docs/specs/data_collection_record_spec.md",
+      "requirements": [
+        {
+          "id": "COLLECT-001-REQ-01",
+          "acs": [
+            {
+              "id": "COLLECT-001-AC-01",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "manual: YAML 필수 양식·요약 진입점·범위 겹침/부분 완료/합성 구분·업로드 전후 기록과 AGENTS 규칙 검토",
+                  "evidence": "docs/tasks/data-collection-record.md#validation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "COLLECT-001-REQ-02",
+          "acs": [
+            {
+              "id": "COLLECT-001-AC-02",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "manual: YAML 필수 양식·요약 진입점·범위 겹침/부분 완료/합성 구분·업로드 전후 기록과 AGENTS 규칙 검토",
+                  "evidence": "docs/tasks/data-collection-record.md#validation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "COLLECT-001-REQ-03",
+          "acs": [
+            {
+              "id": "COLLECT-001-AC-03",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "manual: YAML 필수 양식·요약 진입점·범위 겹침/부분 완료/합성 구분·업로드 전후 기록과 AGENTS 규칙 검토",
+                  "evidence": "docs/tasks/data-collection-record.md#validation"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "tasks": [
@@ -763,6 +818,8 @@
     "outputs/budongi_mvp_temp/docs/tasks/credential-vault-sdd.md",
     "outputs/budongi_mvp_temp/docs/tasks/credential-vault-qa.md",
     "outputs/budongi_mvp_temp/docs/tasks/credential-provider-edit.md",
-    "outputs/budongi_mvp_temp/docs/tasks/credential-vault-ci.md"
+    "outputs/budongi_mvp_temp/docs/tasks/credential-vault-ci.md",
+    "outputs/budongi_mvp_temp/docs/tasks/rental-upload-restore-20261012.md",
+    "docs/tasks/data-collection-record.md"
   ]
 }

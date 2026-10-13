@@ -16,3 +16,4 @@ data/eval/*
 !data/eval/README.md
 data/provisional/*
 !data/provisional/README.md
+data/rental/

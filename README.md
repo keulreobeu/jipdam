@@ -4,6 +4,10 @@
 
 팀원은 **Codex, Claude Code, Antigravity 중 익숙한 도구**로 작업할 수 있다. 같은 코드·Spec·ADR·Task·검증 명령을 공유한다. 전체 gstack의 자동 등록은 현재 Codex용으로 구성되어 있다.
 
+## 데이터 수집·공유
+
+데이터 수집·공유는 [수집 현황](docs/data-collection.md)에서 확인한다. **수집 전 GitHub 범위 예약, Drive ZIP 업로드 전 결과 요약 기록은 필수**다. 기존 완료/예약 범위는 건너뛰고 미수집/실패분만 수집한다. 원본 ZIP은 [공유 Drive](https://drive.google.com/drive/folders/13AjoiYNCWcIB12GhSKyLiR1M2bR4Drkg)에 보관한다.
+
 ## 1. 저장소 받기
 
 ```sh
