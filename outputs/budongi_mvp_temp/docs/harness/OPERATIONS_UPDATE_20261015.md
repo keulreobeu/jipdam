@@ -54,4 +54,14 @@ GMS **코드·테스트·문서 초안 adapter는 실제 작동**하며 계속 �
 
 ## Final verification
 
-최종 공식 검사·커밋 결과를 이 절에 기록한다.
+최종 `.venv/Scripts/python.exe -X utf8 scripts/verify_environment.py --gstack` exit0.
+제품281개·팀27개·합성CLI·고정gstack58 통과. 기본/브랜치 SDD도 통과했다.
+이전280개 전체 통과 후 추가한 작업 소스 import 회귀까지 포함한 최종 결과다.
+최종 공식 key-info(2026-10-15 13:12:09 KST)는 잔액29,078, reserve_only 최소1,000, uncertain 보류183이다.
+이 설정/한도 변경으로 원장이나 보류를 초기화하지 않았다.
+
+기준 커밋 `d823032`에 기존 미커밋 MVP/하네스 코드·문서139개를 검토된 경로 manifest로 보존했다.
+데이터/DB/키/런타임은 포함하지 않았고 사용자 원본 파일을 되돌리지 않았다.
+실제 저장소 CLI smoke TASK-CLI-INTEGRATION-SMOKE: 등록→별도 HEAD worktree→Planner8검사→명시 approve→COMPLETED.
+코드 변경이 없는 실행이라 auto_commit=no_changes로 기록했고 불필요한 commit을 만들지 않았다.
+검증 subprocess의 import 경로는 작업 worktree src를 우선하도록 고정했고 실제 수정 모듈 import 시험13개 suite가 통과했다.

@@ -127,7 +127,7 @@ def _kill_tree(process: subprocess.Popen, job=None) -> None:
 
 
 def run_process(argv, cwd: Path, input_text: str | None, timeout: float,
-                should_stop: StopCheck) -> tuple[int, str, str, str | None]:
+                should_stop: StopCheck, *, env_overrides=None) -> tuple[int, str, str, str | None]:
     """Drain capped streams concurrently and terminate the entire subprocess group."""
     timeout = min(MAX_TIMEOUT, max(0.05, float(timeout)))
     stop = should_stop()
@@ -135,6 +135,7 @@ def run_process(argv, cwd: Path, input_text: str | None, timeout: float,
         return -1, "", "", stop
     options = {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == "nt" else {"start_new_session": True}
     environment = dict(os.environ, PYTHONUTF8="1", PYTHONDONTWRITEBYTECODE="1", PYTEST_ADDOPTS="", PYTEST_DISABLE_PLUGIN_AUTOLOAD="1")
+    environment.update(env_overrides or {})
     process = subprocess.Popen(list(argv), cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=False, env=environment, **options)
     job = _WindowsJob(process)

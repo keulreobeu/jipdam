@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import sys
 import time
@@ -146,7 +147,9 @@ class Orchestrator:
             if argv[0] == "python": argv[0] = sys.executable
             if argv[1:3] == ["-m", "pytest"]:
                 argv[3:3] = ["-o", "addopts=", "-p", "no:cacheprovider"]
-            rc, out, err, reason = run_process(argv, tree, "", min(300, task["execution"]["timeout_seconds"]), stop)
+            source_paths = os.pathsep.join(str(p) for p in (tree / "outputs/budongi_mvp_temp/src", tree / "src", tree))
+            rc, out, err, reason = run_process(argv, tree, "", min(300, task["execution"]["timeout_seconds"]), stop,
+                                              env_overrides={"PYTHONPATH": source_paths})
             results.append({"argv": check["argv"], "acs": check["acs"], "exit_code": rc if rc is not None else -1,
                             "output": persisted_text(out + "\n" + err)[-6000:], "stop_reason": reason})
             if reason: break

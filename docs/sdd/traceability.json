@@ -2275,6 +2275,11 @@
                   "file": "outputs/budongi_mvp_temp/tests/test_managed_harness.py",
                   "class": "ManagedHarnessTests",
                   "method": "test_cross_state_directory_lock_and_retry_pause_race"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_managed_harness.py",
+                  "class": "ManagedHarnessTests",
+                  "method": "test_validation_imports_worktree_code_instead_of_controller_checkout"
                 }
               ]
             }
@@ -2396,6 +2401,16 @@
                   "file": "outputs/budongi_mvp_temp/tests/test_harness_operations.py",
                   "class": "AutoCommitTests",
                   "method": "test_post_validation_edit_and_missing_validation_are_rejected"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_harness_operations.py",
+                  "class": "AutoCommitTests",
+                  "method": "test_receipt_recovery_reconciles_old_index_and_preserves_user_staging"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_harness_operations.py",
+                  "class": "CommitPathSafetyTests",
+                  "method": "test_unsafe_paths_are_rejected"
                 }
               ]
             }

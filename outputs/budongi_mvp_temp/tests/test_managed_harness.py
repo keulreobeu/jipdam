@@ -185,3 +185,13 @@ class ManagedHarnessTests(unittest.TestCase):
         self.assertEqual(result["state"], "BLOCKED")
         self.assertIsNone(result["lease"])
         self.assertEqual(result["attempt"], 1)
+
+    def test_validation_imports_worktree_code_instead_of_controller_checkout(self):
+        body = deepcopy(self.body); body["task_id"] = "TASK-IMPORT"; body["scope"]["allowed_paths"] = ["src", "tests"]
+        self.store.create(body)
+        def write(count, task, cwd, stop):
+            (cwd / "src").mkdir(); (cwd / "src/only_in_worktree.py").write_text("VALUE = 42\n")
+            (cwd / "tests/test_value.py").write_text("import unittest\nfrom only_in_worktree import VALUE\nclass Test(unittest.TestCase):\n def test_actual_code(self): self.assertEqual(VALUE,42)\n")
+            return ExecutionResult()
+        row = self.runner(Provider(write)).run("TASK-IMPORT")
+        self.assertEqual(row["state"], "REVIEW_REQUIRED", row["result"])
