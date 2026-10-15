@@ -5,10 +5,10 @@ kind = "spec"
 id = "PORTABLE-001"
 status = "approved"
 owner = "Codex"
-revision = 1
+revision = 2
 approved_by = "사용자"
-approved_at = "2026-10-13"
-approval_ref = "현재 GitHub 브랜치를 확인하고 다른 브랜치가 있으면 분기해 푸시하며, 현재 DB에 적재한 파일을 Drive에 보관하고 다른 환경에서 다시 DB를 만들라는 요청"
+approved_at = "2026-10-14"
+approval_ref = "2026-10-13 포터블 패키지 승인에 더해 2026-10-14 사용자가 '원본을 드라이브에 저장해두고 필요하면 드라이브에서 받아서 쓸 수 있게 만들어' 요청"
 ```
 
 ## 범위
@@ -46,3 +46,11 @@ MOLIT 기존 ZIP의 원본/manifest/DB를 그대로 포함하고, 주 통합 DB�
 ### PORTABLE-001-AC-04
 
 원격 새 브랜치의 SHA가 로컬 제출 커밋과 같고 재구성 스크립트/관련 구현이 있으며 원본/DB/ZIP/키는 없다.
+
+## PORTABLE-001-REQ-05 요청 시 Drive 패키지 다운로드
+
+명시한 `statistics` 또는 `molit` 패키지만 Google Drive에서 내려받는다. 내려받을 파일은 고정 Drive 파일 ID에 연결하고 파일별 크기·SHA-256을 확인한다. MOLIT 조각은 조각별 검증 뒤 기존 전체 ZIP 크기·SHA-256과 대조해 재조립한다. 성공한 새 출력 폴더만 게시하며 기존 경로를 덮어쓰지 않는다. 다운로드된 ZIP은 기존 오프라인 `shared_data.py verify/rebuild` 절차로 사용한다. 자동 다운로드/압축해제/재구성은 하지 않는다.
+
+### PORTABLE-001-AC-05
+
+요청한 패키지만 Drive에서 내려받고 원본 Drive 링크에 접근할 수 없거나 파일이 바뀌면 실패한다. 각 다운로드 파일의 크기/해시, MOLIT 전체 ZIP 해시를 확인하고 기존 출력 보존을 검증한다. 다운로드 후 재구성은 네트워크 없이 기존 PORTABLE-001-AC-02를 따른다.

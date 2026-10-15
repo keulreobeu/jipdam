@@ -9,6 +9,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from .gms import estimate_usage
+from .gms_budget import GMSBudgetManager
+from .http_helpers import discard_rejected_body
+
 from .credential_vault import (
     CredentialConfirmationRequired,
     CredentialContentsChanged,
@@ -32,6 +36,7 @@ class _VaultHTTPServer(ThreadingHTTPServer):
 
     def __init__(self, port: int, vault: CredentialVault) -> None:
         self.vault = vault
+        self.gms_budget = GMSBudgetManager(vault)
         self.csrf_token = secrets.token_urlsafe(32)
         super().__init__(("127.0.0.1", port), _CredentialRequestHandler)
 
@@ -110,7 +115,8 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
             length = int(raw_length) if raw_length is not None else -1
         except ValueError as exc:
             raise CredentialValidationError("요청 크기를 확인할 수 없습니다.") from exc
-        if length < 0 or length > MAX_REQUEST_BYTES:
+        maximum = 256 * 1024 if self.path == "/api/gms/quote" else MAX_REQUEST_BYTES
+        if length < 0 or length > maximum:
             raise CredentialValidationError("요청 크기가 허용 범위를 벗어났습니다.")
         try:
             body = self.rfile.read(length)
@@ -125,6 +131,7 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
 
     def _guard_request(self) -> bool:
         if not self._host_is_local():
+            discard_rejected_body(self, MAX_REQUEST_BYTES)
             self._json(421, {"error": "이 로컬 서버 주소는 허용되지 않습니다."})
             return False
         return True
@@ -156,6 +163,12 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
             except CredentialVaultError as exc:
                 self._json(503, {"error": str(exc)})
             return
+        if path == "/api/gms/state":
+            try:
+                self._json(200, self.server.gms_budget.state())
+            except Exception:
+                self._json(503, {"error": "GMS 예산 원장을 읽을 수 없습니다."})
+            return
         self._json(404, {"error": "요청한 경로를 찾을 수 없습니다."})
 
     def _send_static(self, filename: str, content_type: str) -> None:
@@ -179,6 +192,7 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
         if not self._guard_request():
             return
         if not self._origin_and_csrf_valid():
+            discard_rejected_body(self, 256 * 1024 if self.path == '/api/gms/quote' else MAX_REQUEST_BYTES)
             self._json(403, {"error": "로컬 화면에서 다시 요청해 주세요."})
             return
         path = self._route()
@@ -186,6 +200,26 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
             return
         try:
             body = self._body_object()
+            if method == "POST" and path == "/api/gms/check":
+                self._json(200, self.server.gms_budget.check(body.get("credential_id"), confirmed=body.get("confirm")))
+                return
+            if method == "POST" and path == "/api/gms/balance":
+                self._json(200, self.server.gms_budget.balance(body.get("credential_id")))
+                return
+            if method == "POST" and path == "/api/gms/policy":
+                self._json(200, self.server.gms_budget.save_policy(body))
+                return
+            if method == "POST" and path == "/api/gms/quote":
+                self._json(200, self.server.gms_budget.quote(task_id=body.get("task_id"), objective=body.get("objective"),
+                           context=body.get("context", ""), expected_output_tokens=body.get("expected_output_tokens"),
+                           difficulty=body.get("difficulty"), model=body.get("model"), max_output_tokens=body.get("max_output_tokens")))
+                return
+            if method == "POST" and path == "/api/gms/execute":
+                self._json(200, self.server.gms_budget.execute(body.get("quote_id"), confirmed=body.get("confirm")))
+                return
+            if method == "POST" and path == "/api/gms/estimate":
+                self._json(200, estimate_usage(body))
+                return
             if method == "POST" and path == "/api/folders":
                 self._json(201, self.server.vault.create_folder(body.get("name")))
                 return

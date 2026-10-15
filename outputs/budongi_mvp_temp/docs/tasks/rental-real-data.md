@@ -8,7 +8,7 @@ owner = "keulreobeu"
 specs = ["outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md"]
 scope = ["outputs/budongi_mvp_temp/scripts/", "outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md", "outputs/budongi_mvp_temp/docs/tasks/rental-real-data.md", "outputs/budongi_mvp_temp/README.md", "docs/sdd/traceability.json"]
 acs = ["RENT-001-AC-07", "RENT-001-AC-10"]
-blocked_reason = "사용자의 실제 데이터 수집·단지 매칭 보류가 유지됨. API 활용 승인·자료 사용조건·검수 범위도 확인 필요."
+blocked_reason = "기존 승인된 MOLIT 수집은 완료. 새 수집/매칭/좌표/시설은 별도 승인 경계이며 사용자가 실제 검수 패키지·로컬 모델 미준비로 답함."
 
 [[verification]]
 command = "manual: PLAN-RENT-001의 관련 제품 AC 시나리오를 실행하고 실제 결과를 기록"
@@ -33,5 +33,7 @@ acs = ["RENT-001-AC-07", "RENT-001-AC-10"]
 - [ ] RENT-001-AC-10 [Spec](../specs/10_rental_recommendation_spec.md)의 해당 완료 기준과 Plan 시나리오를 충족한다.
 
 ## 검증·결과
+
+2026-10-14: 기존 전월세 238,620건 수집·canonical은 별도 완료 Task로 보존한다. 실제 확정 관계·좌표·시설·커버리지와 사람 검수 Golden은 아직 없다. 새로운 수집/자동 매칭을 시작하지 않으며 [후속 준비](continuation-parts-1to5.md)와 `rental-readiness`를 통해 필요한 입력을 확인한다.
 
 제품 검증은 **not_run**, 구현 미착수다. [검증 시나리오](../plans/rental-recommendation-mvp.md#product-verification-pending)를 따르고 작성·실행한 실제 unittest 메서드만 추적 원장에 연결한다. README에 계획 명령을 실행 가능한 명령으로 표시하지 않는다.

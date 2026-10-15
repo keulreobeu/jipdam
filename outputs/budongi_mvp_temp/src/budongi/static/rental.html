@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="jipdam-csrf" content="__JIPDAM_CSRF_TOKEN__">
+  <title>집담 · 전월세 추천</title>
+  <link rel="stylesheet" href="/static/rental.css">
+  <link rel="stylesheet" href="/static/vendor/leaflet/leaflet.css">
+  <script src="/static/vendor/leaflet/leaflet.js" defer></script>
+  <script src="/static/rental.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="집담 홈"><span class="brand-mark">집</span> 집담</a>
+    <div class="data-badge" id="dataBadge">실제 데이터 확인 중</div>
+  </header>
+  <main class="layout">
+    <section class="intro">
+      <p class="eyebrow">SEOUL RENTAL FINDER</p>
+      <h1>조건을 이야기하고<br><em>근거 있는 집</em>을 찾아보세요.</h1>
+      <p class="intro-copy">대화로 조건을 구체화한 뒤, 확인된 거래와 생활 조건을 비교합니다.</p>
+      <div class="trust-note"><span aria-hidden="true">✓</span> 추천은 실제 DB의 검수된 단지 연결만 사용합니다.</div>
+    </section>
+
+    <section class="chat-card" aria-labelledby="chatTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">STEP 1 · 대화</p><h2 id="chatTitle">어떤 집을 찾고 있나요?</h2></div>
+        <span class="private-label">이 기기에서만 처리</span>
+      </div>
+      <div id="chatLog" class="chat-log" aria-live="polite">
+        <div class="bubble assistant">예산, 전월세 유형, 원하는 동네와 중요하게 보는 생활 조건을 편하게 말씀해 주세요.</div>
+      </div>
+      <form id="chatForm" class="chat-form">
+        <label class="sr-only" for="chatMessage">원하는 집 조건</label>
+        <textarea id="chatMessage" name="message" rows="2" maxlength="2000" placeholder="예: 종로구에서 월세로 찾고 있어요. 보증금은 3억, 월세는 100만 원까지 생각해요." required></textarea>
+        <button class="icon-button" type="submit" aria-label="메시지 보내기">↑</button>
+      </form>
+      <p class="hint">대화는 로컬 메모리에만 보관되고 서버를 종료하면 사라집니다.</p>
+      <div class="chat-actions"><span id="modelState" role="status">모델 연결은 선택 사항입니다. 직접 조건을 입력할 수 있습니다.</span><button id="newChat" type="button" class="detail-button">새 대화</button></div>
+    </section>
+
+    <section class="search-card" aria-labelledby="searchTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">STEP 2 · 조건 확인</p><h2 id="searchTitle">검색 조건을 확인해 주세요</h2></div>
+      </div>
+      <form id="searchForm" class="search-form">
+        <div class="field-grid two">
+          <label>전월세 유형
+            <select name="rental_type"><option value="wolse">월세</option><option value="jeonse">전세</option></select>
+          </label>
+          <label>희망 지역
+            <select name="districts" multiple size="4" aria-describedby="districtHint"><option value="종로구" selected>종로구</option><option value="중구">중구</option><option value="용산구">용산구</option><option value="성동구">성동구</option><option value="광진구">광진구</option><option value="동대문구">동대문구</option><option value="중랑구">중랑구</option><option value="성북구">성북구</option><option value="강북구">강북구</option><option value="도봉구">도봉구</option><option value="노원구">노원구</option><option value="은평구">은평구</option><option value="서대문구">서대문구</option><option value="마포구">마포구</option><option value="양천구">양천구</option><option value="강서구">강서구</option><option value="구로구">구로구</option><option value="금천구">금천구</option><option value="영등포구">영등포구</option><option value="동작구">동작구</option><option value="관악구">관악구</option><option value="서초구">서초구</option><option value="강남구">강남구</option><option value="송파구">송파구</option><option value="강동구">강동구</option></select>
+            <small id="districtHint" class="hint">여러 곳은 Ctrl 키를 누르고 선택하세요. 모두 해제하면 서울 전체를 검색합니다.</small>
+          </label>
+        </div>
+        <div class="field-grid two">
+          <label>보증금 상한 (원)
+            <input name="max_deposit_krw" type="number" min="0" step="1" value="300000000" required>
+          </label>
+          <label>월세 상한 (원)
+            <input name="max_monthly_rent_krw" type="number" min="0" step="1" value="1000000" required>
+          </label>
+        </div>
+        <div class="field-grid two">
+          <label>최소 면적 (㎡, 선택)
+            <input name="area_min_sqm" type="number" min="0.01" step="any" placeholder="비워 두기">
+          </label>
+          <label>최대 면적 (㎡, 선택)
+            <input name="area_max_sqm" type="number" min="0.01" step="any" placeholder="비워 두기">
+          </label>
+        </div>
+        <fieldset class="condition-fieldset">
+          <legend>가까이 있으면 좋은 곳</legend>
+          <div class="condition-grid">
+            <label><input type="checkbox" name="condition" value="workplace"> 직장</label>
+            <select class="condition-priority" data-kind="workplace" aria-label="직장 조건 우선순위"><option value="false">선호</option><option value="true">필수</option></select>
+            <input class="condition-distance" data-kind="workplace" type="number" min="0.01" step="any" value="1000" aria-label="직장 희망 거리 (m)">
+            <label><input type="checkbox" name="condition" value="station"> 지하철역</label>
+            <select class="condition-priority" data-kind="station" aria-label="지하철역 조건 우선순위"><option value="false">선호</option><option value="true">필수</option></select>
+            <input class="condition-distance" data-kind="station" type="number" min="0.01" step="any" value="1000" aria-label="지하철역 희망 거리 (m)">
+            <label><input type="checkbox" name="condition" value="supermarket"> 마트</label>
+            <select class="condition-priority" data-kind="supermarket" aria-label="마트 조건 우선순위"><option value="false">선호</option><option value="true">필수</option></select>
+            <input class="condition-distance" data-kind="supermarket" type="number" min="0.01" step="any" value="1000" aria-label="마트 희망 거리 (m)">
+            <label><input type="checkbox" name="condition" value="park"> 공원</label>
+            <select class="condition-priority" data-kind="park" aria-label="공원 조건 우선순위"><option value="false">선호</option><option value="true">필수</option></select>
+            <input class="condition-distance" data-kind="park" type="number" min="0.01" step="any" value="1000" aria-label="공원 희망 거리 (m)">
+            <label><input type="checkbox" name="condition" value="hospital"> 병원</label>
+            <select class="condition-priority" data-kind="hospital" aria-label="병원 조건 우선순위"><option value="false">선호</option><option value="true">필수</option></select>
+            <input class="condition-distance" data-kind="hospital" type="number" min="0.01" step="any" value="1000" aria-label="병원 희망 거리 (m)">
+          </div>
+        </fieldset>
+        <details class="workplace-fields">
+          <summary>직장 거리 조건에 사용할 확인 좌표 (선택)</summary>
+          <div class="field-grid two workplace-grid">
+            <label>위도<input name="workplace_latitude" type="number" min="-90" max="90" step="any" placeholder="37.5665"></label>
+            <label>경도<input name="workplace_longitude" type="number" min="-180" max="180" step="any" placeholder="126.9780"></label>
+          </div>
+          <label class="confirm-coordinate"><input type="checkbox" name="workplace_verified"> 좌표와 출처를 직접 확인했습니다.</label>
+          <p class="hint">확인되지 않은 회사명은 좌표로 바꾸지 않습니다. 좌표는 로컬 검색에만 사용합니다.</p>
+        </details>
+        <button class="primary-button" type="submit">조건 확인 · DB에서 후보 찾기 <span aria-hidden="true">→</span></button>
+        <p id="searchMessage" class="inline-message" role="status"></p>
+      </form>
+    </section>
+
+    <section id="results" class="results-section hidden" aria-labelledby="resultsTitle">
+      <div class="section-heading results-heading">
+        <div><p class="eyebrow">STEP 3 · DB 기반 결과</p><h2 id="resultsTitle">조건에 맞는 후보</h2></div>
+        <span id="resultCount" class="count-pill">0곳</span>
+      </div>
+      <div class="page-tabs" role="tablist" aria-label="추천 결과 보기">
+        <button class="page-tab active" id="needsTab" role="tab" aria-selected="true" aria-controls="needsPage">내 조건 비교</button>
+        <button class="page-tab" id="detailsTab" role="tab" aria-selected="false" aria-controls="detailsPage">전체 정보와 지도</button>
+      </div>
+      <section id="needsPage" class="result-page" role="tabpanel" aria-labelledby="needsTab">
+        <div id="dataState" class="state-card hidden"></div>
+        <div id="conditionSummary" class="condition-summary hidden"></div>
+        <div id="candidateList" class="candidate-list"></div>
+      </section>
+      <section id="detailsPage" class="result-page hidden" role="tabpanel" aria-labelledby="detailsTab">
+        <section id="mapPanel" class="map-panel">
+          <h3>검수된 단지 위치</h3>
+          <p id="mapStatus" role="status">후보를 선택하면 확인된 좌표를 표시합니다.</p>
+          <button id="viewMap" class="detail-button" type="button" disabled>서비스 안에서 지도 보기</button>
+          <p class="hint">지도 보기에서만 OpenStreetMap에 배경 타일을 요청합니다. 직장 좌표는 전송하지 않습니다.</p>
+          <div id="rentalMap" class="rental-map hidden" aria-label="후보 단지 지도"></div>
+        </section>
+        <div id="detailEmpty" class="state-card">후보를 선택하면 DB에 저장된 거래·출처·기준일과 위치 정보를 확인할 수 있습니다.</div>
+        <article id="candidateDetail" class="detail-card hidden"></article>
+      </section>
+    </section>
+    <footer><span>집담 · 서울 아파트 전월세</span><span>과거 거래는 현재 매물을 보장하지 않습니다.</span></footer>
+  </main>
+</body>
+</html>

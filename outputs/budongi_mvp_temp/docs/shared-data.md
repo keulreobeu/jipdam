@@ -28,6 +28,15 @@ python join_shared_parts.py molit-seoul-three-api-20261012-portable-v2.zip.parts
 
 ## 다른 PC에서 실행
 
+필요한 데이터만 Drive에서 다시 받으려면 저장소 루트에서 아래 명령을 사용한다. `--output`은 아직 없는 폴더로 지정한다. 이 명령은 ZIP을 내려받고 파일별 크기/SHA-256을 검증한다. MOLIT은 세 조각도 검증한 다음 전체 ZIP을 재조립한다.
+
+```powershell
+python scripts/download_shared_data.py statistics --output D:/jipdam-downloads/statistics
+python scripts/download_shared_data.py molit --output D:/jipdam-downloads/molit
+```
+
+필요한 묶음 하나만 실행한다. 인터넷 연결과 Drive 파일 다운로드 권한이 필요하다. 내려받은 결과의 ZIP을 새 폴더에 풀고 아래 재구성 명령을 실행한다. 재구성에는 12GB 이상의 여유 공간이 필요하며 압축 해제·DB 출력 경로는 공간이 충분한 드라이브를 선택한다. 다운로드 폴더와 이전 출력은 덮어쓰지 않는다.
+
 Python3.11 이상과 12GB 이상 여유 공간을 준비한다. ZIP 전체 SHA를 위 기록과 대조한 뒤 새 폴더에 풀고 독립 Python 프로세스로 실행한다.
 
 ```sh

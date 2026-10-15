@@ -10,8 +10,8 @@
 
 - **TARGET**: 신혼·첫집·사회초년생의 예산·직장 위치·생활시설 조건에 맞는 서울 아파트 전월세 단지 후보를 추천·비교하는 로컬 웹 데모다. 공식 계약은 [RENT-001](10_rental_recommendation_spec.md), API 키 보관함은 [CRED-001](11_api_credential_vault_spec.md), 제품 실행 순서는 [PLAN-RENT-001](../plans/rental-recommendation-mvp.md), 결정 이유는 [ADR-003](../adr/ADR-003-rental-recommendation-first.md)·[ADR-004](../adr/ADR-004-local-api-credential-vault.md)다. 기존 [LLM 실행 계획](../budongi_advanced_llm_evaluation_plan.md)은 선택형 연구로 보존한다.
 - **CURRENT**: Python/SQLite 기반 2023년 이하 스냅샷 적재 계약, 세 Data Tool, 단일 로컬 모델 Tool Calling 경로, 합성 데이터 테스트와 1차 결정적 평가기가 있다. 실제 검수된 역사 스냅샷과 약 200건 Golden은 없다.
-- **CURRENT**: 봉인된 합성 rental_v1 스냅샷의 결정적 추천·recommend CLI·rental-demo가 구현됐다. 실제 데이터 정규화·수집·매칭과 추천 HTTP·웹은 아직 없다.
-- **CURRENT**: CRED-001의 Windows loopback API 키 설정 화면·암호화 저장·폴더/별칭 관리가 구현됐다. 2026-10-07 현재 Windows 사용자 세션에서 합성 키의 Windows Credential Manager 저장·읽기·삭제 왕복을 검증했다. 비대화형 hosted CI 세션은 Credential Manager 세션 부재(오류 1312)로 해당 통합 테스트를 건너뛸 수 있다. 공급자 API 호출은 연결되지 않았다.
+- **CURRENT**: 봉인된 합성 rental_v1 스냅샷의 결정적 추천·recommend CLI·rental-demo가 구현됐다. 실제 MOLIT 원본과 canonical 관측, RENT-001 serving v2·채팅/추천 HTTP·니즈·상세·내장 지도도 구현됐다. 확정 전월세 연결 0건과 실제 좌표/시설·실모델 준비는 별도다.
+- **CURRENT**: CRED-001의 Windows loopback API 키 설정 화면·암호화 저장·폴더/별칭 관리가 구현됐다. 2026-10-07 현재 Windows 사용자 세션에서 합성 키의 Windows Credential Manager 저장·읽기·삭제 왕복을 검증했다. 비대화형 hosted CI 세션은 Credential Manager 세션 부재(오류 1312)로 해당 통합 테스트를 건너뛸 수 있다. 2026-10-14 [GMS-001](17_gms_connection_spec.md)의 연결 시험에 이어 [GMS-BUDGET-001](18_gms_budget_spec.md)의 실제 잔액/만료 조회·보존/토큰/비용 한도·유료 입력 카운트/최대 예약/usage 대사·제한된 코드 작업 runner를 구현했다. 실제 GMS 키 정보·입력 count·코드 초안 생성과 로컬 검토/반영을 확인했다. 상세 수치/실행 근거는 [Task](../tasks/gms-budget-work.md)를 따른다. 저장/교체 자체는 외부 호출이 없다. 채팅 모델 자체나 추천의 로컬 LLM 경계를 전환한 것은 아니다.
 - **CURRENT**: `outputs/budongi_mvp_temp`는 임시 작업 폴더다. 이전 Gemma 4 저장소는 출처를 밝힌 참고 자료이며 현재 구현으로 취급하지 않는다.
 - **CURRENT**: 팀 공유는 워크스페이스 루트의 Git 저장소·README·설치 스크립트로 관리하며, 제품의 기존 상대 경로를 유지한다. gstack은 원본 commit을 고정해 로컬 runtime에 설치하고 Codex용 스킬만 등록한다. 계약은 [Team Environment Spec](../../../../docs/team_environment_spec.md)에 있다.
 - **TARGET**: 최신 임대차 데이터 계약 → 결정적 추천·CLI → Windows Credential Manager로 암호화 키를 보호하는 로컬 API 키 보관함 → Python 단일 앱의 웹 입력·비교 → 선택형 로컬 4B 설명·제품 평가를 진행한다. 여러 공급자 키와 키별 별칭·분류 폴더를 관리하고 폴더 삭제 시 그 키들을 연쇄 삭제한다. 예산은 보증금·월세 각각, 직장·역·마트·공원·병원은 직선거리와 필수/선호로 처리한다. 현재 매물·총주거비·통근시간·전세안전 판정은 제외한다. 2023 Golden 완료는 선행 조건이 아니며 RAG·Hybrid·Router·LoRA 연구는 후순위다.
@@ -50,8 +50,8 @@
 - [RAG](05_rag_spec.md): 후속 의미 검색 범위
 - [Agent Tools](06_agent_tools_spec.md): 현재 허용 도구와 호출 계약
 - [평가](08_evaluation_spec.md): 테스트와 실측 판정
-- [Runtime and Container](09_runtime_spec.md): 현재 CLI 컨테이너와 전월세 로컬 웹 TARGET
-- [전월세 추천](10_rental_recommendation_spec.md): 승인된 RENT-001 계약, 합성 추천·CLI 구현; 실제 추천·웹 비교는 후속
+- [Runtime and Container](09_runtime_spec.md): CLI 컨테이너와 별도 전월세 loopback 웹 실행 계약
+- [전월세 추천](10_rental_recommendation_spec.md): 승인된 RENT-001 계약, 합성 CLI·canonical serving·채팅·웹 비교·내장 지도 구현; 실제 검수 자료와 실모델 검증은 준비 조건
 - [API 키 보관함](11_api_credential_vault_spec.md): 승인된 CRED-001 계약, 설정 화면·저장소 구현 및 검증 상태
 - [전환 Plan](../plans/rental-recommendation-mvp.md) / [현재 Task](../tasks/current.md): 적용 순서와 실제 완료 경계
 

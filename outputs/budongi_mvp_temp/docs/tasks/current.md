@@ -1,6 +1,19 @@
 # Current Tasks — 전월세 제품 전환과 보존된 평가 기록
 
+2026-10-14 [TASK-RENT-CONTINUE-001](continuation-parts-1to5.md): 1~5번을 목적별로 실행. 기본 canonical v3 복구·실제 prepare, 검수/모델 준비 검사, 실제 Drive 다운로드·해시와 문서/Git 정리. [Plan](../plans/continuation-parts-1to5.md), [후속 검증](../continuation-validation-20261014.md). 사용자 검수 패키지·로컬 모델은 미준비.
+
+2026-10-14 [TASK-GMS-MODELS-001](gms-model-routing.md): simple→gpt-6-luna, complex→gpt-6.1-sol, 공식 GMS 요율·같은 모델 사전 카운트/최대 예약·공통 원장. 실제 두 모델 실행과 정수 크레딧 계정 표시를 반영한 예약 보완. 최신 상태는 해당 Task/후속 검증을 따른다.
+
+
+2026-10-14 [TASK-GMS-BUDGET-001](gms-budget-work.md): verified, 공식 잔액·5,000 보존·전체/호출 토큰/비용·유료 카운트 조회 비용 예약/대사·최대 생성 예약/usage 정산·GMS 코드 runner와 공통 지침. [Plan](../plans/gms-budget-work.md). 실제 GMS 코드 초안 1회 생성·검토/반영, 최종 잔여 29,845·이번 작업 차감 155, 제품194/팀SDD22·CLI/웹 검증 통과. 초기 전체 한도500 기록이며 현재는 reserve_only·5,000 보존만 적용한다. 만료 2026-10-16 18:00 KST.
+
+2026-10-14 [TASK-GMS-001](gms-connection.md): verified, 암호화 보관함의 키 등록/교체와 별도 GMS 연결 확인·3만 크레딧 사용량/시간 계산. 합성 GMS 12개·전체 제품 166개·팀/SDD 22개·CLI 및 브라우저 계산 흐름 검증 통과. 실제 GMS 성공은 사용자 키 시험이 필요하다.
+
+2026-10-13 [TASK-TEAM-DATA-001](team-data-contract.md): 3인 수집 전 공통 제출 스키마·기존 DB 호환을 확정하고 실제 매칭/좌표/도메인 매핑은 수집 후 검수로 분리. [팀 수집 가이드](../team-data-contract.md).
+
 2026-10-13 [TASK-PORTABLE-001](data-portability.md): 기존 MOLIT/통계 원본의 Drive 보관·새 환경 DB 재구성·새 브랜치 코드 제출. 상세 상태는 [공유 검증](../shared-data-validation-20261013.md)을 따른다.
+
+2026-10-14 [TASK-PORTABLE-DOWNLOAD-001](data-portability-download.md): Drive에 보관된 통계/MOLIT 패키지를 필요할 때 내려받아 파일별 크기·해시 검증 후 복원할 CLI. 실제 통계/MOLIT 다운로드·조각/전체 해시·CRC·기존 출력 보호 통과, verified.
 
 ```toml
 kind = "task"
@@ -41,17 +54,20 @@ ID는 기존 작업을 계속 추적하기 위해 부여했다. 실제 Golden의
 | 3 | [TASK-RENT-REC-001 추천·CLI](rental-recommendation-cli.md) | verified, 합성 추천·CLI AC-01~06 검증; 실제 데이터·웹 별도 |
 | 4 | [TASK-CRED-001 암호화 API 키 보관함](api-credential-vault.md) | verified, 보관함·loopback 설정 화면 및 현재 Windows 사용자 세션의 합성 WinCred round-trip 검증; 실제 API 호출 제외 |
 | 5 | [TASK-RENT-WEB-001 웹 비교](rental-web-demo.md) | draft, 보관함 Task 뒤에 설정 화면과 추천 비교를 통합 |
+| MVP | [TASK-RENT-MVP-001 대화형 DB 추천](rental-mvp.md) | in_progress, 검수 serving v2·공통 판정·채팅/확인·니즈/100행 상세·Leaflet+OSM 구현·검증. 실제 확정 연결·실모델은 사용자 확인 준비 조건 ([최신 증거](../rental-mvp-validation-20261013.md#2026-10-14-구현-검증)) |
 | 6 | [TASK-RENT-LLM-001 설명·평가](rental-explanation-evaluation.md) | draft |
 | 별도 | [TASK-RENT-REAL-001 실데이터](rental-real-data.md) | blocked, 수집·매칭 보류 |
 | 첨부 점검 | [TASK-RENT-RESTORE-001 DB 복원](rental-upload-restore-20261012.md) | verified, 첨부 합성 DB 복원·조회·수집 범위 점검; 실제 수집 자료 없음 |
 | 수집 기록 | [TASK-COLLECT-001](../../../../docs/tasks/data-collection-record.md) | verified, GitHub 수집 예약·필수 요약·Drive 업로드 전 기록; 첨부 합성 배치 #3 게시 |
 | 원시 수집·오프라인 DB | [TASK-MOLIT-001](molit-collection.md) | verified, 세 API 서울975 query/384,211 원본행·374,892 적재·원본 조인·재생성·ZIP 복원 및 GitHub #5 최종 기록 게시 검증; Drive 업로드는 별도 |
 
+2026-10-15 통계 거래량 기간 정합 확장: [TASK-MOLIT-HISTORY-001](molit-statistics-history.md)에서 서울25구 202401~202608 수집을 추적한다. #5의 202510~202608 query를 재사용하고 202401~202509 누락만 #7로 예약했다. 전체 목표2400 query, 신규 최대1575 query. 실제 수집/검증 진행 중.
+
 2026-10-13 Goal 재개: 기존 ZIP을 새 경로에 복원해975query·원본/DB 해시·건수·무결성을 재확인했다. [재개 증거](../molit-resume-validation-20261013.md)와 사용자가 승인한 [통합 후속 계획](../plans/canonical-db-continuation-20261013.md)을 따른다. 새 수집·좌표·시설·추천·Drive 업로드는 포함하지 않는다.
 
 후속 통합 [TASK-CANONICAL-001](canonical-integration.md)은 verified다. 실제 전체 관측·원본 조인·재실행·확대 증분·v3 사본의 전체 값 보존, 등록 파일 형식·CLI 계약, 최종 환경/SDD를 검증했다. [CANONICAL-001](../specs/13_canonical_integration_spec.md)·ADR-006과 [완료 감사](../canonical-validation-20261013.md#goal-completion-audit)를 따른다. 추천·좌표·시설·Golden·Drive 업로드의 별도 상태는 유지한다.
 
-합성 추천·CLI의 AC-01~06은 추천 Task 검증을 따르며 실제 추천 데이터·웹·모델 평가는 미완료다. CRED-001의 미완료 OS 저장소 검증은 해당 Task를 따른다. 문서 완료·합성 성공을 실제 추천 품질로 승격하지 않는다.
+합성 추천·CLI의 AC-01~06은 추천 Task 검증을 따른다. TASK-RENT-MVP-001에서 canonical serving/API·채팅 확인 폼·니즈/전체 상세·내장 지도와 합성 성공/타일 장애/모바일 브라우저 경로를 검증했다. 실제 확정 단지 연결이 0건이므로 실제 추천·좌표·시설의 성공 경로와 실모델 검증은 준비 조건이다. GMS 코드 초안 활용 및 최신 앱 199개/팀 22개 검사 결과는 [최종 기록](../rental-mvp-validation-20261013.md#2026-10-14-최종-재검증)을 따른다. CRED-001의 OS 저장소 검증은 해당 Task의 실제 기록을 따른다. 문서 완료·합성 성공을 실제 추천 품질로 승격하지 않는다.
 
 보관함 구현의 후속 검증·수정은 [TASK-CRED-QA-001](credential-vault-qa.md)에서 추적한다. 키 비노출·요청 처리·삭제 재확인·수정 창 취소의 회귀 검증이며 실제 API 호출은 포함하지 않는다.
 

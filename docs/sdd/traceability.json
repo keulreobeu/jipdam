@@ -498,6 +498,210 @@
               ]
             }
           ]
+        },
+        {
+          "id": "RENT-001-REQ-09",
+          "acs": [
+            {
+              "id": "RENT-001-AC-12",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_loopback_api_status_chat_and_csrf"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_model_draft_is_allowlisted_and_rejects_invalid_values"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_local_model_structured_reply_returns_a_confirmable_draft"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_chat_confirmation_removal_manual_draft_failure_reset_and_expiry"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_malformed_model_json_and_remote_redirect_never_become_conditions"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "manual: 대화 endpoint/UI에서 누락 질문·사용자 확인·모델 장애 fallback 검증",
+                  "evidence": "outputs/budongi_mvp_temp/docs/rental-mvp-validation-20261013.md#동작-검증"
+                },
+                {
+                  "command": "manual: 승인 T1~T6의 2026-10-14 계약/브라우저/회귀/5warmup100회 계측과 남은 실제 준비 게이트 대조",
+                  "evidence": "outputs/budongi_mvp_temp/docs/rental-mvp-validation-20261013.md#2026-10-14-구현-검증"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "RENT-001-REQ-10",
+          "acs": [
+            {
+              "id": "RENT-001-AC-13",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_unlinked_observations_are_not_recommended_and_database_is_read_only"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_only_confirmed_official_links_use_latest_contract_and_keep_provenance"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_raw_complex_id_and_verified_boolean_do_not_grant_eligibility"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_pending_rejected_links_and_synthetic_opt_in"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_package_missing_lineage_review_and_invalid_coordinate_are_rejected"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_source_versions_and_sealed_report_mismatch_are_rejected"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_catalog_version_errors_and_detail_empty_page_is_not_unknown_id"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_same_input_output_and_invalid_package_leave_original_and_serving_unchanged"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_new_review_dataset_cutoff_preserves_original_transaction_snapshot"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_review.py",
+                  "class": "LoadReviewPackageSnapshotDateTests",
+                  "method": "test_cutoff_uses_seoul_approval_calendar_day"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_review.py",
+                  "class": "LoadReviewPackageSnapshotDateTests",
+                  "method": "test_invalid_noncanonical_and_nonstring_cutoffs_are_rejected"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_review.py",
+                  "class": "LoadReviewPackageSnapshotDateTests",
+                  "method": "test_timezone_naive_approval_is_rejected"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_review.py",
+                  "class": "LoadReviewPackageSnapshotDateTests",
+                  "method": "test_snapshot_date_can_be_omitted"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_review.py",
+                  "class": "LoadReviewPackageSnapshotDateTests",
+                  "method": "test_synthetic_package_requires_explicit_opt_in"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_readiness.py",
+                  "class": "RentalReadinessTests",
+                  "method": "test_corrupt_serving_metadata_is_a_blocked_gate_not_a_traceback"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "manual: 실제 canonical DB의 read-only 조회·확정 매칭 적격성·provenance/확장 상세 검증",
+                  "evidence": "outputs/budongi_mvp_temp/docs/rental-mvp-validation-20261013.md#실제-db-준비-상태"
+                },
+                {
+                  "command": "manual: 승인 T1~T6의 2026-10-14 계약/브라우저/회귀/5warmup100회 계측과 남은 실제 준비 게이트 대조",
+                  "evidence": "outputs/budongi_mvp_temp/docs/rental-mvp-validation-20261013.md#2026-10-14-구현-검증"
+                }
+              ]
+            },
+            {
+              "id": "RENT-001-AC-14",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_only_explicitly_verified_wgs84_coordinates_reach_the_map"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_only_confirmed_official_links_use_latest_contract_and_keep_provenance"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_rtree_exact_radius_and_required_preferred_unknown_states"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_final_conditions_are_evaluated_before_limit_and_rank_is_deterministic"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_http_db_failure_invalid_input_host_origin_csrf_and_map_asset_policy"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_nearest_unmet_distance_and_stale_data_do_not_reuse_old_spatial_cache"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "manual: 니즈 페이지·전체 상세 페이지·좌표 있을 때 지도/없을 때 상태 검증",
+                  "evidence": "outputs/budongi_mvp_temp/docs/rental-mvp-validation-20261013.md#동작-검증"
+                },
+                {
+                  "command": "manual: 승인 T1~T6의 2026-10-14 계약/브라우저/회귀/5warmup100회 계측과 남은 실제 준비 게이트 대조",
+                  "evidence": "outputs/budongi_mvp_temp/docs/rental-mvp-validation-20261013.md#2026-10-14-구현-검증"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "RENT-001-REQ-11",
+          "acs": [
+            {
+              "id": "RENT-001-AC-15",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "manual: 실제 canonical DB에서 100회 계측, p50/p95·EXPLAIN QUERY PLAN 기록 및 500ms 목표 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/rental-mvp-validation-20261013.md#실제-db-읽기-지연-및-쿼리-계획"
+                },
+                {
+                  "command": "manual: 승인 T1~T6의 2026-10-14 계약/브라우저/회귀/5warmup100회 계측과 남은 실제 준비 게이트 대조",
+                  "evidence": "outputs/budongi_mvp_temp/docs/rental-mvp-validation-20261013.md#2026-10-14-구현-검증"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -1381,6 +1585,451 @@
               ]
             }
           ]
+        },
+        {
+          "id": "PORTABLE-001-REQ-05",
+          "acs": [
+            {
+              "id": "PORTABLE-001-AC-05",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "Drive에서 통계/MOLIT 패키지를 내려받아 파일별·전체 SHA-256 및 출력 보호 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/shared-data-download-validation-20261014.md"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "TEAM-DATA-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/16_team_collection_schema_spec.md",
+      "requirements": [
+        {
+          "id": "TEAM-DATA-001-REQ-01",
+          "acs": [
+            {
+              "id": "TEAM-DATA-001-AC-01",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "프로젝트 venv의 읽기 전용 SQLite probe: integrity/FK/건수/SCHEMA 대조",
+                  "evidence": "outputs/budongi_mvp_temp/docs/team-data-contract-validation-20261013.md#db-inspection"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TEAM-DATA-001-REQ-02",
+          "acs": [
+            {
+              "id": "TEAM-DATA-001-AC-02",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "가이드 §2와 기존 collection_integrate.py/source_files.py 수동 대조",
+                  "evidence": "outputs/budongi_mvp_temp/docs/team-data-contract-validation-20261013.md#contract-review"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TEAM-DATA-001-REQ-03",
+          "acs": [
+            {
+              "id": "TEAM-DATA-001-AC-03",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "가이드 §3/4와 기존 단위·시간·좌표 계약 수동 대조",
+                  "evidence": "outputs/budongi_mvp_temp/docs/team-data-contract-validation-20261013.md#contract-review"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TEAM-DATA-001-REQ-04",
+          "acs": [
+            {
+              "id": "TEAM-DATA-001-AC-04",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "가이드 §6/7과 현행 입력/상태/대사 계약 수동 대조",
+                  "evidence": "outputs/budongi_mvp_temp/docs/team-data-contract-validation-20261013.md#contract-review"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TEAM-DATA-001-REQ-05",
+          "acs": [
+            {
+              "id": "TEAM-DATA-001-AC-05",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "첨부 분담안과 가이드 §5/8 담당·후속 결정표 수동 대조",
+                  "evidence": "outputs/budongi_mvp_temp/docs/team-data-contract-validation-20261013.md#contract-review"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TEAM-DATA-001-REQ-06",
+          "acs": [
+            {
+              "id": "TEAM-DATA-001-AC-06",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "python -X utf8 scripts/check_sdd.py (이번 scope 연결 및 전체 검사 결과 기록)",
+                  "evidence": "outputs/budongi_mvp_temp/docs/team-data-contract-validation-20261013.md#sdd-validation"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GMS-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/17_gms_connection_spec.md",
+      "requirements": [
+        {
+          "id": "GMS-001-REQ-01",
+          "acs": [
+            {
+              "id": "GMS-001-AC-01",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSConnectionTests",
+                  "method": "test_fixed_request_and_key_rotation"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSConnectionTests",
+                  "method": "test_confirmation_and_secure_storage_failure_prevent_call"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSConnectionTests",
+                  "method": "test_concurrent_probe_is_busy_and_releases_lock"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSHTTPTests",
+                  "method": "test_http_mutations_estimate_and_guards_do_not_call_gms"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSHTTPTests",
+                  "method": "test_http_probe_is_bounded_even_with_extra_fields"
+                }
+              ]
+            },
+            {
+              "id": "GMS-001-AC-02",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSConnectionTests",
+                  "method": "test_http_errors_are_classified_without_echo_or_retry"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSConnectionTests",
+                  "method": "test_transport_errors_and_invalid_key_are_safe"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSConnectionTests",
+                  "method": "test_incomplete_and_malformed_responses_do_not_claim_success"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSConnectionTests",
+                  "method": "test_generated_text_never_reaches_browser"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSHTTPTests",
+                  "method": "test_page_exposes_explicit_cost_and_offline_estimator"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GMS-001-REQ-02",
+          "acs": [
+            {
+              "id": "GMS-001-AC-03",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSCostTests",
+                  "method": "test_estimates_use_floor_and_declared_frequency"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSCostTests",
+                  "method": "test_invalid_estimates_and_zero_budget_do_not_succeed"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms.py",
+                  "class": "GMSHTTPTests",
+                  "method": "test_http_mutations_estimate_and_guards_do_not_call_gms"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GMS-BUDGET-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/18_gms_budget_spec.md",
+      "requirements": [
+        {
+          "id": "GMS-BUDGET-001-REQ-01",
+          "acs": [
+            {
+              "id": "GMS-BUDGET-001-AC-01",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBalanceTests",
+                  "method": "test_official_balance_fields_and_kst_format"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBalanceTests",
+                  "method": "test_bad_balance_and_count_schemas_fail_closed"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBalanceTests",
+                  "method": "test_transport_error_does_not_echo_or_retry"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBalanceTests",
+                  "method": "test_contradictory_suffix_offsets"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBalanceTests",
+                  "method": "test_consistent_suffix_offset"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GMS-BUDGET-001-REQ-02",
+          "acs": [
+            {
+              "id": "GMS-BUDGET-001-AC-02",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_policy_quote_and_actual_usage_settlement"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_reserve_cost_and_token_caps_block_generation"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_expiry_count_failure_and_changed_balance_block"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_quotes_invalidated_by_key_policy_expiry_and_confirmation"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_uncertain_reservation_survives_restart"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_provider_limit_violation_disables_future_work"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_account_charge_over_reservation_is_not_hidden_by_small_usage"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_parallel_execution_and_ledger_change_do_not_duplicate"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_default_policy_and_invalid_settings_are_closed"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_count_fee_is_reserved_included_and_not_repeated_at_execution"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_counter_fee_limit_violation_and_counter_budget_stop_before_generation"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_usage_known_but_balance_unavailable_keeps_maximum_credit_hold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GMS-BUDGET-001-REQ-03",
+          "acs": [
+            {
+              "id": "GMS-BUDGET-001-AC-03",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSWorkTests",
+                  "method": "test_scoped_code_context_and_unsafe_paths"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSWorkTests",
+                  "method": "test_cli_quote_default_and_explicit_execution"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSWorkTests",
+                  "method": "test_secret_context_and_non_code_input_rejected"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_no_prompt_or_secret_in_ledger_and_secret_context_blocked"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_connection_probe_uses_same_budget_and_policy_cap"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetHTTPTests",
+                  "method": "test_balance_policy_quote_execute_http_and_cli"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetHTTPTests",
+                  "method": "test_guarded_routes_and_unconfigured_execution_are_closed"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetHTTPTests",
+                  "method": "test_large_quote_body_accepted_within_gms_limit_and_secret_blocked"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GMS-BUDGET-001-REQ-04",
+          "acs": [
+            {
+              "id": "GMS-BUDGET-001-AC-04",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_model_rates_and_round_up"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_reservation_covers_provider_whole_credit_rounding"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_luna_count_generation_and_ledger_share_model"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_model_conflicts_and_invalid_difficulty_never_count"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_per_work_output_limit_cannot_increase_policy"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_shared_budget_and_restart_keep_both_models"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_provider_whole_credit_rounding_fits_reservation"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "GMS simple LUNA/complex SOL actual gms-work execution and local UI selection",
+                  "evidence": "outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GMS-BUDGET-001-REQ-05",
+          "acs": [
+            {
+              "id": "GMS-BUDGET-001-AC-05",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_reserve_only_ignores_cumulative_limits_and_preserves_ledger"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_reserve_only_still_blocks_below_floor_and_floor_cannot_be_lowered"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "Current selected policy reserve_only save/reload, retained ledger and UI mode",
+                  "evidence": "outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md"
+                }
+              ]
+            }
+          ]
         }
       ]
     }
@@ -1408,6 +2057,13 @@
     "outputs/budongi_mvp_temp/docs/tasks/molit-collection.md",
     "outputs/budongi_mvp_temp/docs/tasks/canonical-integration.md",
     "outputs/budongi_mvp_temp/docs/tasks/statistics-import.md",
-    "outputs/budongi_mvp_temp/docs/tasks/data-portability.md"
+    "outputs/budongi_mvp_temp/docs/tasks/data-portability.md",
+    "outputs/budongi_mvp_temp/docs/tasks/rental-mvp.md",
+    "outputs/budongi_mvp_temp/docs/tasks/team-data-contract.md",
+    "outputs/budongi_mvp_temp/docs/tasks/gms-connection.md",
+    "outputs/budongi_mvp_temp/docs/tasks/gms-budget-work.md",
+    "outputs/budongi_mvp_temp/docs/tasks/data-portability-download.md",
+    "outputs/budongi_mvp_temp/docs/tasks/continuation-parts-1to5.md",
+    "outputs/budongi_mvp_temp/docs/tasks/gms-model-routing.md"
   ]
 }

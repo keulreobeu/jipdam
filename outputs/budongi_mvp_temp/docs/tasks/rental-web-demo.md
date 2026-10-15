@@ -3,7 +3,7 @@
 ```toml
 kind = "task"
 id = "TASK-RENT-WEB-001"
-status = "draft"
+status = "in_progress"
 owner = "keulreobeu"
 specs = ["outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md", "outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md"]
 scope = ["outputs/budongi_mvp_temp/src/budongi/", "outputs/budongi_mvp_temp/tests/", "outputs/budongi_mvp_temp/docs/specs/09_runtime_spec.md", "outputs/budongi_mvp_temp/docs/tasks/rental-web-demo.md", "outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md", "outputs/budongi_mvp_temp/README.md", "docs/sdd/traceability.json"]
@@ -35,4 +35,4 @@ Python 단일 앱의 loopback HTTP 진입점과 정적 HTML/JS를 구현한다. 
 
 ## 검증·결과
 
-제품 검증은 **not_run**, 구현 미착수다. [검증 시나리오](../plans/rental-recommendation-mvp.md#product-verification-pending)를 따르고 작성·실행한 실제 unittest 메서드만 추적 원장에 연결한다. README에 계획 명령을 실행 가능한 명령으로 표시하지 않는다.
+2026-10-14 현재 웹 기능은 [TASK-RENT-MVP-001](rental-mvp.md)에서 구현됐다. 공통 추천 API, 조건 확인, 니즈/전체 상세, 지도·모바일·타일 실패 흐름의 [검증 기록](../rental-mvp-validation-20261013.md#2026-10-14-최종-재검증)을 따른다. 위 초기 범위의 지도·대화 제외는 2026-10-13/14 승인으로 대체됐다. 이 Task는 기존 AC 연결을 보존하며 실제 자료·모델 게이트를 MVP Task로 추적한다. 과거 not_run은 초기 계획 기록이다.
