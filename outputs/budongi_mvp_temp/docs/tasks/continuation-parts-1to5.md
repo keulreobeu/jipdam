@@ -22,6 +22,12 @@ evidence = "outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md"
 acs = ["RENT-001-AC-15"]
 
 [[verification]]
+command = "manual loopback UI check against an existing synthetic serving and the default actual serving database; synthetic results/zero-match/detail and actual data_not_ready"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md#actual-and-synthetic-browser-gates"
+acs = ["RENT-001-AC-08"]
+
+[[verification]]
 command = "python -X utf8 scripts/check_sdd.py; python -X utf8 scripts/verify_environment.py"
 result = "passed"
 evidence = "outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md"

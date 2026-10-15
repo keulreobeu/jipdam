@@ -20,6 +20,12 @@ command = "python -X utf8 -m unittest discover -s tests -p test_canonical_rental
 result = "passed"
 evidence = "outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md#canonical-cli-http-parity"
 acs = ["RENT-001-AC-08"]
+
+[[verification]]
+command = "manual loopback UI: synthetic successful comparison/detail/zero-match and actual no-confirmed-link data_not_ready"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md#actual-and-synthetic-browser-gates"
+acs = ["RENT-001-AC-08"]
 ```
 
 ## 목표·범위
