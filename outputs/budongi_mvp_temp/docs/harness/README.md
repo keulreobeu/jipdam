@@ -1,5 +1,7 @@
 # 집담 개발 하네스
 
+팀원 공유용 현재 상태와 Codex/Claude/Antigravity 지원 경계는 [개발 하네스·CLI 팀 공유 요약](TEAM_GUIDE.md)을 참고한다.
+
 2026-10-15 자동 CLI 실행·App 관리 하네스는 [CLI 운영](CLI_OPERATIONS.md),
 [구조](CLI_ARCHITECTURE.md), [구현·검증](CLI_IMPLEMENTATION_REPORT.md)을 따른다.
 이 페이지 아래 내용은 보존된 HARNESS-001 수동/native 역할 인계와 Mock Gateway 계약이다.

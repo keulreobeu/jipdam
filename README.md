@@ -178,6 +178,8 @@ GitHub CI는 Ubuntu/Windows × Python 3.11/3.12의 모델 없는 검증을 실�
 
 ### CLI-First 개발 하네스
 
+현재 구현과 Codex CLI·Claude Code CLI·Antigravity별 지원 상태는 [팀 공유 하네스 요약](outputs/budongi_mvp_temp/docs/harness/TEAM_GUIDE.md)에서 확인한다.
+
 저장소 루트에서 `python -m harness status`, `python -m harness providers`로 자동 작업을 관리합니다.
 [작업 등록·worker·복구·검토·승인 명령](outputs/budongi_mvp_temp/docs/harness/CLI_OPERATIONS.md)과
 [구현·검증 결과](outputs/budongi_mvp_temp/docs/harness/CLI_IMPLEMENTATION_REPORT.md)를 참고하세요.
