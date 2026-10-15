@@ -74,6 +74,10 @@ def _parser() -> argparse.ArgumentParser:
     demo.add_argument("--directory", type=Path, default=Path("data/rental/synthetic-demo"))
     prepare_rentals = sub.add_parser("prepare-rentals", help="Build an indexed rental serving DB from the read-only canonical DB")
     from .canonical_rental import DEFAULT_CANONICAL_DB, DEFAULT_RENTAL_SERVING_DB
+    canonical_recommend = sub.add_parser("recommend-canonical", help="Recommend from the reviewed canonical rental serving DB")
+    canonical_recommend.add_argument("--database", type=Path, default=DEFAULT_RENTAL_SERVING_DB)
+    canonical_recommend.add_argument("--request", type=Path, required=True, help="UTF-8 JSON conditions file")
+    canonical_recommend.add_argument("--allow-synthetic", action="store_true", help="Explicitly allow a labelled synthetic serving DB")
     prepare_rentals.add_argument("--canonical-db", type=Path, default=DEFAULT_CANONICAL_DB)
     prepare_rentals.add_argument("--output-db", type=Path, default=DEFAULT_RENTAL_SERVING_DB)
     prepare_rentals.add_argument("--review-package", type=Path, help="Already approved offline review package directory")
@@ -119,6 +123,30 @@ def main() -> None:
     if args.command == "collection":
         from .collection_cli import run_collection
         run_collection(args)
+        return
+    if args.command == "recommend-canonical":
+        from .canonical_rental import open_rental_serving_reader, recommend_canonical_rentals
+        from .rental_recommendation import RentalDataUnavailable, RentalInputError
+        try:
+            request = json.loads(args.request.read_text(encoding="utf-8-sig"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            _print({"status": "input_error", "error": "추천 요청 JSON 파일을 읽을 수 없습니다."})
+            raise SystemExit(2) from None
+        try:
+            connection = open_rental_serving_reader(args.database, allow_synthetic=args.allow_synthetic)
+            try:
+                _print(recommend_canonical_rentals(connection, request))
+            finally:
+                connection.close()
+        except RentalInputError as exc:
+            _print({"status": "input_error", "error": str(exc)})
+            raise SystemExit(2) from None
+        except RentalDataUnavailable as exc:
+            _print({"status": "data_unavailable", "error": str(exc)})
+            raise SystemExit(3) from None
+        except (OSError, sqlite3.Error):
+            _print({"status": "internal_error", "error": "추천 데이터 처리에 실패했습니다."})
+            raise SystemExit(1) from None
         return
     if args.command in {"recommend", "rental-demo"}:
         from .rental_demo import create_rental_demo

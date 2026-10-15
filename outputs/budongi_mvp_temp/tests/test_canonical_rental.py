@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sqlite3
 from contextlib import closing, contextmanager
+import io
 import tempfile
 import json
 import threading
@@ -557,6 +558,76 @@ class CanonicalRentalServingTests(unittest.TestCase):
                 check('/static/vendor/leaflet/../../rental_server.py',404)
             finally:
                 server.shutdown();server.server_close();thread.join(timeout=3)
+
+    def test_canonical_cli_matches_http_recommendation_and_preserves_databases(self):
+        from budongi.cli import main as cli_main
+
+        with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[1]) as folder:
+            source = Path(folder) / "source.sqlite3"
+            target = Path(folder) / "serving.sqlite3"
+            request_file = Path(folder) / "request.json"
+            self._source(source, linked=True)
+            package = self._review(source, Path(folder))
+            prepare_canonical_rental_serving(source, target, review_package=package, allow_synthetic=True)
+            request_value = self._request(max_deposit_krw=400_000_000, max_monthly_rent_krw=900_000)
+            request_file.write_text(json.dumps(request_value), encoding="utf-8")
+            source_hash = file_sha256(source)
+            serving_hash = file_sha256(target)
+            server = create_rental_server(port=0, database=target, model=None, allow_synthetic=True)
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                body = json.dumps({"request": request_value}).encode("utf-8")
+                http_request = Request(server.origin + "/api/recommendations", data=body, headers={
+                    "Content-Type": "application/json", "Origin": server.origin,
+                    "X-Jipdam-CSRF": server.csrf_token,
+                })
+                with urlopen(http_request, timeout=3) as response:
+                    http_result = json.loads(response.read().decode("utf-8"))
+
+                output = io.StringIO()
+                with patch("sys.argv", ["budongi", "recommend-canonical", "--database", str(target),
+                                        "--request", str(request_file), "--allow-synthetic"]), \
+                     patch("sys.stdout", output):
+                    cli_main()
+                cli_result = json.loads(output.getvalue())
+
+                self.assertEqual(http_result["status"], "ok")
+                self.assertEqual(http_result["count"], 1)
+                self.assertEqual(cli_result, http_result)
+                self.assertEqual(file_sha256(source), source_hash)
+                self.assertEqual(file_sha256(target), serving_hash)
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join(timeout=3)
+
+    def test_canonical_cli_separates_invalid_request_from_missing_database(self):
+        from budongi.cli import main as cli_main
+
+        with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[1]) as folder:
+            root = Path(folder)
+            database = root / "missing-serving.sqlite3"
+            request_file = root / "request.json"
+
+            def run_cli():
+                output = io.StringIO()
+                with patch("sys.argv", ["budongi", "recommend-canonical", "--database", str(database),
+                                        "--request", str(request_file)]), patch("sys.stdout", output):
+                    try:
+                        cli_main()
+                    except SystemExit as exc:
+                        return exc.code, json.loads(output.getvalue())
+                self.fail("recommend-canonical should return a non-zero exit for this input")
+
+            request_file.write_text("{broken", encoding="utf-8")
+            exit_code, result = run_cli()
+            self.assertEqual((exit_code, result["status"]), (2, "input_error"))
+
+            request_file.write_text(json.dumps(self._request()), encoding="utf-8")
+            exit_code, result = run_cli()
+            self.assertEqual((exit_code, result["status"]), (3, "data_unavailable"))
+            self.assertFalse(database.exists())
 
 
 if __name__ == "__main__":

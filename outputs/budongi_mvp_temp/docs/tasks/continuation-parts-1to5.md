@@ -7,7 +7,7 @@ status = "in_progress"
 owner = "Codex"
 specs = ["outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md", "outputs/budongi_mvp_temp/docs/specs/15_data_portability_spec.md"]
 scope = [".gitignore", "outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md", "outputs/budongi_mvp_temp/src/budongi/canonical_rental.py", "outputs/budongi_mvp_temp/src/budongi/rental_readiness.py", "outputs/budongi_mvp_temp/src/budongi/cli.py", "outputs/budongi_mvp_temp/tests/test_rental_readiness.py", "outputs/budongi_mvp_temp/tests/test_canonical_rental.py", "scripts/download_shared_data.py", "tests/test_download_shared_data.py", "outputs/budongi_mvp_temp/docs/tasks/continuation-parts-1to5.md", "outputs/budongi_mvp_temp/docs/plans/continuation-parts-1to5.md", "outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md", "outputs/budongi_mvp_temp/docs/tasks/current.md", "outputs/budongi_mvp_temp/docs/tasks/rental-web-demo.md", "outputs/budongi_mvp_temp/docs/tasks/rental-data-contract.md", "outputs/budongi_mvp_temp/docs/tasks/rental-real-data.md", "outputs/budongi_mvp_temp/docs/tasks/data-portability-download.md", "outputs/budongi_mvp_temp/docs/shared-data-download-validation-20261014.md", "outputs/budongi_mvp_temp/docs/rental-review-package.md", "outputs/budongi_mvp_temp/docs/harness/CLI_OPERATIONS.md", "outputs/budongi_mvp_temp/README.md", "README.md", "docs/sdd/traceability.json"]
-acs = ["RENT-001-AC-12", "RENT-001-AC-13", "RENT-001-AC-15", "PORTABLE-001-AC-05"]
+acs = ["RENT-001-AC-08", "RENT-001-AC-12", "RENT-001-AC-13", "RENT-001-AC-15", "PORTABLE-001-AC-05"]
 
 [[verification]]
 command = "Actual default canonical-v3 prepare-rentals, read-only rental-readiness and statistics/MOLIT download/hash/CRC/existing-output audit"
@@ -43,6 +43,8 @@ acs = ["RENT-001-AC-12", "RENT-001-AC-13", "RENT-001-AC-15", "PORTABLE-001-AC-05
 ## 검증·남은 조건
 
 [후속 검증](../continuation-validation-20261014.md)에 실제 명령과 결과를 기록한다. 준비 기능의 완료를 TASK-RENT-MVP-001 실제 모델/추천 품질 AC 완료로 표시하지 않는다.
+
+2026-10-15 추가: RENT-001-AC-08의 canonical HTTP API와 CLI 실행 경로가 같은 추천 서비스/결과를 사용하도록 `recommend-canonical`을 추가했고, 두 경로의 JSON 결과 및 source/serving DB 불변성을 synthetic serving fixture로 대조했다. 신규 회귀 2개와 canonical rental 22개, legacy rental 15개가 통과했다. 실제 브라우저 시나리오, 승인 검수 패키지와 로컬 모델 검증은 이 결과에 포함되지 않는다.
 
 ## Verification
 

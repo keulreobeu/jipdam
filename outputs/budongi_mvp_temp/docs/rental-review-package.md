@@ -34,6 +34,7 @@ python -m budongi.cli rental-mvp --model qwen3.5:4b-q4_K_M --endpoint http://127
 python -m budongi.cli prepare-rentals --review-package APPROVED_PACKAGE
 python -m budongi.cli rental-readiness --review-package APPROVED_PACKAGE --model LOCAL_MODEL
 python -m budongi.cli rental-mvp --model LOCAL_MODEL --no-browser
+python -m budongi.cli recommend-canonical --request REQUEST_UTF8_JSON
 python scripts/benchmark_rentals.py --database data/rental/serving/canonical.sqlite3 --candidate ACTUAL_CANDIDATE_ID --output ../../.local_runtime/real-ready-benchmark.json
 ```
 

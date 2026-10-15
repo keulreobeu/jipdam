@@ -449,7 +449,18 @@
           "acs": [
             {
               "id": "RENT-001-AC-08",
-              "tests": [],
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_canonical_cli_matches_http_recommendation_and_preserves_databases"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_canonical_rental.py",
+                  "class": "CanonicalRentalServingTests",
+                  "method": "test_canonical_cli_separates_invalid_request_from_missing_database"
+                }
+              ],
               "manual": [
                 {
                   "command": "manual: PLAN-RENT-001 product-verification-pending의 RENT-001-AC-08 행에 있는 fixture·절차·예상 결과를 구현 후 실행 (현재 not_run)",

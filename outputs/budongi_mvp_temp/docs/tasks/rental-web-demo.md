@@ -14,6 +14,12 @@ command = "manual: PLAN-RENT-001의 관련 제품 AC 시나리오를 실행하�
 result = "not_run"
 evidence = "outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md#product-verification-pending"
 acs = ["RENT-001-AC-01", "RENT-001-AC-04", "RENT-001-AC-05", "RENT-001-AC-08"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s tests -p test_canonical_rental.py -k canonical_cli -v"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md#canonical-cli-http-parity"
+acs = ["RENT-001-AC-08"]
 ```
 
 ## 목표·범위

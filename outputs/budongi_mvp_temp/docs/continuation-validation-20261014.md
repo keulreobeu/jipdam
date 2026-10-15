@@ -1,5 +1,13 @@
 # 1~5번 후속 검증 — 2026-10-14
 
+## canonical-cli-http-parity
+
+2026-10-15 AC-08 재현·수정: 기존 `recommend` 명령은 sealed `rental_v1` snapshot을 사용하고 HTTP `POST /api/recommendations`는 canonical serving v2를 사용한다. canonical DB/API와 같은 계약을 받는 CLI 명령이 없어 `recommend-canonical`을 추가했다. 이 명령은 `DEFAULT_RENTAL_SERVING_DB` 또는 명시 경로를 SQLite read-only로 열고, 같은 `recommend_canonical_rentals` 함수에 UTF-8 JSON 요청을 전달한다. 합성 serving은 `--allow-synthetic`이 있어야 열리며 기존 `recommend` 명령은 변경하지 않았다.
+
+회귀 검증은 test_canonical_rental.py의 격리 source/review fixture로 serving을 만든 뒤 CLI와 loopback HTTP를 같은 요청으로 호출해 상태·후보 순서·조건·계보 JSON 전체가 같음을 확인했다. 준비한 source/serving 양쪽 SHA-256도 호출 전후 동일하다. 별도 테스트에서 malformed JSON은 `input_error`/exit 2, 없는 serving DB는 `data_unavailable`/exit 3이고 파일이 생성되지 않음을 확인했다. 명령: `python -X utf8 -m unittest discover -s tests -p test_canonical_rental.py -k canonical_cli -v`; 2 tests passed. 첫 sandbox 시험은 Windows loopback WinError 10013으로 실행 전 차단되어 동일한 synthetic-only 테스트를 승인된 로컬 소켓 실행에서 재검증했다.
+
+GMS SOL 코드 초안은 quote 통과(input 1,217, max output 1,800, 최대 예약 225 credits) 후 `uncertain`, usage/text 없음으로 끝났다. 최대 생성 예약 205 credits가 미확정 hold로 남고 두 사전 count는 각 20 credits settled다. 당시 공식 key-info 잔액 28,787 credits(2026-10-15 16:40 KST), `held_credits=585`, `active_calls=0`, 고정 보존 0이었다. 초안 텍스트를 회수하지 못해 반영하지 않았으며 재시도하지 않았다.
+
 ## 2026-10-15 후속 준비 재검증
 
 기존 승인 MOLIT 공유 패키지를 고정 ID 검증 CLI로 다시 받아 파일 크기/해시, ZIP SHA-256 `e9eeb0c1057e16f11066c42e704ffd38d88e93bc59dda797a3b250c7366cc013`, CRC를 확인했다. manifest 확인 후 네트워크 차단 재구성에서 관측·정규화·canonical 테이블 기대값이 일치했다. 새로운 출력 경로를 사용했으며 기본 경로 `prepare-rentals`는 exit 0, source v3/serving v2, 관측 238,620건이었다. canonical SHA-256 `04f7e4da5e52884878c957757699c4e1cd44213839a0df2fc9273e911e46b20f`는 prepare 전후 동일하다.
@@ -100,3 +108,11 @@ LUNA의 활성 오류·기록 라벨 초안과 SOL의 보류/최대예약 차감
 최종 문구 반영 후 집중 GMS 검사34개가 통과했다(4.718초). 첫 샌드박스 실행은 로컬 소켓 접근 WinError10013 3오류였고, 동일 코드를 로컬 네트워크가 허용된 환경에서 재실행했다. JS 문법도 통과했다. 서버 재시작 직후 샌드박스 연결은 timeout이었으나 동일 loopback 서버를 허용 환경에서 재시작해 HTTP200을 확인하고, 같은 인앱 브라우저의 새 탭에서 최종 안내·저장 정책을 확인했다. 기존 오류 탭을 통해 우회하지 않았다. 최종 화면의 reserve_only/5000·누적 비용/토큰/호출 비용 disabled·활성 정책·새 견적 전 실행 disabled·새 문구와 기록 라벨을 확인했고 경고/오류0이었다. .local_runtime/gms-reserve-policy-ui-20261015.jpg에 화면 증거를 보관했다.
 
 본 UI 후속 변경은 안내·오류 문구와 기록 라벨 및 운영 지시/증거 동기화다. 직전 전체 제품215/팀26개 통과 코드에 이 변경을 더해 관련34개·JS·SDD·공백 검사로 검증했다. 앞선 전체 검사를 이 후속 문구 변경 이후에 다시 돌린 것처럼 표시하지 않는다. 실제 추천 데이터·지정 로컬 모델 준비 조건은 여전히 충족되지 않았다.
+
+## canonical-cli-http-parity — 2026-10-15
+
+`recommend-canonical` CLI를 추가해 canonical serving DB 기반 HTTP `/api/recommendations`와 같은 추천 함수를 사용하도록 했다. synthetic serving fixture로 동일 요청의 CLI/HTTP JSON 결과가 같고 원본·serving DB hash가 보존되는지 확인했다. 잘못된 요청은 `input_error`/exit 2, DB 부재는 `data_unavailable`/exit 3으로 분리한다. 기존 legacy `recommend` CLI 동작은 유지한다.
+
+신규 CLI 회귀 2개, canonical rental 22개, legacy rental 15개가 통과했다. `python -X utf8 scripts/verify_environment.py` 최종 실행도 SDD 계약(15 features/87 ACs/34 Tasks), 제품 284 tests, 팀/SDD 27 tests, synthetic CLI smoke 모두 통과했다. 첫 sandbox 실행은 Windows loopback socket 제한으로 일부 실패했지만 승인된 로컬 loopback 실행에서 전체 검증을 완료했다.
+
+GMS SOL 초안 호출은 `uncertain`으로 종료되어 응답 텍스트를 받지 못했고 재호출하지 않았다. 코드 변경은 GMS 초안을 적용한 것이 아니라 로컬 담당자가 작성·검토했다. 호출 전 잔액 확인 28,827크레딧에서 이후 확인 28,787, held 585, active calls 0으로 기록됐다. 이번 시도에서 입력 카운트 합계 40크레딧은 정산됐으며 generation 최대 예약 205크레딧은 미확정 보류다. GMS 원장/잔액 상태를 임의로 해소하지 않았다.
