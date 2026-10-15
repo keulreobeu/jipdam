@@ -52,3 +52,5 @@ acs = ["RENT-001-AC-12", "RENT-001-AC-13", "RENT-001-AC-15", "PORTABLE-001-AC-05
 Part 3 synthetic-only 비교 benchmark는 각 경로 5회 warmup/100회 실행, 인덱스 on/off의 결과 signature 일치를 확인했다. 추천 p95 145.243/152.562 ms, 상세 p95 82.065/90.655 ms다. 실제 후보의 p95나 실모델 품질로 간주하지 않는다. 통계 다운로드는 선행 Task 증거로 유지하고, 이번 MOLIT 재다운로드 SHA/CRC도 통과했다.
 
 Part 5에서 저장소 `.gitignore`에 로컬 제품 data 디렉터리와 기존 `jipdam-branches-pre-delete-20261015.bundle`의 정확한 경로를 추가해 raw/DB/ZIP과 사용자 bundle이 Git 변경 목록·스테이징에서 제외되도록 했다. bundle 자체는 변경하지 않는다. GMS 현재 고정 보존액은 0이며 이전 5,000/1,000 기록을 현재 지시로 취급하지 않는다. LUNA 문구 작업은 두 번 `output_limited`; 세 번째 generation은 ledger에서 settled/852 tokens로 확인했지만 command output text가 노출되지 않아 draft를 적용하지 않았다. 전체 hold 380 credits와 active_calls 0은 유지됐고 재시도하지 않았다.
+
+후속 freshness check: `python -X utf8 -m budongi.cli rental-readiness`에서 `$LASTEXITCODE=2`, canonical v3 ready와 Part 2·3 needs_input, serving 238,620건/확정 연결 0/`data_not_ready`를 재확인했다. `benchmark_rentals.py --help`에는 실제 `--candidate`와 합성 인덱스 비교 인자가 표시된다. 해당 결과와 SDD/환경검증 기록은 [후속 검증](../continuation-validation-20261014.md)에 연결했다.

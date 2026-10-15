@@ -8,7 +8,9 @@ Readiness는 기대한 exit 2/`needs_input`으로, Part 1 ready, Part 2 승인 �
 
 합성 전용 `benchmark_rentals --create-synthetic --allow-synthetic --compare-indexes`는 각 경로 5 warmup/100회로 통과했고 on/off 인덱스 결과 signature가 일치했다. 추천 p95는 indexed 145.243ms/no-index 152.562ms, 상세 p95는 82.065ms/90.655ms였다. 이는 실제 후보 p95나 모델 품질 측정이 아니다.
 
-환경 검증은 제품 282개(104.340초), 루트/팀 27개(1.599초), 모델 없는 합성 CLI smoke가 통과했다. SDD 검사도 기능 15개/AC 87개/Task 34개/변경 경로 5개로 통과했다. Git 공백 검사는 통과했고 사용자 데이터 폴더와 기존 bundle은 ignore 규칙에 포함되며 스테이징 대상에서 제외했다.
+환경 검증은 제품 282개(104.340초), 루트/팀 27개(1.599초), 모델 없는 합성 CLI smoke가 통과했다. SDD 검사도 기능 15개/AC 87개/Task 34개/변경 경로 6개로 통과했다. Git 공백 검사는 통과했고 사용자 데이터 폴더와 기존 bundle은 ignore 규칙에 포함되며 스테이징 대상에서 제외했다.
+
+2026-10-15 후속 read-only readiness를 재실행했다. `$LASTEXITCODE=2`, 전체 `needs_input`, canonical v3 gate `ready`, 승인 패키지·실제 후보/좌표·시설/커버리지·지정 모델 gates는 모두 `needs_input`이다. serving 관측 238,620건, 확정 연결 0, 좌표/시설/커버리지 false, `data_not_ready`를 확인했다. 벤치마크 CLI 도움말에서 실제 후보 `--candidate`와 synthetic-only `--create-synthetic --allow-synthetic --compare-indexes` 입력 경로를 확인했고 provider/model/tile 호출이 없는 로컬 도구임을 명시한다.
 
 ## 조사
 
