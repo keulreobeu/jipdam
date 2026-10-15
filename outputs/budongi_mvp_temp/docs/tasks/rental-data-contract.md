@@ -64,4 +64,6 @@ acs = ["RENT-001-AC-07"]
 
 ## 검증·남은 조건
 
+2026-10-14 상태 정정: 기존 MOLIT 범위의 실제 필드 파싱·원본 정규화·canonical 적재는 [TASK-MOLIT-001](molit-collection.md)과 [TASK-CANONICAL-001](canonical-integration.md)에서 완료했다. 따라서 아래 초기 문서의 “실데이터 수집 not_run”은 현재 전체 상태를 설명하지 않는다. 본 Task의 남은 범위는 실제 위치·시설 출처 매핑과 승인된 검수 자료다. serving v2의 검수 패키지 입력 계약은 [MVP Task](rental-mvp.md)에 구현돼 있다. 원천 위치/시설 자료 미제공을 합성 계약 검증으로 완료 처리하지 않는다.
+
 위 unittest 명령은 저장·파서 foundation에 대해 실행했고 통과했다. 이 결과는 `RENT-001-AC-07` 전체를 통과한 기록이 아니다. 공식 상세 기술문서의 응답 항목·단위·식별/정정 한계를 확인하고 원천→정규화 매핑 및 그 fixture를 추가하기 전까지 AC는 체크하지 않고 Task를 `in_progress`로 둔다. 실데이터 수집·사람 검수 단지 매칭·제품 추천 시나리오는 **not_run**이며 [후속 검증 시나리오](../plans/rental-recommendation-mvp.md#product-verification-pending)를 따른다.

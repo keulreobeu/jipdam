@@ -10,6 +10,7 @@ Issue 본문이 현재 진행 상태의 원본이다. 이 문서는 절차와 �
 | --- | --- | --- | --- | --- |
 | 2026-10-12 | 합성 전월세 데모 / `synthetic_rental_demo` | 종로구 코드, 예시 계약일 2026-09-15 | 합성 단지·월세 각 3건. 전세·시설 0건. 실제 수집 범위 없음. Drive 업로드 대기 | [GitHub #3](https://github.com/keulreobeu/jipdam/issues/3) · [첨부 점검](../outputs/budongi_mvp_temp/docs/rental-upload-audit-20261012.md) |
 | 2026-10-12 수집 / 2026-10-13 공유 | MOLIT 전월세·매매 일반·매매 상세 XML | 서울25구·202510~202610, 관측2025-10-12~2026-10-12 | 975/975조회 완료, 원본384,211·유효374,892·제외9,319·거부0. 일반/상세는 독립 관측. 재구성 ZIP은 3조각으로 Drive 저장, 다운로드 SHA/새 경로 전체 DB 대사 완료 | [GitHub #5](https://github.com/keulreobeu/jipdam/issues/5) · [공유·복원](../outputs/budongi_mvp_temp/docs/shared-data.md) |
+| 2026-10-15 | MOLIT 전월세·매매 일반·매매 상세 XML | 서울25구·202401~202608 | 2,400/2,400 query 완료(825 재사용·1,575 신규). 원본/유효 전월세685,575·매매 일반192,142·매매 상세192,142, 제외·거부0. staging/DB 대사와 ZIP CRC 검증 완료, source_unverified. ZIP SHA-256은 Issue 기록 참조, Drive 업로드 미실행 | [GitHub #7](https://github.com/keulreobeu/jipdam/issues/7) · [완료 검증](../outputs/budongi_mvp_temp/docs/molit-statistics-history-validation-20261015.md) |
 | 2026-10-13 보관·공유 | 사용자 제공 KB/공공 통계 XLSX30개 | 주간2021-10~2026-10, 월간 대부분2021-09~2026-09 등 파일별 범위 | 수치483,979/결측46,577·통계DB 별도 저장. 원본/코드/DB ZIP Drive 저장, 다운로드 SHA/새 경로 재구성 완료 | [GitHub #6](https://github.com/keulreobeu/jipdam/issues/6) · [공유·복원](../outputs/budongi_mvp_temp/docs/shared-data.md) |
 
 기존 README의 과거 수집 계획/검수 후보는 지금 공유 Drive의 수집 완료 증거가 아니다. 원본·매니페스트를 확인하기 전 완료로 등록하지 않는다.

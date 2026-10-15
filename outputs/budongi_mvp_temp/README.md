@@ -1,19 +1,20 @@
 # 집담 (Jipdam) 애플리케이션
 
-승인된 목표는 **서울 아파트 전월세 단지 후보의 조건별 추천·비교 웹 데모**입니다. 현재 실행 가능한 기능은 기존 역사 스냅샷·세 Data Tool·로컬 모델·합성 평가, 합성 전월세 추천 CLI와 Windows 계정 기반 암호화 API 키 보관함입니다. 전월세 추천 HTTP API와 비교 화면은 아직 구현되지 않았습니다. 팀 저장소는 [keulreobeu/jipdam](https://github.com/keulreobeu/jipdam)이며 기존 작업 폴더와 `budongi` Python 모듈·CLI는 호환성을 위해 유지합니다. 패키지 설치 후에는 `jipdam` 명령도 사용할 수 있습니다.
+승인된 목표는 **서울 아파트 전월세 단지 후보의 조건별 추천·비교 웹 데모**입니다. 채팅과 선택적 로컬 LLM 후속 질문, 실제 canonical DB의 read-only 추천 API, 니즈 비교·전체 거래 상세/지도 화면의 첫 구현을 제공합니다. 현재 canonical에는 전월세 관측 238,620건이 있지만 확정 단지 연결이 0건이므로 제품은 `data_not_ready`를 표시합니다. 보존된 역사 스냅샷·세 Data Tool·로컬 모델·합성 평가, 합성 전월세 CLI와 Windows 계정 기반 암호화 API 키 보관함은 기존 경로로 유지됩니다. 팀 저장소는 [keulreobeu/jipdam](https://github.com/keulreobeu/jipdam)이며 `budongi` Python 모듈·CLI 호환성을 유지합니다.
 
-2026-10-13 추가 구현: 서울 세 API의 확정된 원본 수집과 오프라인 통합 DB, 공식 ID 관계·미확정 후보·반복/증분 적재 및 등록 파일 입력을 구현·검증했습니다. [실행 문서](docs/canonical-db.md)와 [실제 검증](docs/canonical-validation-20261013.md)을 따릅니다. 실제 추천·웹·좌표·시설의 별도 상태는 유지합니다.
+2026-10-13 추가 구현: 서울 세 API의 확정된 원본 수집과 오프라인 통합 DB, 공식 ID 관계·미확정 후보·반복/증분 적재 및 등록 파일 입력을 구현·검증했습니다. [실행 문서](docs/canonical-db.md)와 [실제 검증](docs/canonical-validation-20261013.md)을 따릅니다. 후속 대화형 전월세 MVP의 첫 웹/실 DB 경로는 [실행 안내](#대화형-db-전월세-mvp), 검증 범위·현재 데이터 미준비 상태는 [검증 기록](docs/rental-mvp-validation-20261013.md)을 참고하세요.
 
 사용자가 제공한 통계 엑셀 30개는 별도 `data/statistics/statistics.sqlite3`에 오프라인 보존·적재했습니다. `jipdam statistics import/status/audit`는 원본 셀 계보·기간·결측·재실행·심리 반올림 중복과 후속 메타데이터 근거를 관리합니다. [사용·조회·추가 자료 후보](docs/statistics-storage.md)와 [실제 수입 검증](docs/statistics-validation-20261013.md)을 따릅니다.
 
 ## 개발 문서와 작업 순서
 
-다른 PC에서 원본만으로 DB를 재구성하는 [공유 패키지·복원 명령](docs/shared-data.md)과 [실제 검증](docs/shared-data-validation-20261013.md)을 제공합니다. ZIP/DB/원본은 공유 Drive에, 코드·설정·수집 기록은 GitHub에 보관합니다.
+다른 PC에서 필요할 때 Drive의 [공유 패키지](docs/shared-data.md)를 내려받아 원본으로 DB를 재구성할 수 있습니다. 다운로드 CLI는 파일별 크기와 SHA-256을 확인하며 ZIP/DB/원본은 Drive에, 코드·설정·수집 기록은 GitHub에 보관합니다. 재구성은 실제 검증 기록을 참고하세요.
 
 새 기능은 요구사항 질문·Plan → 확정 Spec → 필요 시 ADR → Task → 구현 → 테스트·평가 → 문서 동기화 순서로 진행합니다. 워크스페이스에 설치된 gstack을 기본 개발 스킬로 사용하고, 집담 전용 `jipdam-workflow`로 기존 Spec·ADR·데이터·평가 계약에 연결합니다. 확정된 내용만 프로젝트 문서에 반영합니다. 작업 규칙은 [AGENTS.md](AGENTS.md), 설치·확장 방법은 [gstack 안내](../../docs/gstack.md)에 있습니다.
 
 - [Project Spec](docs/specs/00_project_spec.md): 현재 구현, 목표, 공통 제약
 - [전월세 추천 RENT-001](docs/specs/10_rental_recommendation_spec.md) / [전환 Plan](docs/plans/rental-recommendation-mvp.md) / [전환 ADR](docs/adr/ADR-003-rental-recommendation-first.md): 승인된 추천 계약·제품 순서·결정 이유
+- [대화형 MVP 실행](#대화형-db-전월세-mvp) / [TASK-RENT-MVP-001](docs/tasks/rental-mvp.md) / [실제 DB·성능 검증](docs/rental-mvp-validation-20261013.md): 확정 연결만 추천, 미준비 상태와 지연 계측
 - [API 키 보관함 CRED-001](docs/specs/11_api_credential_vault_spec.md) / [ADR-004](docs/adr/ADR-004-local-api-credential-vault.md) / [구현 Task](docs/tasks/api-credential-vault.md): Windows 보호 키·암호화 저장·검증 상태
 - [통합 DB 실행·조회·출처 확장](docs/canonical-db.md) / [검증 기록](docs/canonical-validation-20261013.md) / [Task](docs/tasks/canonical-integration.md): 보존 XML과 등록 CSV/JSON/XLSX의 오프라인 적재·재실행·증분 계약
 - [Structured Search](docs/specs/03_structured_search_spec.md), [Router](docs/specs/04_router_spec.md), [RAG](docs/specs/05_rag_spec.md), [Agent Tools](docs/specs/06_agent_tools_spec.md): 기능별 현재 상태와 도입 조건
@@ -37,6 +38,19 @@ Spec의 `CURRENT`는 확인된 구현, `TARGET`은 계획, `OPEN QUESTION`은 �
 기존 저장소의 [README](https://github.com/keulreobeu/Real_estate_Chatbot_by_gemma4)와 ZIP을 확인했습니다. GitHub 저장소에는 `data/original` 원본 CSV와 실제 평가 CSV가 들어 있지 않습니다. 따라서 여기에는 실거래 기록이나 200건 Golden을 임의로 만들지 않았습니다. 이전 파이프라인의 `공급액(만원)`은 분양/공급액이며 실거래가가 아닙니다.
 
 ## 빠른 시작
+
+### 대화형 DB 전월세 MVP
+
+첫 실행이나 canonical DB 갱신 뒤 실제 통합 DB에서 compact serving projection을 재생성하고 loopback 웹 화면을 시작합니다.
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path .\src).Path
+python -X utf8 -m budongi.cli prepare-rentals
+python -X utf8 -m budongi.cli rental-readiness
+python -X utf8 -m budongi.cli rental-mvp --no-browser
+```
+
+브라우저에서 출력된 `http://127.0.0.1:8766/`을 엽니다. 로컬 OpenAI 호환 모델을 연결할 때만 `JIPDAM_RENTAL_MODEL`과 `OLLAMA_ENDPOINT`를 설정합니다. 모델이 없으면 질문 안내와 직접 조건 입력을 사용할 수 있습니다. 대화 draft는 폼에 반영되며, 사용자가 확인·수정한 뒤 검색 버튼을 눌러야 DB를 조회합니다. 현재 실제 단지 연결은 0건이므로 `data_not_ready`가 정상 상태입니다. 확정 연결·검수 좌표·시설 데이터를 자동으로 만들지 않습니다. 실제 사용 범위와 제약은 [검증 기록](docs/rental-mvp-validation-20261013.md)을 따릅니다.
 
 ### Docker Compose
 
@@ -82,7 +96,40 @@ python -X utf8 -m budongi.cli recommend --rental-db data/rental/synthetic-demo/s
 
 첫 명령은 허구 단지 3개와 요청 JSON을 만듭니다. 둘째 명령은 예산·직장 직선거리 필수 조건으로 2곳을 반환합니다. 역 선호는 확인되지 않은 조건으로 표시합니다. 데모가 이미 있으면 첫 명령을 다시 실행하지 않고 둘째 명령만 실행하거나 `rental-demo --directory 다른폴더`를 사용하세요.
 
-`request.json`에서 원 정수 예산·면적·자치구·확인한 직장 좌표·필수/선호를 바꿀 수 있습니다. 실제 데이터로 받아들이지 않도록 합성 허용 옵션을 명시해야 합니다. 실데이터 수집·매칭과 웹 비교는 후속 범위입니다. [추천 Task](docs/tasks/rental-recommendation-cli.md#validation)에서 실제 검증과 한계를 확인할 수 있습니다.
+`request.json`에서 원 정수 예산·면적·자치구·확인한 직장 좌표·필수/선호를 바꿀 수 있습니다. 실제 데이터로 받아들이지 않도록 합성 허용 옵션을 명시해야 합니다. 실데이터 조회 웹은 별도 [대화형 MVP](#대화형-db-전월세-mvp)에 있고, 이 CLI 설명은 합성 snapshot 경로에 한정됩니다. [추천 Task](docs/tasks/rental-recommendation-cli.md#validation)에서 검증과 한계를 확인할 수 있습니다.
+
+### GMS 실잔액·사용 한도·코드 작업
+
+`jipdam credentials`로 [로컬 보관함](http://127.0.0.1:8765/)을 엽니다. 등록한 GMS 키를 직접 선택하고 **잔여 크레딧 조회**를 누르면 공식 key-info의 전체/사용/잔여 크레딧과 KST 만료 시각을 표시합니다. 키 교체는 저장한 키의 **수정 → 새 API 키 → 변경 저장**을 사용합니다.
+
+**실행 예산 기준**은 현재 사용자 지시에 따라 `reserve_only`입니다. 실잔액에서 진행 중 예약과 이번 최대 비용을 제외한 뒤 **5,000크레딧 이상 보존**하는지만 비용 기준으로 관리합니다. 누적/호출 크레딧·누적 토큰 한도는 실행을 차단하지 않고 사용 이력은 기록으로 유지합니다. 500크레딧/10,000토큰은 초기 운영 이력입니다. 입력/출력의 기술적 상한·키 만료·유료 입력 카운트·최대 예약·정산은 유지합니다. 이전 `cumulative` 모드는 호환용입니다.
+
+모든 생성 전에 공식 잔액/만료와 전체 입력 토큰을 확인합니다. GMS의 입력 카운트 프록시에도 실제 관측상 요금이 붙으므로 조회 비용부터 예약합니다. 모델별 견적은 조회 비용 + 입력×입력 요율 + 예상 출력×출력 요율이며 최대 생성 예약은 정수 크레딧까지 올려 계정 반올림을 포함합니다. SOL 요율은 0.02/0.1, LUNA는 0.001/0.005크레딧/토큰입니다. 120초 동안 model/input을 동결하고 카운트를 재사용합니다. 실제 usage와 계정 차감을 대사하며, 팀의 다른 차감이 섞일 때는 보수적으로 계산합니다. 사용량 없는 실패는 최대 비용/토큰을 보류하고 재시도하지 않습니다. 조회 요금의 공식 상한은 제공되지 않았으므로 관측 상한을 넘으면 다음 실행을 중지합니다.
+
+웹의 **명확한 코드 작업 · 사전 견적**에 Task ID, 목표/AC, 필요한 코드 부분을 입력하면 견적을 볼 수 있습니다. 견적 조회에도 크레딧이 사용될 수 있으며 별도 실행 버튼만 모델 생성합니다. 코드 초안은 자동 적용하지 않습니다.
+
+CLI용 `request.json` 예시는 다음과 같습니다. files는 이 제품 폴더 기준 src/tests/docs의 코드·문서만 지정합니다.
+
+```json
+{
+  "task_id": "TASK-EXAMPLE-001",
+  "objective": "금액 검증 함수의 경계값 테스트 초안을 작성한다",
+  "acceptance_criteria": ["음수·bool·소수점 초과 입력을 거부한다"],
+  "files": ["src/budongi/gms_budget.py"],
+  "difficulty": "simple",
+  "max_output_tokens": 1000,
+  "expected_output_tokens": 700
+}
+```
+
+```powershell
+python -X utf8 -m budongi.cli gms-work --request request.json
+python -X utf8 -m budongi.cli gms-work --request request.json --execute
+```
+
+`difficulty=simple`은 `gpt-6-luna`, `complex`는 `gpt-6.1-sol`을 사용합니다. 누락은 기존 SOL이며 두 ID만 직접 지정할 수 있습니다. 작업 출력 상한은 저장 정책 이내로만 줄입니다. 현재 검증 서버는 `credentials --no-browser --port 8785`로 실행하며 CLI에도 `--port 8785`를 지정합니다. 기본 포트 8765의 기존 서버는 최신 코드로 재시작한 뒤 사용하세요.
+
+첫 명령은 사전 견적만, 둘째는 저장된 정책 안에서 1회 생성합니다. 가능한 한 둘째 명령 한 번으로 견적/실행을 수행해 불필요한 카운트 조회를 줄이세요. 필요한 코드 부분만 선택하며 큰 문맥은 입력 상한에서 차단합니다. 실제 데이터/DB/raw·키/.env·다른 자격증명·로그/런타임을 보내지 않습니다. 명확한 코드/테스트/기계적 문서 초안은 이 runner를 우선 사용하고 담당자가 검토·적용·테스트합니다. 현재 Codex 채팅 모델 자체를 GMS로 전환한 것은 아닙니다. [계약](docs/specs/18_gms_budget_spec.md)·[Plan](docs/plans/gms-budget-work.md)·[검증 Task](docs/tasks/gms-budget-work.md).
 
 ### API 키 보관함 (Windows)
 
@@ -273,7 +320,7 @@ python -m budongi.cli collection pack --directory data/collection/my-batch --db-
 
 ### 제품 실행 순서
 
-[현재 Task](docs/tasks/current.md)와 [Plan](docs/plans/rental-recommendation-mvp.md)을 따라 문서 전환 → 합성 전월세·위치·시설 적재 → 결정적 추천·CLI → [암호화 API 키 보관함](docs/tasks/api-credential-vault.md) → 로컬 웹 비교 → 선택형 LLM 설명·평가를 진행합니다. 보관함 설정 화면은 구현됐으며, 수집·단지 매칭·사람 Golden은 별도 보류 해제 후 검수합니다. 추천 결과는 현재 매물이 아닌 단지 후보이며, 직선거리와 보증금/월세 각각의 상한을 사용하고 관리비·대출비용은 포함하지 않습니다.
+[현재 Task](docs/tasks/current.md)와 [Plan](docs/plans/rental-recommendation-mvp.md)을 따른다. 문서 전환·합성 추천 CLI·[암호화 API 키 보관함](docs/tasks/api-credential-vault.md)에 더해, [대화형 DB 전월세 MVP](#대화형-db-전월세-mvp)의 loopback 웹/API, 실제 serving projection 및 니즈/상세 화면 첫 구현을 진행 중이다. 실제 확정 매칭, 좌표·시설은 별도 승인·검수 게이트이며 현재 추천 상태는 `data_not_ready`다. 성공 경로와 실제 모델/browser QA는 추가 검증이 필요하다. 추천은 현재 매물이 아닌 단지 후보이며, 직선거리와 보증금/월세 각각의 상한을 사용하고 관리비·대출비용은 포함하지 않는다.
 
 ### 선택형 역사 평가 연구 (제품 선행 조건 아님)
 
@@ -283,3 +330,12 @@ python -m budongi.cli collection pack --directory data/collection/my-batch --db-
 4. 답변 전체의 근거 없는 추가 주장까지 재는 평가기를 확장해 실제 Tool 결과와 답변 사실을 단계별로 평가합니다.
 
 최신 임대차 데이터 계약은 제품 첫 단계로 앞당깁니다. 의미 검색·Judge·LoRA·Adapter/Model Routing은 제품 평가에서 필요성이 확인된 경우 별도 계약으로 검토할 후속 연구입니다. 기존 2023 역사 자료·평가 미완료 기록은 보존합니다.
+
+### 대화형 전월세 MVP — 2026-10-14
+
+채팅 초안 확인·수정, 실제 DB 추천, 후보별 니즈, 100행 거래 상세와 Leaflet+OSM 내장 지도를 구현했다. 현재 실제 확정 연결은 0건이므로 data_not_ready로 표시한다. 검수 자료·실모델은 준비 조건이다. [실행·검수 패키지·성능 재현 안내](docs/rental-review-package.md)를 따른다.
+
+
+## 개발 에이전트 하네스
+
+선택적 역할 배정·공통 SQLite 상태·체크포인트·Mock GMS 예산은 [하네스 운영](docs/harness/README.md)을 따릅니다. 루트에서 `python -X utf8 scripts/agent_harness.py doctor`로 확인합니다. 실제 GMS 호출은 새 하네스에서 차단되며 기존 GMS·제품 경로를 보존합니다.

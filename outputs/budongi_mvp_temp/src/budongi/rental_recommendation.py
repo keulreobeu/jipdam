@@ -5,6 +5,7 @@ import calendar
 import json
 import math
 import sqlite3
+from functools import lru_cache
 from datetime import date
 from pathlib import Path
 
@@ -149,6 +150,7 @@ def open_rental_reader(path: Path) -> sqlite3.Connection:
         raise RentalInternalError("전월세 DB를 열 수 없습니다.") from exc
 
 
+@lru_cache(maxsize=131072)
 def straight_distance_m(first: tuple[float, float], second: tuple[float, float]) -> float:
     lat1, lon1, lat2, lon2 = map(math.radians, (*first, *second))
     value = math.sin((lat2-lat1)/2)**2 + math.cos(lat1)*math.cos(lat2)*math.sin((lon2-lon1)/2)**2
@@ -164,6 +166,11 @@ def observation_period(end: date) -> tuple[str, str]:
 
 
 def _date_known(value: object, cutoff: date) -> bool:
+    return _date_known_text(value, cutoff) if isinstance(value, str) else False
+
+
+@lru_cache(maxsize=512)
+def _date_known_text(value: str, cutoff: date) -> bool:
     try:
         start, _ = observation_period(cutoff)
         return (isinstance(value, str) and date.fromisoformat(value).isoformat() == value
@@ -182,22 +189,22 @@ def _source(row: dict, datasets: dict) -> dict:
         "source_date": dataset.get("source_date"), "retrieved_at_utc": dataset.get("retrieved_at_utc")}
 
 
-def _facility_condition(condition: dict, complex_row: dict, facilities: dict, coverage: dict, datasets: dict, cutoff: date) -> dict:
+def facility_condition(condition: dict, coords: tuple | None, scope: dict | None,
+                       entries: list[dict], cutoff: date, *, dates_complete: bool = True) -> dict:
+    """Pure coverage and exact-distance judgement shared by both DB adapters."""
     result = dict(condition, status="unknown", distance_type="straight_line", distance_m=None, reason="시설 자료의 검수 범위·기준일이 부족합니다.")
     kind = condition["kind"]
     if kind not in FACILITY_KINDS:
         result["reason"] = "지원하지 않는 선호 시설입니다."
         return result
-    coords = (complex_row["latitude"], complex_row["longitude"])
-    if None in coords:
+    if coords is None or None in coords:
         result["reason"] = "단지 좌표가 확인되지 않았습니다."
         return result
-    scope = coverage.get((kind, complex_row["sgg_cd"]))
     if not scope or scope["coverage_status"] != "complete":
         return result
-    result["coverage_source"] = _source(scope, datasets) | {"checked_at_utc": scope["checked_at_utc"]}
+    result["coverage_source"] = scope['source']
     # A district catalog alone does not prove that a circle crossing its border is complete.
-    area = json.loads(scope["raw_payload_json"]).get("coverage_area")
+    area = scope.get('coverage_area')
     if not isinstance(area, dict) or not _date_known(scope["checked_at_utc"][:10], cutoff):
         return result
     try:
@@ -207,19 +214,55 @@ def _facility_condition(condition: dict, complex_row: dict, facilities: dict, co
         return result
     if straight_distance_m(center, coords) + condition["max_distance_m"] > radius + 1e-6:
         return result
-    entries = facilities.get(kind, [])
     # Unknown/future basis dates inside the queried radius invalidate completeness.
-    if any(not _date_known(_dataset(row, datasets).get("source_date"), cutoff) for row in entries):
+    if not dates_complete or any(not _date_known(row.get('source_date'), cutoff) for row in entries):
         return result
-    if not _date_known(_dataset(scope, datasets).get("source_date"), cutoff):
+    if not _date_known(scope.get('source_date'), cutoff):
         return result
-    nearest = min(entries, key=lambda row: (straight_distance_m(coords, (row["latitude"], row["longitude"])), row["facility_observation_id"]), default=None)
-    distance = None if nearest is None else straight_distance_m(coords, (nearest["latitude"], nearest["longitude"]))
+    distances = [(row.get('_distance_m') if '_distance_m' in row else straight_distance_m(coords, (row['latitude'],row['longitude'])),
+                  row['id'], row) for row in entries]
+    nearest_pair = min(distances, key=lambda item: item[:2], default=None)
+    nearest = None if nearest_pair is None else nearest_pair[2]
+    distance = None if nearest_pair is None else nearest_pair[0]
     result.update(status="met" if distance is not None and distance <= condition["max_distance_m"] + 1e-6 else "unmet",
                   distance_m=None if distance is None else round(distance, 3), reason="검수된 범위의 직선거리 조건을 비교했습니다.")
     if nearest:
-        result["facility"] = {"id": nearest["facility_observation_id"], "name": nearest["name"], "source": _source(nearest, datasets)}
+        result["facility"] = {"id": nearest['id'], "name": nearest['name'], "source": nearest['source']}
     return result
+
+
+def _facility_condition(condition: dict, complex_row: dict, facilities: dict, coverage: dict, datasets: dict, cutoff: date) -> dict:
+    scope = coverage.get((condition['kind'], complex_row['sgg_cd']))
+    if scope:
+        scope = {**scope, 'coverage_area': json.loads(scope['raw_payload_json']).get('coverage_area'),
+                 'source_date': _dataset(scope, datasets).get('source_date'),
+                 'source': _source(scope, datasets) | {'checked_at_utc': scope['checked_at_utc']}}
+    entries = [{**row, 'id': row['facility_observation_id'], 'source': _source(row, datasets),
+                'source_date': _dataset(row, datasets).get('source_date')}
+               for row in facilities.get(condition['kind'], [])]
+    return facility_condition(condition, (complex_row['latitude'], complex_row['longitude']), scope, entries, cutoff)
+
+
+def evaluate_conditions(request: dict, coords: tuple | None, facility_lookup) -> tuple[list, int, float | None]:
+    """Adapters supply facility evidence; the common function controls all decisions."""
+    workplace = request.get('workplace')
+    distance = (straight_distance_m(coords, _coordinates(workplace))
+                if workplace and coords is not None and None not in coords else None)
+    checks = []
+    for condition in request['conditions']:
+        if condition['kind'] == 'workplace':
+            status = 'unknown' if distance is None else 'met' if distance <= condition['max_distance_m'] + 1e-6 else 'unmet'
+            checks.append(dict(condition, status=status, distance_type='straight_line',
+                               distance_m=None if distance is None else round(distance, 3),
+                               reason='직장까지 직선거리입니다.' if distance is not None else '단지 좌표가 확인되지 않았습니다.'))
+        else:
+            checks.append(facility_lookup(condition))
+    return checks, sum(not row['required'] and row['status'] == 'met' for row in checks), distance
+
+
+def ranking_key(score: int, distance: float | None, contract_date: str, complex_id: str) -> tuple:
+    return (-score, distance if distance is not None else math.inf,
+            -date.fromisoformat(contract_date).toordinal(), complex_id)
 
 
 def recommend_rentals(connection: sqlite3.Connection, *, snapshot_id: str, arguments: object,
@@ -290,18 +333,10 @@ def _recommend(connection: sqlite3.Connection, snapshot_id: str, request: dict, 
             continue
         complex_row = {"latitude": row["latitude"], "longitude": row["longitude"], "sgg_cd": row["complex_sgg_cd"]}
         coords = None if row["latitude"] is None or row["longitude"] is None else _coordinates(complex_row)
-        work_distance = None if workplace is None or coords is None else straight_distance_m(coords, _coordinates(workplace))
-        checks = []
-        for condition in request["conditions"]:
-            if condition["kind"] == "workplace":
-                status = "unknown" if work_distance is None else "met" if work_distance <= condition["max_distance_m"] + 1e-6 else "unmet"
-                checks.append(dict(condition, status=status, distance_type="straight_line", distance_m=None if work_distance is None else round(work_distance, 3),
-                                   reason="직장까지 직선거리입니다." if work_distance is not None else "단지 좌표가 확인되지 않았습니다."))
-            else:
-                checks.append(_facility_condition(condition, complex_row, facilities, coverage, datasets, cutoff))
-        if any(check["required"] and check["status"] != "met" for check in checks):
+        checks, score, work_distance = evaluate_conditions(
+            request, coords, lambda condition: _facility_condition(condition, complex_row, facilities, coverage, datasets, cutoff))
+        if any(check['required'] and check['status'] != 'met' for check in checks):
             continue
-        score = sum(not check["required"] and check["status"] == "met" for check in checks)
         candidates.append({"complex": {"id": row["complex_id"], "name": row["complex_name"], "sgg_cd": row["complex_sgg_cd"],
                                        "address": " ".join(filter(None, ("서울특별시", next(name for name, code in SEOUL_DISTRICTS.items() if code == row["complex_sgg_cd"]), row["complex_dong"], row["complex_jibun"]))),
                                        "source": _source({key: row["complex_" + key] for key in ("source", "source_record_id", "source_file_ref", "source_content_sha256", "source_row_number", "ingested_at_utc")}, datasets)},
@@ -316,8 +351,8 @@ def _recommend(connection: sqlite3.Connection, snapshot_id: str, request: dict, 
                            "workplace_distance": {"distance_m": None if work_distance is None else round(work_distance, 3), "distance_type": "straight_line", "source": workplace},
                            "_distance": work_distance,
                            "explanation": f"{row['contract_date']}의 같은 계약에서 보증금·월세 상한을 충족하며, 선호 조건 {score}개를 충족합니다."})
-    candidates.sort(key=lambda row: (-row["preference_met_count"], row["_distance"] if workplace and row["_distance"] is not None else math.inf,
-                                    -date.fromisoformat(row["contract"]["contract_date"]).toordinal(), row["complex"]["id"]))
+    candidates.sort(key=lambda row: ranking_key(row['preference_met_count'], row['_distance'],
+                                                row['contract']['contract_date'], row['complex']['id']))
     total = len(candidates)
     selected = candidates[:request["limit"]]
     for rank, candidate in enumerate(selected, 1):

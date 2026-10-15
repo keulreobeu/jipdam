@@ -103,7 +103,8 @@ def query_folder(root: Path, service: str, code: str, month: str) -> Path:
 
 
 def create_plan(root: Path, *, batch_id: str, snapshot_date: str, districts=None,
-                services=None, months=None, per_page: int = 1000, record_url: str = "") -> dict:
+                services=None, months=None, observation_from: str | None = None,
+                per_page: int = 1000, record_url: str = "") -> dict:
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,79}", batch_id):
         raise CollectionError("invalid_batch_id")
     try:
@@ -112,8 +113,16 @@ def create_plan(root: Path, *, batch_id: str, snapshot_date: str, districts=None
         raise CollectionError("invalid_snapshot_date") from None
     if type(per_page) is not int or not 1 <= per_page <= 1000:
         raise CollectionError("invalid_page_size")
-    start = cutoff.replace(year=cutoff.year - 1, day=min(cutoff.day,
-                           calendar.monthrange(cutoff.year - 1, cutoff.month)[1]))
+    default_start = cutoff.replace(year=cutoff.year - 1, day=min(cutoff.day,
+                                   calendar.monthrange(cutoff.year - 1, cutoff.month)[1]))
+    try:
+        start = date.fromisoformat(observation_from) if observation_from is not None else default_start
+    except (ValueError, TypeError):
+        raise CollectionError("invalid_observation_start") from None
+    if observation_from is not None and start.isoformat() != observation_from:
+        raise CollectionError("invalid_observation_start")
+    if start > cutoff:
+        raise CollectionError("invalid_observation_period")
     if services is None:
         from .source_files import read_registry
         services = [s["service"] for s in read_registry()["sources"] if s.get("status") == "approved" and s.get("required")]
@@ -155,7 +164,8 @@ def load_plan(root: Path) -> dict:
     # Reuse the input validator without writing: the existing file must match itself.
     expected = create_plan(root, batch_id=plan.get("batch_id"), snapshot_date=plan.get("snapshot_date"),
                            services=plan.get("services"), districts=plan.get("districts"),
-                           months=plan.get("months"), per_page=plan.get("per_page"),
+                           months=plan.get("months"), observation_from=plan.get("observation_from"),
+                           per_page=plan.get("per_page"),
                            record_url=plan.get("record_url", ""))
     if expected != plan:
         raise CollectionError("invalid_collection_plan")

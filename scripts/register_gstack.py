@@ -143,9 +143,11 @@ def validate_discovery(root: Path = WORKSPACE, *, require_gstack: bool = True) -
         raise ValueError('Duplicate skill names')
     if 'jipdam-workflow' not in names:
         raise ValueError('The shared jipdam-workflow skill is missing')
-    expected = load_lock(root)['expected_skills'] + 1
-    if require_gstack and len(names) != expected:
-        raise ValueError(f'Expected {expected} skills after installation, found {len(names)}')
+    # The pin counts generated gstack skills, not unrelated project-owned skills.
+    expected = load_lock(root)['expected_skills']
+    generated = sum(name == 'gstack' or name.startswith('gstack-') for name in names)
+    if require_gstack and generated != expected:
+        raise ValueError(f'Expected {expected} gstack skills after installation, found {generated}')
     return len(names)
 
 if __name__ == '__main__':

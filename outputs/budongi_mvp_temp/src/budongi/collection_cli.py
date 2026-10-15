@@ -19,6 +19,7 @@ def add_collection_parser(subparsers) -> None:
     plan.add_argument("--snapshot-date", default=date.today().isoformat())
     plan.add_argument("--districts", nargs="+")
     plan.add_argument("--months", nargs="+")
+    plan.add_argument("--observation-from", help="Inclusive ISO date; defaults to one year before snapshot date")
     plan.add_argument("--services", nargs="+", choices=list(SERVICES))
     plan.add_argument("--per-page", type=int, default=1000)
     plan.add_argument("--record-url", default="")
@@ -74,6 +75,7 @@ def run_collection(args) -> None:
         elif args.collection_action == "plan":
             result = create_plan(root, batch_id=args.batch_id, snapshot_date=args.snapshot_date,
                                  districts=args.districts, services=args.services, months=args.months,
+                                 observation_from=args.observation_from,
                                  per_page=args.per_page, record_url=args.record_url)
             result = result | {"status": collection_status(root)}
         elif args.collection_action == "status":

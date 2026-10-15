@@ -78,6 +78,28 @@ class CollectionTests(unittest.TestCase):
             fetch_collection(path, {}, opener=lambda *_: self.fail("Network before record"))
         self.assertFalse((path / "serving.sqlite3").exists())
 
+    def test_explicit_observation_period_supports_statistics_history(self):
+        path = self.root / "statistics-history"
+        plan = create_plan(path, batch_id="statistics-history", snapshot_date="2026-08-31",
+                           observation_from="2024-01-01", districts=["11110"],
+                           services=["rental"], months=["202401", "202608"], record_url=RECORD)
+        self.assertEqual(plan["observation_from"], "2024-01-01")
+        self.assertEqual(load_plan(path)["observation_from"], "2024-01-01")
+        cli_path = self.root / "statistics-history-cli"
+        completed = subprocess.run([
+            sys.executable, "-X", "utf8", "-m", "budongi.cli", "collection", "plan",
+            "--batch-id", "statistics-history-cli", "--snapshot-date", "2026-08-31",
+            "--observation-from", "2024-01-01", "--districts", "11110", "--months",
+            "202401", "202608", "--services", "rental", "--record-url",
+            "https://github.com/keulreobeu/jipdam/issues/7", "--directory", str(cli_path),
+        ], capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertEqual(json.loads(completed.stdout)["observation_from"], "2024-01-01")
+        with self.assertRaisesRegex(CollectionError, "invalid_observation_period"):
+            create_plan(self.root / "future-start", batch_id="future-start", snapshot_date="2026-08-31",
+                        observation_from="2026-09-01", districts=["11110"], services=["rental"],
+                        months=["202608"], record_url=RECORD)
+
     def test_completed_query_reexecution_uses_no_network_or_vault(self):
         path = self.plan()
         self.assertTrue(self.fetch(path, lambda *a, **k: Response(payload([item()])))["complete"])

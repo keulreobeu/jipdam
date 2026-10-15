@@ -3,9 +3,9 @@
   "approved_at": "2026-10-12",
   "approval_ref": "User approved MOLIT XML plan and expanded integrated-data goal",
   "sources": [
-    {"source_id": "molit_apt_rent", "service": "rental", "dataset_id": "15126474", "format": "xml", "transport": "molit_http", "mapping": "molit_rental_v1", "scope": "Seoul 25 districts; 202510-202610; all pages", "status": "approved", "required": true, "documentation": "https://www.data.go.kr/data/15126474/openapi.do"},
-    {"source_id": "molit_apt_trade_general", "service": "trade", "dataset_id": "15126469", "format": "xml", "transport": "molit_http", "mapping": "molit_trade_v1", "scope": "Seoul 25 districts; 202510-202610; all pages", "status": "approved", "required": true, "approval_ref": "2026-10-12 user approved three-API XML plan and reported general sale API registration complete", "documentation": "https://www.data.go.kr/data/15126469/openapi.do"},
-    {"source_id": "molit_apt_trade_detail", "service": "trade-detail", "dataset_id": "15126468", "format": "xml", "transport": "molit_http", "mapping": "molit_trade_v1", "scope": "Seoul 25 districts; 202510-202610; all pages", "status": "approved", "required": true, "documentation": "https://www.data.go.kr/data/15126468/openapi.do"}
+    {"source_id": "molit_apt_rent", "service": "rental", "dataset_id": "15126474", "format": "xml", "transport": "molit_http", "mapping": "molit_rental_v1", "scope": "Seoul 25 districts; 202401-202608; all pages; explicit approval 2026-10-15", "status": "approved", "required": true, "documentation": "https://www.data.go.kr/data/15126474/openapi.do"},
+    {"source_id": "molit_apt_trade_general", "service": "trade", "dataset_id": "15126469", "format": "xml", "transport": "molit_http", "mapping": "molit_trade_v1", "scope": "Seoul 25 districts; 202401-202608; all pages; explicit approval 2026-10-15", "status": "approved", "required": true, "approval_ref": "2026-10-12 three-API approval plus 2026-10-15 extension to statistics transaction-volume period; collection issue #7", "documentation": "https://www.data.go.kr/data/15126469/openapi.do"},
+    {"source_id": "molit_apt_trade_detail", "service": "trade-detail", "dataset_id": "15126468", "format": "xml", "transport": "molit_http", "mapping": "molit_trade_v1", "scope": "Seoul 25 districts; 202401-202608; all pages; explicit approval 2026-10-15", "status": "approved", "required": true, "documentation": "https://www.data.go.kr/data/15126468/openapi.do"}
   ],
   "excluded": [
     {"name": "synthetic_rental_demo", "reason": "fictional, not actual collection coverage"},

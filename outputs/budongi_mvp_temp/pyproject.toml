@@ -17,4 +17,4 @@ budongi = "budongi.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-budongi = ["static/*.html", "static/*.js", "static/*.css", "source_registry.json", "statistics_sources.json"]
+budongi = ["static/*.html", "static/*.js", "static/*.css", "static/vendor/leaflet/*", "static/vendor/leaflet/images/*.png", "source_registry.json", "statistics_sources.json"]

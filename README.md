@@ -1,12 +1,14 @@
 # 집담 (Jipdam)
 
-서울 아파트 전월세 단지 후보를 예산·직장 위치·생활시설 조건으로 추천하고 이유와 포기할 조건을 비교하는 프로젝트다. 승인된 [RENT-001](outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md)과 [전환 Plan](outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md)을 따른다. 현재 구현은 Python·SQLite의 2023 역사 스냅샷·세 Data Tool·로컬 모델·합성 평가 기반에 합성 전월세 추천 CLI와 키 보관함이 추가됐다. 실데이터 추천·웹 비교는 아직 없다. [Project Spec](outputs/budongi_mvp_temp/docs/specs/00_project_spec.md)에서 CURRENT와 TARGET를 구분한다.
+서울 아파트 전월세 단지 후보를 예산·직장 위치·생활시설 조건으로 추천하고 이유와 포기할 조건을 비교하는 프로젝트다. 승인된 [RENT-001](outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md)과 [전환 Plan](outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md)을 따른다. 기존 Python·SQLite 역사 조회·로컬 모델·합성 추천/평가와 키 보관함을 보존하면서, 실제 canonical DB read-only serving, 대화형 검색과 니즈/상세 화면을 추가했다. 실제 확정 단지 연결은 아직 없어 결과는 `data_not_ready`다. [MVP 실행 안내](outputs/budongi_mvp_temp/README.md#대화형-db-전월세-mvp)와 [검증 기록](outputs/budongi_mvp_temp/docs/rental-mvp-validation-20261013.md)을 참고한다.
 
 팀원은 **Codex, Claude Code, Antigravity 중 익숙한 도구**로 작업할 수 있다. 같은 코드·Spec·ADR·Task·검증 명령을 공유한다. 전체 gstack의 자동 등록은 현재 Codex용으로 구성되어 있다.
 
 ## 데이터 수집·공유
 
 데이터 수집·공유는 [수집 현황](docs/data-collection.md)에서 확인한다. **수집 전 GitHub 범위 예약, Drive ZIP 업로드 전 결과 요약 기록은 필수**다. 기존 완료/예약 범위는 건너뛰고 미수집/실패분만 수집한다. 원본 ZIP은 [공유 Drive](https://drive.google.com/drive/folders/13AjoiYNCWcIB12GhSKyLiR1M2bR4Drkg)에 보관한다.
+
+3인 분담은 [채팅 공유용 요약](outputs/budongi_mvp_temp/docs/team-collection-chat-summary.md)과 [상세 확보처·추가 데이터·제출 안내](outputs/budongi_mvp_temp/docs/team-collection-details.md)를 사용한다. 스키마의 공식 기준은 [팀 데이터 계약](outputs/budongi_mvp_temp/docs/team-data-contract.md)이다.
 
 ## 1. 저장소 받기
 
@@ -167,3 +169,15 @@ GitHub CI는 Ubuntu/Windows × Python 3.11/3.12의 모델 없는 검증을 실�
 서비스·패키지·새 CLI 이름은 **집담(Jipdam)**·`jipdam`이다. 기존 `budongi` Python 모듈·CLI, 작업 폴더·데이터 ID는 호환성을 위해 유지한다. 저장소는 [keulreobeu/jipdam](https://github.com/keulreobeu/jipdam)이다.
 
 공유 ZIP이 필요하면 `python -X utf8 scripts/export_team.py`를 실행한다. 공유 대상만 `.local_runtime/team-share/jipdam-team-source.zip`에 담는다.
+
+### 대화형 전월세 MVP — 2026-10-14
+
+채팅 초안 확인·수정, 실제 DB 추천, 후보별 니즈, 100행 거래 상세와 Leaflet+OSM 내장 지도를 구현했다. 현재 실제 확정 연결은 0건이므로 data_not_ready로 표시한다. 검수 자료·실모델은 준비 조건이다. [실행·검수 패키지·성능 재현 안내](outputs/budongi_mvp_temp/docs/rental-review-package.md)를 따른다.
+
+2026-10-15 후속 준비: [1~5번 목적별 계획](outputs/budongi_mvp_temp/docs/plans/continuation-parts-1to5.md)과 [실제 검증](outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md)을 따릅니다. canonical v3 기본 경로·검수/로컬 모델 readiness CLI·Drive 패키지 다운로드·SOL/LUNA 난이도 선택을 연결했습니다. GMS는 최신 사용자 지시에 따라 누적을 차단 기준으로 쓰지 않고 실잔액 5,000을 보존합니다. 두 모델의 최신 설정 UI 호출·정산 검증도 완료했습니다. 실제 검수 자료/모델의 남은 게이트는 Task 기록을 따릅니다.
+
+### CLI-First 개발 하네스
+
+저장소 루트에서 `python -m harness status`, `python -m harness providers`로 자동 작업을 관리합니다.
+[작업 등록·worker·복구·검토·승인 명령](outputs/budongi_mvp_temp/docs/harness/CLI_OPERATIONS.md)과
+[구현·검증 결과](outputs/budongi_mvp_temp/docs/harness/CLI_IMPLEMENTATION_REPORT.md)를 참고하세요.
