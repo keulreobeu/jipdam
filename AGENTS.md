@@ -83,7 +83,7 @@ GMS는 기존 선택 보관함/예산 runner만 사용하며 초안은 수동 �
 
 ## GMS와 자동 커밋 최신 지시 — 2026-10-15
 
-사용자는 현재 대화에서 GMS 최소 보존을 **1,000크레딧**으로 변경했고 새 브랜치·검증 후 로컬 오토커밋을 승인했다.
+사용자는 현재 대화에서 GMS 고정 보존액을 해제했고, 가용 잔액 전액 사용을 허용했다. 새 브랜치·검증 후 로컬 오토커밋 지시는 유지한다.
 [HARNESS-OPS-001](outputs/budongi_mvp_temp/docs/specs/21_harness_operations_spec.md)과
 [TASK-HARNESS-OPS-001](outputs/budongi_mvp_temp/docs/tasks/harness-operations.md)을 따른다. 이전5,000은 이력이다.
 기존 선택 키/공통 원장/사전 count/최대 예약/만료·기술 상한을 유지하며 GMS 코드·테스트·문서 초안을 우선 사용한다.

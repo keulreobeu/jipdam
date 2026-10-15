@@ -185,8 +185,8 @@ class GMSBudgetManager:
                 raise GMSBudgetError("실행 활성화 값은 true/false여야 합니다.")
             if policy['budget_mode'] not in ('cumulative','reserve_only'):
                 raise GMSBudgetError('예산 기준은 cumulative 또는 reserve_only여야 합니다.')
-            if policy['budget_mode'] == 'reserve_only' and _credits(policy['reserve_credits']) < 100000:
-                raise GMSBudgetError('잔액 보존 모드는 최소 1,000크레딧을 남겨야 합니다.')
+            # reserve_only allows zero fixed reserve when explicitly selected.
+            # Active and uncertain reservations remain protected by the gates below.
             ids = {item["id"] for item in self.vault.list_state()["credentials"]}
             if policy["credential_id"] not in ids:
                 raise GMSBudgetError("보관함에서 사용할 GMS 키를 선택해 주세요.")

@@ -7,7 +7,7 @@ status = "verified"
 owner = "keulreobeu"
 specs = ["outputs/budongi_mvp_temp/docs/specs/18_gms_budget_spec.md"]
 scope = ["outputs/budongi_mvp_temp/src/budongi/gms_budget.py", "outputs/budongi_mvp_temp/src/budongi/gms_work.py", "outputs/budongi_mvp_temp/src/budongi/credential_server.py", "outputs/budongi_mvp_temp/src/budongi/static/credentials.html", "outputs/budongi_mvp_temp/src/budongi/static/credentials.js", "outputs/budongi_mvp_temp/src/budongi/static/credentials.css", "outputs/budongi_mvp_temp/src/budongi/cli.py", "outputs/budongi_mvp_temp/tests/test_gms_budget.py", "outputs/budongi_mvp_temp/tests/test_gms.py", "outputs/budongi_mvp_temp/docs/specs/18_gms_budget_spec.md", "outputs/budongi_mvp_temp/docs/specs/00_project_spec.md", "outputs/budongi_mvp_temp/docs/plans/gms-budget-work.md", "outputs/budongi_mvp_temp/docs/adr/ADR-011-gms-budgeted-work.md", "outputs/budongi_mvp_temp/docs/tasks/gms-budget-work.md", "outputs/budongi_mvp_temp/docs/tasks/current.md", "outputs/budongi_mvp_temp/README.md", "AGENTS.md", "outputs/budongi_mvp_temp/AGENTS.md", "docs/sdd/traceability.json"]
-acs = ["GMS-BUDGET-001-AC-01", "GMS-BUDGET-001-AC-02", "GMS-BUDGET-001-AC-03"]
+acs = ["GMS-BUDGET-001-AC-01", "GMS-BUDGET-001-AC-02", "GMS-BUDGET-001-AC-03", "GMS-BUDGET-001-AC-05", "GMS-BUDGET-001-AC-06"]
 
 [[verification]]
 command = ".venv/Scripts/python.exe -X utf8 scripts/verify_environment.py (TEMP/TMP=workspace .local_runtime/gms-test-temp)"
@@ -20,6 +20,24 @@ command = "node --check outputs/budongi_mvp_temp/src/budongi/static/credentials.
 result = "passed"
 evidence = "outputs/budongi_mvp_temp/docs/tasks/gms-budget-work.md#validation"
 acs = ["GMS-BUDGET-001-AC-03"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s tests -p test_gms_budget.py (TEMP/TMP=outputs/budongi_mvp_temp/.local_runtime/gms-test-temp)"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/gms-budget-work.md#gms-zero-reserve-verification"
+acs = ["GMS-BUDGET-001-AC-05", "GMS-BUDGET-001-AC-06"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s tests (TEMP/TMP=outputs/budongi_mvp_temp/.local_runtime/gms-test-temp)"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/gms-budget-work.md#gms-zero-reserve-verification"
+acs = ["GMS-BUDGET-001-AC-06"]
+
+[[verification]]
+command = "manual: POST /api/gms/policy on updated local server, reserve_credits=0; preserve active_calls=0 and held_credits=183"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/gms-budget-work.md#gms-zero-reserve-verification"
+acs = ["GMS-BUDGET-001-AC-06"]
 
 [[verification]]
 command = "manual: selected credential key-info GET; GMS input_tokens; gms-work quote/execute for TASK-GMS-BUDGET-001; IAB actual balance/5000 reserve/policy/counter fee/ledger and console"
@@ -43,6 +61,8 @@ acs = ["GMS-BUDGET-001-AC-01", "GMS-BUDGET-001-AC-02", "GMS-BUDGET-001-AC-03"]
 - [x] GMS-BUDGET-001-AC-01 실제 잔액 adapter·비노출
 - [x] GMS-BUDGET-001-AC-02 정책·견적·예약·정산·재시작
 - [x] GMS-BUDGET-001-AC-03 웹·코드 CLI 경로·예산 진입점
+- [x] GMS-BUDGET-001-AC-05 reserve_only 사용 이력/재시작 및 보존 호환성
+- [x] GMS-BUDGET-001-AC-06 고정 보존 0·가용 잔액 실행/hold 보호
 
 ## validation
 
@@ -80,3 +100,18 @@ IAB localhost:8765에서 공식 잔액·5,000 보존·초기 한도 저장·조�
 | Plan/Spec/Task/Goal | 해당 영구 문서·SDD 원장·이 채팅 Goal의 구현/검증 목적 연결 |
 | 명확한 코드 작업 GMS 우선 | 실제 GMS가 파서 함수/테스트 초안 작성; 로컬 검토/수정/적용/테스트; 공통 AGENTS의 runner 우선 지침 |
 | 비밀값/데이터/현재 모델 경계 | 허용된 서버 HTTPS만 선택 키 사용; prompt/키 없는 원장; 문맥 경로/비밀 탐지 테스트; 현재 Codex 공급자 및 원본 DB/추천 경계 유지 |
+
+### 2026-10-15 후속 — 고정 보존액 해제
+
+사용자가 고정 잔액 보존을 해제하고, 최대 예약과 기존 활성·미확인 보류를 제외한 가용 잔액 전부의 사용을 허용했다. `reserve_only`에서 `reserve_credits=0`을 저장할 수 있게 하고 설정 화면과 오류 없는 정책 안내를 맞춘다. 과거 1,000/5,000 보존 설정과 원장은 이력으로 보존한다.
+
+- AC-06: reserve=0 정책 저장 및 가용 잔액에서 최대 생성 비용까지 실행 가능.
+- AC-06: 잔액이 최대 예약보다 부족하면 count/generation을 시작하지 않음.
+- AC-06: 미확인 hold를 침범하지 않고 재시작 이후에도 hold/원장 보존.
+- AC-06: 설정 UI에서 0 입력/저장 가능, 누적 모드 호환 유지.
+
+### GMS zero-reserve verification
+
+사용자가 승인한 0 보존 정책을 로컬 보관함 서버에 저장했다. 기존 선택 자격증명/정책 mode를 유지했고 `reserve_credits=0`, active_calls=0, 기존 uncertain hold=183.0이 남은 것을 확인했다. 이전 서버 8786/8787은 변경 전 코드로 실행 중이어서 건드리지 않고, 현재 코드의 서버를 loopback 8788에서 사용했다.
+
+GMS budget 테스트 37개, GMS work 입력 경계 테스트 3개, JS 문법 검사와 전체 제품 테스트 281개(103.292초)가 통과했다. 첫 통합 시도는 테스트 임시 폴더가 Windows sandbox에서 막혀 실패했으며 프로젝트 로컬 임시 폴더를 지정해 재실행했다. 이번 정책 저장의 실제 포트 응답은 HTTP 200이었다. 통합 `verify_environment.py`는 SDD 변경 경로 검사에서 기존 미추적 `jipdam-branches-pre-delete-20261015.bundle`이 Task scope 밖이라는 이유로 중단된다. 해당 사용자 bundle은 건드리지 않았다. 후보 규칙 GMS 작업은 이어서 기록한다.

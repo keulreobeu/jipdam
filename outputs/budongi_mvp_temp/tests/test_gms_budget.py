@@ -69,40 +69,41 @@ class GMSBudgetTests(unittest.TestCase):
         self.assertEqual(restarted.state()['policy']['budget_mode'],'reserve_only')
         self.assertEqual(restarted.state()['accounted_credits'],4.2)
 
-    def test_reserve_only_still_blocks_below_floor_and_floor_cannot_be_lowered(self):
-        self.manager.save_policy({**self.policy,'budget_mode':'reserve_only','reserve_credits':1000})
-        self.client.remaining=1000
-        with self.assertRaises(GMSBudgetError): self.quote()
-        self.assertEqual(self.client.generated,0)
-        self.assertEqual(self.client.requests,[])
-        with self.assertRaises(GMSBudgetError):
-            self.manager.save_policy({**self.policy,'budget_mode':'reserve_only','reserve_credits':999})
+    def test_reserve_only_zero_fixed_reserve_allows_full_unheld_balance(self):
+        self.manager.save_policy({**self.policy,'budget_mode':'reserve_only','reserve_credits':0})
+        maximum = reservation_cents('gpt-6.1-sol', self.client.inputs, self.policy['max_output_tokens']) / 100
+        self.client.remaining = maximum
+        quote = self.quote()
+        self.assertEqual(quote['generation_maximum_credits'], maximum)
+        result = self.manager.execute(quote['quote_id'], confirmed=True)
+        self.assertEqual(result['status'], 'available')
+        self.assertEqual(self.client.generated, 1)
 
-    def test_reserve_only_1000_floor_preserves_existing_5000_and_cumulative_policy(self):
-        for reserve in (1000, 5000):
+    def test_reserve_only_accepts_zero_and_custom_reserve_and_cumulative_policy(self):
+        for reserve in (0, 1000, 5000):
             self.manager.save_policy({**self.policy, 'budget_mode': 'reserve_only', 'reserve_credits': reserve})
             self.assertEqual(self.manager.state()['policy']['reserve_credits'], reserve)
         # The new floor applies to the user-selected reserve_only mode.
         self.manager.save_policy({**self.policy, 'budget_mode': 'cumulative', 'reserve_credits': 0})
         self.assertEqual(self.manager.state()['policy']['reserve_credits'], 0)
 
-    def test_reserve_only_1000_checks_reservation_before_count_and_generation(self):
-        self.manager.save_policy({**self.policy, 'budget_mode': 'reserve_only', 'reserve_credits': 1000})
+    def test_reserve_only_checks_reservation_before_count_and_generation(self):
+        self.manager.save_policy({**self.policy, 'budget_mode': 'reserve_only', 'reserve_credits': 0})
         # Even zero input needs 200 credits for the selected maximum output.
         minimum = reservation_cents('gpt-6.1-sol', 0, self.policy['max_output_tokens']) / 100
-        self.client.remaining = 1000 + minimum - .01
+        self.client.remaining = minimum - .01
         with self.assertRaises(GMSBudgetError):
             self.quote()
         self.assertEqual(self.client.requests, [])
         self.assertEqual(self.client.generated, 0)
         # Counted input raises the actual reservation to 202; exact equality fits.
         maximum = reservation_cents('gpt-6.1-sol', self.client.inputs, self.policy['max_output_tokens']) / 100
-        self.client.remaining = 1000 + maximum
+        self.client.remaining = maximum
         quote = self.quote()
         self.assertEqual(quote['generation_maximum_credits'], maximum)
         counted_requests = len(self.client.requests)
         # A balance change after quotation must still block generation.
-        self.client.remaining = 1000 + maximum - .01
+        self.client.remaining = maximum - .01
         with self.assertRaises(GMSBudgetError):
             self.manager.execute(quote['quote_id'], confirmed=True)
         self.assertEqual(len(self.client.requests), counted_requests)
@@ -114,14 +115,14 @@ class GMSBudgetTests(unittest.TestCase):
         self.assertEqual(self.manager.execute(quote['quote_id'], confirmed=True)['status'], 'uncertain')
         before = self.manager.state()
         self.assertGreater(before['held_credits'], 0)
-        self.manager.save_policy({**self.policy, 'budget_mode': 'reserve_only', 'reserve_credits': 1000})
+        self.manager.save_policy({**self.policy, 'budget_mode': 'reserve_only', 'reserve_credits': 0})
         restarted = GMSBudgetManager(self.vault, path=self.manager.path, client=self.client)
         after = restarted.state()
-        self.assertEqual(after['policy']['reserve_credits'], 1000)
+        self.assertEqual(after['policy']['reserve_credits'], 0)
         for field in ('accounted_credits', 'accounted_tokens', 'held_credits', 'call_count', 'calls'):
             self.assertEqual(after[field], before[field])
         self.client.error = False
-        self.client.remaining = 1000 + before['held_credits']
+        self.client.remaining = before['held_credits']
         counted_requests = len(self.client.requests)
         with self.assertRaises(GMSBudgetError):
             restarted.quote(task_id='TASK-HARNESS-OPS-001', objective='Do not spend held credits')

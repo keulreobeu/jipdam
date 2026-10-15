@@ -23,11 +23,11 @@ acs = ["HARNESS-OPS-001-AC-03"]
 
 ```
 
-- [x] HARNESS-OPS-001-AC-01 보존1000·GMS CLI 호환성
+- [x] HARNESS-OPS-001-AC-01 GMS 보존 정책·CLI 호환성 (당시 보존1,000은 후속 지시로 0으로 변경)
 - [x] HARNESS-OPS-001-AC-02 안전한 자동 커밋
 - [x] HARNESS-OPS-001-AC-03 운영·실제 Git 기록·회귀
 
-사용자 추가 지시는 기존 CLI-HARNESS 구현 Goal의 후속 범위다. 기존 5,000은 이력이고 현재는1,000이다.
+사용자 추가 지시는 기존 CLI-HARNESS 구현 Goal의 후속 범위다. 기존 5,000/1,000은 이력이고 현재 고정 보존액은0이다.
 
 ## 후속 검증 보완
 

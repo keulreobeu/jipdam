@@ -1,5 +1,7 @@
 # Current Tasks — 전월세 제품 전환과 보존된 평가 기록
 
+2026-10-15 [TASK-GMS-BUDGET-001 후속 AC-06](gms-budget-work.md): reserve_only 고정 보존액 0 허용. 최대 비용 사전 예약·활성/미확인 hold·실잔액/만료·기술 상한 유지. 코드와 테스트 및 실제 로컬 정책 저장 확인 완료. 실제 GMS 후보 규칙 초안 작업은 계속 진행.
+
 2026-10-14 [TASK-RENT-CONTINUE-001](continuation-parts-1to5.md): 1~5번을 목적별로 실행. 기본 canonical v3 복구·실제 prepare, 검수/모델 준비 검사, 실제 Drive 다운로드·해시와 문서/Git 정리. [Plan](../plans/continuation-parts-1to5.md), [후속 검증](../continuation-validation-20261014.md). 사용자 검수 패키지·로컬 모델은 미준비.
 
 2026-10-14 [TASK-GMS-MODELS-001](gms-model-routing.md): simple→gpt-6-luna, complex→gpt-6.1-sol, 공식 GMS 요율·같은 모델 사전 카운트/최대 예약·공통 원장. 실제 두 모델 실행과 정수 크레딧 계정 표시를 반영한 예약 보완. 2026-10-15 최신 웹 UI의 두 모델 호출·정산과 reserve_only/5,000 보존·누적 입력 비활성을 검증해 Task는 verified다. 이후 코드·테스트·기계적 문서 작업은 GMS를 최대한 사용한다.

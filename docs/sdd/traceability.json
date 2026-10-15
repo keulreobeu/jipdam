@@ -2040,13 +2040,34 @@
                 {
                   "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
                   "class": "GMSBudgetTests",
-                  "method": "test_reserve_only_still_blocks_below_floor_and_floor_cannot_be_lowered"
+                  "method": "test_reserve_only_zero_fixed_reserve_allows_full_unheld_balance"
                 }
               ],
               "manual": [
                 {
                   "command": "Current selected policy reserve_only save/reload, retained ledger and UI mode",
                   "evidence": "outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md"
+                }
+              ]
+            },
+            {
+              "id": "GMS-BUDGET-001-AC-06",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_reserve_only_zero_fixed_reserve_allows_full_unheld_balance"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_lower_reserve_and_restart_preserve_uncertain_ledger_and_holds"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "Updated local credential server accepts reserve=0 and preserves existing hold",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/gms-budget-work.md#gms-zero-reserve-verification"
                 }
               ]
             }
@@ -2370,7 +2391,7 @@
                 {
                   "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
                   "class": "GMSBudgetTests",
-                  "method": "test_reserve_only_still_blocks_below_floor_and_floor_cannot_be_lowered"
+                  "method": "test_reserve_only_accepts_zero_and_custom_reserve_and_cumulative_policy"
                 },
                 {
                   "file": "outputs/budongi_mvp_temp/tests/test_codex_gms_probe.py",

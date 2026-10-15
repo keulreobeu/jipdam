@@ -34,8 +34,7 @@
   }
 
   function updateReserveMinimum() {
-    document.getElementById("gms-reserve").min =
-      document.getElementById("gms-budget-mode").value === "reserve_only" ? "1000" : "0";
+    document.getElementById("gms-reserve").min = "0";
   }
 
   function renderPolicy() {
