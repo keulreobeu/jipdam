@@ -268,9 +268,15 @@ def _typed_input(c, db_directory, normalized, batch, *, replay=False):
 
 def _candidates(c, batch):
     # Summarize entity evidence first; never join every transaction to every transaction.
+    # Values made only of mask asterisks (for example, public-data "***") are
+    # unknowns, not labels. Exclude them before exact equality can create a
+    # false candidate; partially missing evidence remains unresolved as well.
     c.execute("""CREATE TEMP TABLE official_labels AS
         SELECT complex_id,sgg_cd,legal_dong,jibun,apartment_name,MIN(observation_id) AS supporting_observation_id
-        FROM observations WHERE complex_id IS NOT NULL AND length(trim(legal_dong))>0 AND length(trim(jibun))>0
+        FROM observations WHERE complex_id IS NOT NULL
+          AND length(trim(legal_dong))>0 AND trim(legal_dong) GLOB '*[^*]*'
+          AND length(trim(jibun))>0 AND trim(jibun) GLOB '*[^*]*'
+          AND length(trim(apartment_name))>0 AND trim(apartment_name) GLOB '*[^*]*'
         GROUP BY complex_id,sgg_cd,legal_dong,jibun,apartment_name""")
     c.execute("CREATE INDEX official_label_lookup ON official_labels(sgg_cd,legal_dong,jibun,apartment_name)")
     for row in c.execute("""SELECT a.observation_id,b.complex_id,b.supporting_observation_id

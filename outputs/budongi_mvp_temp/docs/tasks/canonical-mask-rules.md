@@ -3,10 +3,22 @@
 ```toml
 kind = "task"
 id = "TASK-CANONICAL-MASK-RULES-001"
-status = "ready"
+status = "verified"
 owner = "Codex"
 specs = ["outputs/budongi_mvp_temp/docs/specs/13_canonical_integration_spec.md"]
 scope = ["outputs/budongi_mvp_temp/src/budongi/collection_integrate.py", "outputs/budongi_mvp_temp/tests/test_collection_integration.py", "outputs/budongi_mvp_temp/docs/specs/13_canonical_integration_spec.md", "outputs/budongi_mvp_temp/docs/tasks/canonical-mask-rules.md", "outputs/budongi_mvp_temp/docs/tasks/current.md", "outputs/budongi_mvp_temp/docs/plans/canonical-mask-rule-context.md", "docs/sdd/traceability.json"]
+acs = ["CANONICAL-001-AC-03"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s tests -p test_collection_integration.py (TEMP/TMP=outputs/budongi_mvp_temp/.local_runtime/gms-test-temp)"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/canonical-mask-rules.md#verification"
+acs = ["CANONICAL-001-AC-03"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s tests (TEMP/TMP=outputs/budongi_mvp_temp/.local_runtime/gms-test-temp)"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/canonical-mask-rules.md#verification"
 acs = ["CANONICAL-001-AC-03"]
 ```
 
@@ -27,11 +39,15 @@ acs = ["CANONICAL-001-AC-03"]
 
 ## 완료 기준
 
-- [ ] `***`는 literal identity로 사용되지 않는다.
-- [ ] 완전하고 정확한 비마스크 기준의 기존 후보 회귀가 유지된다.
-- [ ] 부족/모호한 근거는 pending/unverified 경계 밖으로 승격되지 않는다.
-- [ ] 합성 테스트와 제품 회귀 및 SDD 증거를 기록한다.
+- [x] `***`는 literal identity로 사용되지 않는다.
+- [x] 완전하고 정확한 비마스크 기준의 기존 후보 회귀가 유지된다.
+- [x] 부족/모호한 근거는 pending/unverified 경계 밖으로 승격되지 않는다.
+- [x] 합성 테스트와 제품 회귀 및 SDD 증거를 기록한다.
 
-## 검증·상태
+## Verification
 
-GMS가 코드를 수정하지 않는 초안을 반환한 뒤 담당자가 검토·수동 적용한다. 실제 자료 준비는 이 Task의 선행 조건이 아니다. 코드/테스트/로컬 검증이 완료되기 전까지 ready 상태를 유지한다.
+GMS가 코드를 직접 수정하지 않고 검토용 텍스트 초안만 반환해야 한다. 실행 시도는 provider 결과/정산이 불확정되어 managed task `TASK-CANONICAL-MASK-RULES-001-GMS2`가 `WAITING_FOR_PROVIDER`로 남았다. count 예약은 settled됐고 생성은 uncertain 197크레딧 hold로 기록되어 재시도하지 않았다. 이전 183크레딧 hold도 유지했다. 결과 텍스트는 받지 못해 코드는 Spec/기존 함수와 합성 회귀를 바탕으로 담당자가 직접 작성했다.
+
+`collection_integrate._candidates()`는 공식 라벨 쪽에서 trim 뒤 전부 별표인 법정동·지번·단지명을 제외한다. 따라서 `***`가 양쪽에 동일하게 있어도 후보가 되지 않는다. 불완전 값의 부분 매칭/퍼지 확장은 추가하지 않았다. 완전한 동일 라벨은 종전과 같이 근거가 있는 pending/unverified 후보이고 `confidence_score=NULL`이며 `observations.complex_id`는 수정하지 않는다.
+
+합성 검증: 해당 통합 파일 13개 테스트 통과(26.396초), 제품 전체 282개 테스트 통과(100.739초). 통합 `verify_environment.py`는 기존 미추적 branch bundle에 대한 SDD 범위 오류로 계속 막혀 있다. bundle은 수정·삭제·스테이징하지 않았다.

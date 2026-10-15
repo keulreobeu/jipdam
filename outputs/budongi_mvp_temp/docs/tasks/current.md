@@ -1,6 +1,6 @@
 # Current Tasks — 전월세 제품 전환과 보존된 평가 기록
 
-2026-10-15 [TASK-CANONICAL-MASK-RULES-001](canonical-mask-rules.md): GMS SOL 초안 대기/진행. `***`를 identity evidence로 취급하지 않는 deterministic pending-candidate 규칙과 합성 테스트. 실제 자료·리뷰 패키지 없이 진행.
+2026-10-15 [TASK-CANONICAL-MASK-RULES-001](canonical-mask-rules.md): verified, `***`/all-star fields are unknown, not identity evidence; pending-only exact-match rule is preserved. Synthetic integration tests13/13 and product tests282/282 passed. GMS SOL draft stayed uncertain with a retained 197-credit hold; see Task; actual package/model still not prepared.
 
 2026-10-15 [TASK-GMS-BUDGET-001 후속 AC-06](gms-budget-work.md): reserve_only 고정 보존액 0 허용. 최대 비용 사전 예약·활성/미확인 hold·실잔액/만료·기술 상한 유지. 코드와 테스트 및 실제 로컬 정책 저장 확인 완료. 실제 GMS 후보 규칙 초안 작업은 계속 진행.
 

@@ -94,13 +94,16 @@ class CanonicalSnapshotTests(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         self.base = Path(temporary.name)
 
-    def archive(self, name="batch", *, conflict=False):
+    def archive(self, name="batch", *, conflict=False, masked_labels=False):
         root = self.base / name
         create_plan(root, batch_id=name, snapshot_date="2026-10-12", districts=["11110"],
                     months=["202609"], services=["rental", "trade", "trade-detail"], record_url=RECORD)
         def response(request, **kwargs):
             if "AptRent" in request.full_url:
                 rows = [item(), item()]
+                if masked_labels:
+                    for row in rows:
+                        row.update(aptNm="***", umdNm="***", jibun="***")
             elif "AptTradeDev" in request.full_url:
                 rows = [item(service="trade"), item(service="trade")]
                 rows[0].update(umdCd="18000", bonbun="126", bubun="0", landCd="1")
@@ -108,6 +111,8 @@ class CanonicalSnapshotTests(unittest.TestCase):
                                umdCd="18000", bonbun="0126", bubun="0000", landCd="1")
             else:
                 rows = [item(service="trade")]
+                if masked_labels:
+                    rows[0].update(aptNm="***", umdNm="***", jibun="***")
             return Response(payload(rows))
         fetch_collection(root, {s: "fixture" for s in ("rental", "trade", "trade-detail")},
                          vault=Vault(), opener=response, sleep=lambda _: None)
@@ -159,6 +164,18 @@ class CanonicalSnapshotTests(unittest.TestCase):
             self.assertEqual(c.execute("SELECT COUNT(*) FROM observations WHERE kind!='sale' AND complex_id IS NOT NULL").fetchone()[0], 0)
             self.assertEqual(c.execute("SELECT DISTINCT review_status,confidence,confidence_score FROM match_candidates").fetchall(), [("pending", "unverified", None)])
             self.assertEqual(c.execute("SELECT COUNT(*) FROM observations WHERE source_effective_from IS NOT NULL OR building_id IS NOT NULL").fetchone()[0], 0)
+        finally:
+            c.close()
+
+    def test_masked_labels_do_not_create_literal_identity_candidates(self):
+        root = self.archive(masked_labels=True)
+        report = integrate_collection(root, root / "db", self.base / "canonical")
+        self.assertEqual(report["counts"]["complexes"], 2)
+        self.assertEqual(report["counts"]["match_candidates"], 0)
+        c = sqlite3.connect(self.base / "canonical/canonical.sqlite3")
+        try:
+            self.assertEqual(c.execute("SELECT COUNT(*) FROM match_candidates").fetchone()[0], 0)
+            self.assertEqual(c.execute("SELECT COUNT(*) FROM observations WHERE kind!='sale' AND complex_id IS NOT NULL").fetchone()[0], 0)
         finally:
             c.close()
 

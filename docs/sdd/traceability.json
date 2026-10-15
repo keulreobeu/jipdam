@@ -1254,6 +1254,11 @@
                   "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
                   "class": "CanonicalSnapshotTests",
                   "method": "test_region_conflict_is_recorded_and_not_promoted_to_an_official_link"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_collection_integration.py",
+                  "class": "CanonicalSnapshotTests",
+                  "method": "test_masked_labels_do_not_create_literal_identity_candidates"
                 }
               ],
               "manual": [
