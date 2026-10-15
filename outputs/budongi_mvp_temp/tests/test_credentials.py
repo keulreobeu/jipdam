@@ -75,6 +75,34 @@ class CredentialVaultTests(unittest.TestCase):
         self.assertEqual(reopened.get_secret(first["id"], expected_provider_id="kakao_local"), first_secret)
         self.assertEqual(reopened.get_secret(second["id"], expected_provider_id="kakao_local"), second_secret)
 
+    def test_alias_only_registration_and_legacy_folder_move_preserve_secret(self) -> None:
+        folder = self.add_folder()
+        destination = self.add_folder("공공데이터 API")
+        new_key = self.vault.add_credential(folder_id=destination, alias="공공데이터 공통 인증키",
+                                            api_key="synthetic-generic-key")
+        legacy = self.add_key(folder, "이전 키", "synthetic-legacy-key", "molit_rental")
+        moved = self.vault.update_credential(legacy["id"], alias="국토부 공통 키", folder_id=destination)
+        reopened = CredentialVault(self.path, self.key_store)
+        self.assertEqual(reopened.get_secret(new_key["id"]), "synthetic-generic-key")
+        self.assertEqual(reopened.get_secret(legacy["id"]), "synthetic-legacy-key")
+        self.assertEqual(moved["folder_id"], destination)
+        self.assertEqual(moved["provider_id"], "molit_rental")
+        counts = {f["id"]: f["credential_count"] for f in reopened.list_state()["folders"]}
+        self.assertEqual(counts, {folder: 0, destination: 2})
+
+    def test_invalid_folder_move_rolls_back_and_does_not_expose_secret(self) -> None:
+        folder = self.add_folder()
+        secret = "synthetic-move-secret"
+        key = self.add_key(folder, "기존 별칭", secret)
+        with self.assertRaises(CredentialNotFound):
+            self.vault.update_credential(key["id"], folder_id=str(uuid.uuid4()), alias="변경 별칭")
+        unsafe_folder = self.add_folder(secret)
+        with self.assertRaises(CredentialValidationError):
+            self.vault.update_credential(key["id"], folder_id=unsafe_folder)
+        state = self.vault.list_state()["credentials"][0]
+        self.assertEqual((state["folder_id"], state["alias"]), (folder, "기존 별칭"))
+        self.assertEqual(self.vault.get_secret(key["id"]), secret)
+
     def test_database_contains_ciphertext_not_plaintext_and_provider_is_bound(self) -> None:
         folder_id = self.add_folder()
         secret = "synthetic-secret-value-not-for-production"

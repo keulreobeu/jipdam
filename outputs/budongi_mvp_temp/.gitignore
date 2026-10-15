@@ -17,3 +17,6 @@ data/eval/*
 data/provisional/*
 !data/provisional/README.md
 data/rental/
+data/collection/
+data/sales/
+data/statistics/

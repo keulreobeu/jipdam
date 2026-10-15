@@ -34,4 +34,6 @@ Status: Accepted. 담당자: keulreobeu. 날짜: 2026-10-06.
 
 ## Verification
 
+2026-10-12 사용자 요청에 따라 보관함 화면은 별칭·폴더 관리로 통일한다. 연결 API 선택 목록은 전체 공급자·서비스를 대표하지 못하고 중복 분류로 잘못된 연동 판단을 유발했다. 전체 API 카탈로그 유지 대신 보관과 실제 사용을 분리한다. 새 키에는 중립적인 `generic` 공급자 메타데이터를 쓰고 기존 공급자 ID는 암호문 인증 데이터 호환성을 위해 보존한다. 실제 사용은 명시한 API 종류와 키 ID를 따른다. 기존의 명시적 공급자 검사·변경 경로는 호환성용으로 유지하며, 폴더 이동은 새 폴더 ID로 재암호화하는 트랜잭션으로 처리한다. 검증은 [TASK-CRED-ALIAS-001](../tasks/credential-alias-only.md)을 따른다.
+
 CRED-001-AC-01~05 제품 검증은 [vault Task](../tasks/api-credential-vault.md#validation)에 수동 시나리오로 연결한다. 문서 전환 검증은 [문서 Task](../tasks/credential-vault-sdd.md#doc-validation)에 기록한다. 이 ADR은 구현 또는 실제 API 호출 완료 증거가 아니다.

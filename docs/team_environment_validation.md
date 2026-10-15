@@ -89,3 +89,39 @@ PowerShell에서 활성화 없이도 다음 명령으로 설치한 CLI를 사용
 workflow에 `python -m pip install -e outputs/budongi_mvp_temp` 단계를 추가해 검증 전에 앱 런타임 의존성을 설치한다. 루트 README도 새 checkout에서 패키지를 설치한 뒤 `--app-only`를 실행하도록 고쳤다.
 
 저장소 `.local_runtime/` 아래 임시 가상환경을 새로 만들고 workflow와 같은 editable 설치를 실행했다. `cryptography 50.0.2`와 그 의존성이 설치된 뒤 `python -X utf8 scripts/bootstrap.py --app-only`가 통과했다. 제품 테스트 82개, 팀/SDD 테스트 18개, 합성 CLI smoke가 모두 성공했다. `python -X utf8 scripts/check_sdd.py --base origin/main`도 통과했다. PR #2 수정 후 [GitHub Actions run 37599609319](https://github.com/keulreobeu/jipdam/actions/runs/37599609319)에서 네 OS/Python 조합이 모두 성공했다.
+
+## Environment setup 2026-10-12
+
+[TASK-ENV-002](tasks/environment-setup-20261012.md)의 현재 PC 구성 결과다. Python 3.12.10, Node.js 24.18.0, Git 2.55.0.windows.2 및 기존 `.venv`의 editable jipdam 0.1.0·cryptography 50.0.2를 확인했다. `pip check`와 두 CLI help가 정상이다.
+
+공식 Bun 1.3.14 Windows x64 ZIP과 같은 release의 SHASUMS256.txt를 내려받아 SHA-256 `0a0620930b6675d7ba440e81f4e0e00d3cfbe096c4b140d3fff02205e9e18922` 일치를 확인했다. `.local_runtime/bun/bin/`에 bun.exe와 bunx.exe hard link를 설치하고 둘 다 1.3.14 실행을 확인했다. 사용자 전역 PATH·PowerShell 프로필·Codex 설정은 편집하지 않았다.
+
+고정 gstack commit `96764e80a641e28141ec8297223768029f5bf483`의 전체 bootstrap이 exit 0이었다. frozen Bun lock 설치·setup 전후 lock 해시 확인과 고유 스킬 57개 등록을 통과했다. Chromium/Headless Shell 151.0.7922.34, Playwright browser revision 1234를 프로젝트 로컬에 설치했다. setup은 일부 대형 스킬의 토큰 상한 경고를 출력했지만 설치·manifest·실행 검증은 성공했다.
+
+최종 검증 결과:
+
+- 제품 unittest 82개, 팀/SDD unittest 18개 모두 통과. 첫 sandbox의 app-only 검증에서는 native WinCred round-trip 1개가 로그온 세션 부재로 skipped였으나, 최종 전체 설치 실행에서는 같은 합성 테스트도 통과했다.
+- 합성 역사 스냅샷 doctor·Data Tool 조회 통과. 실제 평가 준비 완료로 판정하지 않는다.
+- Chromium 빈 화면 탐색·버튼 클릭·DOM 값·스크린샷·서버 종료 통과.
+- `register_gstack.py --check`: 고유·중첩 없는 스킬 57개.
+- 별도 합성 rental-demo CLI: 후보 2곳, status ok. 추천 전후 DB SHA-256 동일. 없는 DB는 exit 3·data_unavailable이며 DB 파일을 만들지 않는다.
+- `check_sdd.py --base origin/main` 통과. GitHub CI를 새로 실행하거나 원격 게시하지 않았다.
+
+현재 PC의 PowerShell에서는 저장소 루트에서 다음을 실행하면 Python·jipdam·budongi와 Bun·bunx가 로컬 설치 경로로 선택된다. UTF-8 출력과 gstack runtime 환경도 함께 설정한다. 이 스크립트는 개인 runtime 산출물이므로 Git에 포함하지 않는다.
+
+```powershell
+. ./.local_runtime/activate.ps1
+jipdam --help
+python -X utf8 scripts/verify_environment.py
+```
+
+추가 `gstack-qa-only` 보고서의 첫 직접 CLI 증거 캡처는 stdout이 UTF-8이 아니어서 incomplete였다. 해당 report-only 실행을 종료한 뒤 환경 작업에서 활성화 스크립트에 `PYTHONUTF8=1`을 추가했다. 동일 추천 명령을 같은 봉인 DB로 다시 실행해 complete 캡처, UTF-8 JSON·후보 2곳 및 DB 불변을 확인했다. 원래 실패와 후속 복구 증거는 분리해 보존했다. 보고서: `.local_runtime/gstack/qa-reports/environment-setup-20261012/`, 복구 capture: `.local_runtime/gstack/qa-reports/environment-setup-20261012-repair/`.
+
+Git Bash의 `--noprofile --norc` helper 호출은 셸 내부 PATH에 Unix 도구 경로가 있어야 한다. 단순 Windows PATH 전달에서는 dirname/tr/sed를 찾지 못했으며, 다음 방식으로 skill-start/end가 정상 동작했다.
+
+```powershell
+. ./.local_runtime/activate.ps1
+& 'C:/Program Files/Git/bin/bash.exe' --noprofile --norc -c 'export PATH="/usr/bin:/bin:$PATH"; "$GSTACK_ROOT/bin/gstack-config" get telemetry'
+```
+
+전체 설치 로그는 `.local_runtime/environment-setup-20261012-full.log`, 화면은 `.local_runtime/team-browser-smoke.png`에 있다. telemetry·auto_upgrade·update_check·원격 자동 리뷰는 꺼져 있다. Docker 실행 환경·Ollama·모델·CSO C++ toolchain은 이번 구성 범위 밖이다. 실제 수집·단지 매칭 보류와 GitHub 수집 범위 예약·결과 기록 계약을 유지한다. 합성 검증을 실제 데이터 수집·추천 품질 완료로 해석하지 않는다.

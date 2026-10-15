@@ -61,6 +61,10 @@ def _parser() -> argparse.ArgumentParser:
     credentials.add_argument("--port", type=int, default=8765,
                              help="Loopback-only local settings server port (default: 8765)")
     credentials.add_argument("--no-browser", action="store_true", help="Print the local URL without opening a browser")
+    gms_work = sub.add_parser("gms-work", help="Quote or run a bounded code draft through the local GMS budget manager")
+    gms_work.add_argument("--request", type=Path, required=True, help="JSON task_id/objective/acceptance_criteria/files; files relative to the product folder")
+    gms_work.add_argument("--port", type=int, default=8765)
+    gms_work.add_argument("--execute", action="store_true", help="Explicitly generate within the saved budget; default only quotes")
     recommend = sub.add_parser("recommend", help="Recommend rental complexes from a sealed rental snapshot")
     recommend.add_argument("--rental-db", type=Path, required=True)
     recommend.add_argument("--snapshot-id", required=True)
@@ -68,11 +72,54 @@ def _parser() -> argparse.ArgumentParser:
     recommend.add_argument("--allow-synthetic", action="store_true", help="Explicitly allow a fictional demo snapshot")
     demo = sub.add_parser("rental-demo", help="Create a fictional rental snapshot and sample request; no API calls")
     demo.add_argument("--directory", type=Path, default=Path("data/rental/synthetic-demo"))
+    prepare_rentals = sub.add_parser("prepare-rentals", help="Build an indexed rental serving DB from the read-only canonical DB")
+    from .canonical_rental import DEFAULT_CANONICAL_DB, DEFAULT_RENTAL_SERVING_DB
+    prepare_rentals.add_argument("--canonical-db", type=Path, default=DEFAULT_CANONICAL_DB)
+    prepare_rentals.add_argument("--output-db", type=Path, default=DEFAULT_RENTAL_SERVING_DB)
+    prepare_rentals.add_argument("--review-package", type=Path, help="Already approved offline review package directory")
+    prepare_rentals.add_argument("--allow-synthetic", action="store_true", help="Explicitly allow a labelled synthetic review fixture")
+    readiness = sub.add_parser("rental-readiness", help="Read-only real data/model input gates; no collection or generation")
+    readiness.add_argument("--canonical-db", type=Path, default=DEFAULT_CANONICAL_DB)
+    readiness.add_argument("--database", type=Path, default=DEFAULT_RENTAL_SERVING_DB)
+    readiness.add_argument("--review-package", type=Path)
+    readiness.add_argument("--model", default=os.environ.get("JIPDAM_RENTAL_MODEL"))
+    readiness.add_argument("--endpoint", default=os.environ.get("OLLAMA_ENDPOINT", "http://127.0.0.1:11434/v1/chat/completions"))
+    rental_mvp = sub.add_parser("rental-mvp", help="Run the loopback chat and rental comparison UI")
+    rental_mvp.add_argument("--database", type=Path, default=DEFAULT_RENTAL_SERVING_DB)
+    rental_mvp.add_argument("--allow-synthetic", action="store_true", help="Explicitly show labelled synthetic serving data")
+    rental_mvp.add_argument("--model", default=os.environ.get("JIPDAM_RENTAL_MODEL"))
+    rental_mvp.add_argument("--endpoint", default=os.environ.get("OLLAMA_ENDPOINT", "http://127.0.0.1:11434/v1/chat/completions"))
+    rental_mvp.add_argument("--port", type=int, default=8766)
+    rental_mvp.add_argument("--no-browser", action="store_true")
+    from .collection_cli import add_collection_parser
+    add_collection_parser(sub)
+    from .statistics_cli import add_statistics_parser
+    add_statistics_parser(sub)
     return parser
 
 
 def main() -> None:
     args = _parser().parse_args()
+    if args.command == "rental-readiness":
+        from .rental_readiness import rental_readiness
+        result = rental_readiness(canonical_db=args.canonical_db, database=args.database,
+                                  review_package=args.review_package, model=args.model, endpoint=args.endpoint)
+        _print(result)
+        if result['status'] in ('blocked','needs_input'):
+            raise SystemExit(2)
+        return
+    if args.command == "gms-work":
+        from .gms_work import run_gms_work
+        run_gms_work(args)
+        return
+    if args.command == "statistics":
+        from .statistics_cli import run_statistics
+        run_statistics(args)
+        return
+    if args.command == "collection":
+        from .collection_cli import run_collection
+        run_collection(args)
+        return
     if args.command in {"recommend", "rental-demo"}:
         from .rental_demo import create_rental_demo
         from .rental_recommendation import (RentalDataUnavailable, RentalInputError, RentalInternalError,
@@ -120,6 +167,34 @@ def main() -> None:
             print("집담 API 키 보관함 서버를 시작할 수 없습니다. 포트가 사용 중인지 확인해 주세요.",
                   file=sys.stderr)
             raise SystemExit(2) from exc
+        return
+    if args.command == "prepare-rentals":
+        from .canonical_rental import prepare_canonical_rental_serving
+        from .rental_recommendation import RentalDataUnavailable
+        try:
+            _print(prepare_canonical_rental_serving(args.canonical_db, args.output_db,
+                                                 review_package=args.review_package, allow_synthetic=args.allow_synthetic))
+        except RentalDataUnavailable as exc:
+            _print({"status": "data_not_ready", "error": str(exc)})
+            raise SystemExit(3) from None
+        except (OSError, sqlite3.Error):
+            _print({"status": "internal_error", "error": "실제 전월세 serving DB를 만들지 못했습니다."})
+            raise SystemExit(1) from None
+        return
+    if args.command == "rental-mvp":
+        from .rental_recommendation import RentalInputError
+        if not 1024 <= args.port <= 65535:
+            raise SystemExit("--port must be between 1024 and 65535")
+        try:
+            from .rental_server import serve_rental_mvp
+            serve_rental_mvp(port=args.port, database=args.database, model=args.model,
+                             endpoint=args.endpoint, open_browser=not args.no_browser, allow_synthetic=args.allow_synthetic)
+        except OSError as exc:
+            print("전월세 MVP 서버를 시작할 수 없습니다. DB 경로와 포트를 확인해 주세요.", file=sys.stderr)
+            raise SystemExit(2) from exc
+        except RentalInputError as exc:
+            _print({'status':'input_error','error':str(exc)})
+            raise SystemExit(2) from None
         return
     connection = connect(args.db)
     try:

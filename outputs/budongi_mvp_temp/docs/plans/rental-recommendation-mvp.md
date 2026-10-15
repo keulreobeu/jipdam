@@ -42,7 +42,9 @@
 
 설계 전제: 실거래를 매물로 부르지 않는다(D1); LLM이 조건·순위를 결정하지 않는다(D13); 최신 서비스 데이터와 2023 연구를 분리한다(D4·승인된 최종 계획). 첫 화면은 조건 입력, 다음 화면은 후보 비교와 추천 이유다. 샘플은 합성 여부를 명확히 표시하며 실제 단지·거래·시설을 만들어내지 않는다.
 
-## 기존 계획 대비 유지·추가·중단
+## 2026-10-06 초기 계획의 유지·추가·중단
+
+이 표는 초기 승인 이력이다. 지도·대화의 현재 범위는 아래 2026-10-14 사용자 승인 실행 계획에서 확장됐다.
 
 | 분류 | 대상 | 처리 |
 | --- | --- | --- |
@@ -174,3 +176,72 @@ Architecture: 2023 선행 순서·최신/역사 혼합·실거래/매물 혼동�
 **VERDICT:** 기존 RENT 계획 검토는 CRED-001 추가 전 기준이며 이번 보관함 추가를 검토하지 않았다. 이번 변경은 사용자가 결정한 보안 요구를 Spec·ADR·Task로 반영하며 신규 제품 구현·실제 API 호출·실데이터 추천 품질 완료를 뜻하지 않는다. 이번 문서 검증은 [보관함 SDD Task](../tasks/credential-vault-sdd.md#doc-validation)에 기록한다.
 
 NO UNRESOLVED DECISIONS
+
+## 2026-10-13 MVP 범위 확장 및 실행 계획
+
+이번 사용자의 확정 요구는 채팅형 조건 수집, LLM 추가 질문, 실제 로컬 DB 기반 추천, 후보 목록과 두 개의 상세 페이지(니즈 비교 / 전체 데이터), 좌표가 있을 때의 지도, 측정 가능한 DB 성능 기준이다. 기존 D12의 간단한 입력·비교 화면과 “지도·대화 제외”는 이 날짜의 확정 요구로 대체한다. 기존 RENT-001 검증·단위·출처·미확인 규칙, Python 단일 앱, SQLite, loopback 보안 경계는 유지한다.
+
+### 데이터 준비 상태 감사와 확정 정책
+
+읽기 전용 감사 기준 DB: `data/collection/molit-seoul-three-api-20261012-restored-20261013/canonical-v2-growing-20261013/canonical.sqlite3`.
+
+| 항목 | 2026-10-13 관측 | 제품 처리 |
+| --- | ---: | --- |
+| 전체 canonical observations | 374,892 | 성능 고정 기준 |
+| 전월세 observations | 238,620 (전세 119,631 / 월세 118,989) | 실제 데이터 조회 대상 |
+| `pending` 전월세 match candidates | 271,299 | 추천 후보로 쓰지 않음 |
+| `observations.complex_id`가 연결된 전월세 | 0 | 승인된 실제 추천 결과 현재 0개 |
+| 실제 canonical 좌표 필드/단지 시설 행 | 없음 | 지도/시설은 미제공 상태 표기 |
+| `data/rental/.../serving.sqlite3` | 합성 거래 3, 단지 3, 시설 0 | 실제 데이터로 자동 대체 금지 |
+
+사용자는 **확정 매칭된 단지만 추천**하도록 선택했다. 현재 실제 DB의 결과는 빈 추천 성공이 아니라 `data_not_ready`이며, 격리된 관측·pending 후보는 별도 데이터 준비 상태로 설명한다. 후보 자동 확정·문자열 유사도 매칭·거래 병합은 실행하지 않는다. 실제 좌표가 새로 제공되어도 검수 승인 전에는 지도에 올리지 않는다. 이 초기 계획에서는 외부 타일을 별도 승인으로 두었다. 이후 사용자 D1/D2와 실행 요청으로 Leaflet+OSM 내장 지도·지도 보기에서의 타일 요청을 승인했으며 2026-10-14 실행 계약이 적용된다.
+
+### 아키텍처와 작업 순서
+
+```text
+채팅 UI
+  → loopback 대화 endpoint
+      → 로컬 LLM: 다음 확인 질문과 구조화 초안만 생성
+      → 사용자 확인 + 기존 rental request validator
+          → 설정된 실제 canonical DB read-only query
+              → confirmed complex links만 선별
+                  → deterministic ranking + query evidence
+                      ├ 후보 결과 → 니즈 비교 페이지
+                      └ 후보 상세 ID → 전체 DB 데이터/출처 페이지 + 좌표 있으면 지도
+```
+
+1. `TASK-RENT-MVP-001`에서 1.76 GB canonical 원본 DB를 읽기 전용으로 열고, 추천에 필요한 실제 전월세 typed 필드·출처 계보만 담은 별도 인덱스 serving DB를 생성한다. 원본 canonical 파일은 수정하지 않는다. serving DB 경로를 설정화하고 confirmed link 전용 쿼리 및 `data_not_ready`/`no_match` 구분을 API 계약에 넣는다. 합성 데이터는 명시적 demo 설정에서만 사용한다.
+2. 사용자 메시지·assistant 질문·확정 구조화 조건으로 구성된 메모리 내 대화 세션을 구현한다. 기존 로컬 Ollama 런타임만 호출하고 4B 모델은 누락 슬롯 질문과 JSON 초안을 제공한다. 서버가 타입/범위/좌표를 검증하고 사용자 확인 전에는 추천을 실행하지 않는다. 모델 장애 때 입력을 유지하며 정적 확인 양식으로 전환한다.
+3. 기존 loopback 서버 경계를 재사용해 chat, recommendations, candidate-detail endpoint를 추가한다. DB는 `mode=ro`로 열고 SQL은 파라미터화한다. 후보 상세는 명시적인 필드 카탈로그와 출처·기준일을 반환하고, 행/거래 provenance 링크를 제공한다.
+4. 정적 화면을 채팅, 결과/니즈 비교, 전체 데이터 상세(지도 포함)로 연결한다. 지도는 로컬 렌더러에 검수 WGS84 좌표만 전달한다. 현재 DB에는 좌표/시설이 없으므로 빈 지도와 데이터 준비 메시지가 실제 동작이다.
+5. 실제 canonical DB를 변경 없이 읽으며 성능 계측을 100회 수행한다. 대표 request, 평균/중앙값/p95, DB 크기·행 수·SQLite 버전·query plan을 기록한다. 목표는 warmed backend read p95 ≤ 500ms다. 미달 query에만 좁은 인덱스를 설계하고, 기존 불변 DB를 수정하지 않고 별도 재생성/serving 사본에 적용한다.
+6. HTTP/API contract, 대화 질문, confirmed-only/data-not-ready, 상세 필드 계보, 지도 좌표/좌표 없음, 기존 역사·credentials 호환과 성능 목표를 검증한다. 성능 AC는 actual query 결과와 함께 기록하며 model latency를 DB latency에 섞지 않는다.
+
+### 데이터 계약과 실패 동작
+
+- 기본 경로는 실제 canonical에서 재생성된 compact serving DB다. canonical 입력과 serving 출력 경로를 명시하고 원본은 read-only로만 연다. serving 파일이 없거나 schema/source batch가 다르면 fail-closed하고, 합성 DB로 조용히 대체하지 않는다. 정상적으로 열린 DB에 confirmed 전월세 링크가 0건이면 `data_not_ready`; 입력은 유효하지만 확정 후보가 없으면 `no_match`다.
+- 매칭은 `review_status='confirmed'` 및 근거를 가진 링크만 사용한다. 한 원본 거래를 두 단지에 중복 연결하지 않는다. query 결과는 원본 `observation_id`의 계약 금액·면적·날짜 및 dataset/batch provenance를 반환한다. 집계가 필요해도 원본 관측은 병합/덮어쓰기하지 않고 결과 화면에서 그룹 출처를 모두 열거한다.
+- canonical DB schema에는 단지 위경도와 시설 테이블이 없으므로 이 DB에서 역/공원/병원 조건은 `unknown`이다. 필수 거리 조건은 후보를 무리하게 통과시키지 않고 `data_not_ready` 또는 확인 요청이 된다. 외부 지오코딩·시설 조회는 실행하지 않는다.
+- detail field catalogue는 `dataset_id`, `kind`, typed columns, unit, label, source/validity and provenance keys를 매핑한다. 임의 원문 payload를 브라우저로 반환하지 않는다. 새 데이터는 catalogue에 명시 추가하고 version을 남긴다.
+- 대화는 현재 로컬 프로세스 메모리에서만 유지한다. 로컬 LLM에 DB 조회 권한이나 사용자 키를 보내지 않는다. 이름/직장 입력은 로그·SQLite 대화영속 저장에 남기지 않는다.
+- 조회 성능은 SQL 선별 시간, 응답 구성 시간, 전체 endpoint DB 소요시간을 분리한다. serving DB에 `kind/region/date/area` 검색 인덱스와 `complex_id/contract_date` 최신 거래 인덱스를 추가하고 query plan을 기록한다. 100회 동일 payload, 첫 5회 워밍 후 다음 100회를 보고하며 p50/p95를 기록한다. 데이터 적격성 0건도 빠른 응답으로 별도 보고하고 그 사실을 추천 완료로 취급하지 않는다.
+
+### 미완료 게이트
+
+현재 실제 DB에는 confirmed 전월세 링크가 없다. 따라서 실제 추천 콘텐츠·지도 표식·생활시설 비교의 제품 유효성은 사람 검수 매칭, 좌표·시설 자료의 승인된 입력 후 검증해야 한다. 이번 코드는 실제 추천 경로와 올바른 `data_not_ready` 상태를 구현할 수 있으나 현재 DB로 실제 추천 품질을 주장할 수 없다. 실수집·새 출처·좌표/시설 확보·외부 지도 타일·자동 매칭은 이 계획의 범위에 포함하지 않는다.
+
+### 2026-10-13 구현 진행 및 실제 계측
+
+`TASK-RENT-MVP-001`에서 루프백 UI/API, allowlist draft, confirmed-only read-only serving query, 명시적 verified 좌표 게이트, 확장 가능한 상세 필드 카탈로그를 구현했다. 단지별 최신 관측 선택은 SQL `ROW_NUMBER()`로 수행하고, budget은 최신 관측 선택 후 적용한다. Python에 후보 전체 행을 로드하지 않고 serving partial index를 사용한다. 상세 관측은 100행 페이지로 읽는다.
+
+실제 238,620건 전월세 projection을 읽어 readiness endpoint 100회 p95 29.352ms, confirmed-only CTE 후보 조회 100회 p95 0.357ms를 계측했다. CTE의 실제 반환 건수는 매회 0이며 EXPLAIN은 `rental_complex_latest` 검색을 보였다. 이 수치는 현재 DB 상태의 성능 검증이지, 후보가 존재할 때의 실제 추천 성공/결과 정렬·상세 지연 검증은 아니다. 자세한 측정값, 환경, 테스트와 남은 게이트는 [검증 기록](../rental-mvp-validation-20261013.md)에 있다. 실모델과 브라우저 QA, verified match·좌표·시설 자료는 아직 없다.
+
+## 2026-10-14 사용자 승인 실행 계획
+
+사용자의 PLEASE IMPLEMENT THIS PLAN을 실행한다. D1 내장 지도, D2 Leaflet 1.9.4+OpenStreetMap, D3 별도 어댑터·공통 순수 판정. T1 검수 관계/좌표/시설/커버리지·manifest·해시·카탈로그를 포함하는 선택형 review package와 serving v2 → T2 latest-before-budget·필수/선호·순위·RTree → T3 로컬 모델 초안/확인/수정/제거/복구 → T4 후보별 니즈·100행 상세·내장 지도 → T5 5회 워밍업/100회 추천·상세와 회귀 → T6 Runtime/Spec/Task/원장 동기화.
+
+필수 met만 통과하며 선호 unknown은 유지한다. 최신 계약은 날짜/관측ID 내림차순, 순위는 선호 충족/직장거리/계약일/단지ID. 최종 조건 판정 이전 LIMIT 금지. HTTP 400 입력, 503 DB 오류, 200 data_not_ready, 404 존재하지 않는 후보만. 원본 불변·검수 근거 필수·합성 명시·지도 보기에서만 타일 요청. 기능 검증과 실제 데이터 검증을 별도 기록하고 실제 확정 연결 0건의 빠른 응답만으로 Goal을 완료하지 않는다. 상세 계약과 이유는 RENT-001 revision5와 ADR-009를 따른다.
+
+현재 T1~T6 구현·회귀·합성 지도/성능 증거는 TASK-RENT-MVP-001에 기록했다. 실제 확정 자료/좌표/시설 및 실모델은 사용자 답변대로 준비 조건이며 실제 성공 경로 p95를 별도 검증한다.
+
+2026-10-14 재개 지시로 GMS budgeted runner를 사용해 검수 패키지 날짜 경계 테스트 초안을 만들고 로컬 검토·검증 후 적용했다. 개발 초안만 GMS에 제공하며 실제 추천용 로컬 모델은 기존 계약을 유지한다. 현재 runner는 승인된 `gpt-6.1-sol` 고정 모델/요율을 사용했다. 사용자가 허용한 난이도별 LUNA 선택은 지원 모델·요금 확인 후 사전 카운트·최대 비용 예약까지 모델별로 연결해야 한다. 실제 사용·잔액·최종 검증은 [검증 기록](../rental-mvp-validation-20261013.md#2026-10-14-최종-재검증)에 남겼다.

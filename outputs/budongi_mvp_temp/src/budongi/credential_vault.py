@@ -22,7 +22,10 @@ NONCE_BYTES = 12
 FORMAT_VERSION = 1
 MAX_SECRET_BYTES = 4096
 PROVIDERS = {
+    "generic": "별칭으로 관리",
     "molit_rental": "국토교통부 아파트 전월세 실거래가",
+    "molit_trade": "국토교통부 아파트 매매 실거래가",
+    "molit_trade_detail": "국토교통부 아파트 매매 실거래가 상세",
     "kakao_local": "Kakao Local",
     "seoul_open_data": "서울 열린데이터광장",
 }
@@ -387,7 +390,7 @@ class CredentialVault:
                 "SELECT c.id, c.folder_id, f.name AS folder_name, c.provider_id, c.alias, "
                 "c.created_at, c.updated_at FROM credentials c "
                 "JOIN credential_folders f ON f.id = c.folder_id "
-                "ORDER BY f.name COLLATE NOCASE, c.provider_id, c.alias COLLATE NOCASE"
+                "ORDER BY f.name COLLATE NOCASE, c.alias COLLATE NOCASE, c.id"
             ).fetchall()
             key_count = len(rows)
             connection.execute("COMMIT")
@@ -428,7 +431,7 @@ class CredentialVault:
         return {"folders": folders, "credentials": credentials,
                 "secure_storage_ready": ready, "secure_storage_message": message}
 
-    def add_credential(self, *, folder_id: object, provider_id: object,
+    def add_credential(self, *, folder_id: object, provider_id: object = "generic",
                        alias: object, api_key: object) -> dict[str, str]:
         folder_key = self._validate_id(folder_id)
         provider = self._validate_provider(provider_id)
@@ -471,13 +474,15 @@ class CredentialVault:
 
     def update_credential(self, credential_id: object, *, alias: object | None = None,
                           api_key: object | None = None,
-                          provider_id: object | None = None) -> dict[str, str]:
+                          provider_id: object | None = None,
+                          folder_id: object | None = None) -> dict[str, str]:
         key_id = self._validate_id(credential_id)
-        if alias is None and api_key is None and provider_id is None:
-            raise CredentialValidationError("변경할 연결 API, 별칭 또는 API 키를 입력해 주세요.")
+        if alias is None and api_key is None and provider_id is None and folder_id is None:
+            raise CredentialValidationError("변경할 폴더, 별칭 또는 API 키를 입력해 주세요.")
         display_alias = self._validate_alias(alias) if alias is not None else None
         secret = self._validate_secret(api_key) if api_key is not None else None
         replacement_provider = self._validate_provider(provider_id) if provider_id is not None else None
+        replacement_folder = self._validate_id(folder_id) if folder_id is not None else None
         now = self._now()
         connection = self._connect()
         try:
@@ -492,23 +497,27 @@ class CredentialVault:
             updated_alias = display_alias if display_alias is not None else row["alias"]
             replacement_secret = secret if secret is not None else existing_secret
             updated_provider = replacement_provider if replacement_provider is not None else row["provider_id"]
+            updated_folder = replacement_folder if replacement_folder is not None else row["folder_id"]
             if existing_secret in updated_alias or replacement_secret in updated_alias:
                 raise CredentialValidationError("별칭에 API 키 값이 포함될 수 없습니다.")
-            folder_name = connection.execute("SELECT name FROM credential_folders WHERE id = ?",
-                                             (row["folder_id"],)).fetchone()[0]
-            if replacement_secret in folder_name:
+            folder = connection.execute("SELECT name FROM credential_folders WHERE id = ?",
+                                        (updated_folder,)).fetchone()
+            if folder is None:
+                raise CredentialNotFound("폴더를 찾을 수 없습니다.")
+            folder_name = folder["name"]
+            if existing_secret in folder_name or replacement_secret in folder_name:
                 raise CredentialValidationError("폴더 이름에 API 키 값이 포함될 수 없습니다.")
-            if secret is not None or updated_provider != row["provider_id"]:
-                nonce, ciphertext = self._encrypt(old_key, key_id, row["folder_id"], updated_provider, replacement_secret)
+            if secret is not None or updated_provider != row["provider_id"] or updated_folder != row["folder_id"]:
+                nonce, ciphertext = self._encrypt(old_key, key_id, updated_folder, updated_provider, replacement_secret)
                 connection.execute(
-                    "UPDATE credentials SET provider_id = ?, alias = ?, nonce = ?, ciphertext = ?, updated_at = ? WHERE id = ?",
-                    (updated_provider, updated_alias, nonce, ciphertext, now, key_id),
+                    "UPDATE credentials SET folder_id = ?, provider_id = ?, alias = ?, nonce = ?, ciphertext = ?, updated_at = ? WHERE id = ?",
+                    (updated_folder, updated_provider, updated_alias, nonce, ciphertext, now, key_id),
                 )
             else:
                 connection.execute("UPDATE credentials SET alias = ?, updated_at = ? WHERE id = ?",
                                    (updated_alias, now, key_id))
             connection.execute("COMMIT")
-            return {"id": key_id, "folder_id": row["folder_id"], "provider_id": updated_provider,
+            return {"id": key_id, "folder_id": updated_folder, "provider_id": updated_provider,
                     "provider_name": PROVIDERS.get(updated_provider, updated_provider),
                     "alias": updated_alias, "created_at": row["created_at"],
                     "updated_at": now, "masked": "••••••••"}
@@ -523,15 +532,15 @@ class CredentialVault:
         finally:
             connection.close()
 
-    def get_secret(self, credential_id: object, *, expected_provider_id: object) -> str:
+    def get_secret(self, credential_id: object, *, expected_provider_id: object | None = None) -> str:
+        """Read an explicitly selected ID; retain optional legacy provider checks."""
         key_id = self._validate_id(credential_id)
-        provider = self._validate_provider(expected_provider_id)
+        provider = self._validate_provider(expected_provider_id) if expected_provider_id is not None else None
         connection = self._connect()
         try:
-            row = connection.execute("SELECT * FROM credentials WHERE id = ? AND provider_id = ?",
-                                     (key_id, provider)).fetchone()
-            if row is None:
-                raise CredentialNotFound("해당 공급자의 API 키를 찾을 수 없습니다.")
+            row = connection.execute("SELECT * FROM credentials WHERE id = ?", (key_id,)).fetchone()
+            if row is None or (provider is not None and row["provider_id"] != provider):
+                raise CredentialNotFound("지정한 API 키를 찾을 수 없습니다.")
             key = self._key_from_store()
             if key is None:
                 raise SecureStorageUnavailable("기존 암호화 키를 찾을 수 없습니다.")
