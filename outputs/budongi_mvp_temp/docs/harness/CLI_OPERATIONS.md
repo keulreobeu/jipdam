@@ -95,7 +95,7 @@ python -m harness resume --task TASK-OTHER --recover-running
 동일 task/worktree/Codex 재시도에서 resume에 사용한다. task execution의 `resume_session:false`로 새 세션을 선택할 수 있다.
 세션 ID/토큰은 CLI가 실제 제공한 경우에만 저장하고 나머지는 null이다. raw CLI stderr/명령 이벤트는 보관하지 않는다.
 
-GMS는 기존 선택 정책·보관함·실잔액/만료·사전 count·최대 예약·공통 원장·현재1,000 보존을 재사용한다.
+GMS는 기존 선택 정책·보관함·실잔액/만료·사전 count·최대 예약·공통 원장을 재사용한다. 현재 고정 보존액은 0크레딧이며, 활성/불확정 hold와 최대 예약은 계속 보호한다.
 새 키 환경변수를 추가하지 않는다. 기존 `budongi.cli credentials --no-browser --port 8786` 서버가 준비돼야 한다.
 `providers`는 로컬 정책만 조회하며 유료 count·잔액 원격 조회를 하지 않는다. 실행 시 서버가 준비 조건을 검사한다.
 `--gms-port`와 `--codex-bin`은 전역 옵션이므로 관리 명령 앞에 둔다.

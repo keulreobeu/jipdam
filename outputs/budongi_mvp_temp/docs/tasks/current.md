@@ -2,15 +2,15 @@
 
 2026-10-15 [TASK-CANONICAL-MASK-RULES-001](canonical-mask-rules.md): verified, `***`/all-star fields are unknown, not identity evidence; pending-only exact-match rule is preserved. Synthetic integration tests13/13 and product tests282/282 passed. GMS SOL draft stayed uncertain with a retained 197-credit hold; see Task; actual package/model still not prepared.
 
-2026-10-15 [TASK-GMS-BUDGET-001 후속 AC-06](gms-budget-work.md): reserve_only 고정 보존액 0 허용. 최대 비용 사전 예약·활성/미확인 hold·실잔액/만료·기술 상한 유지. 코드와 테스트 및 실제 로컬 정책 저장 확인 완료. 실제 GMS 후보 규칙 초안 작업은 계속 진행.
+2026-10-15 [TASK-GMS-BUDGET-001 후속 AC-06](gms-budget-work.md): reserve_only 고정 보존액 0 허용. 최대 비용 사전 예약·활성/미확인 hold·실잔액/만료·기술 상한 유지. 코드와 테스트 및 실제 로컬 정책 저장 확인 완료. 이후 현재 지시는 가능한 코드·테스트·문서 작업을 GMS 우선으로 한다.
 
-2026-10-14 [TASK-RENT-CONTINUE-001](continuation-parts-1to5.md): 1~5번을 목적별로 실행. 기본 canonical v3 복구·실제 prepare, 검수/모델 준비 검사, 실제 Drive 다운로드·해시와 문서/Git 정리. [Plan](../plans/continuation-parts-1to5.md), [후속 검증](../continuation-validation-20261014.md). 사용자 검수 패키지·로컬 모델은 미준비.
+2026-10-14 [TASK-RENT-CONTINUE-001](continuation-parts-1to5.md): 1~5번의 현재 준비·검증 작업을 마쳤다. 기본 canonical v3를 승인된 패키지에서 복구하고 prepare 성공, 검수/모델 gate, synthetic benchmark, 기존 Drive 다운로드, GMS 정책 문서와 Git 데이터 제외 규칙을 확인했다. 2·3번 실제 검수 패키지와 추천용 로컬 모델은 사용자가 나중에 준비하기로 해 후속 실검증은 대기 중이다. [Plan](../plans/continuation-parts-1to5.md), [Task 증거](continuation-parts-1to5.md#verification).
 
-2026-10-14 [TASK-GMS-MODELS-001](gms-model-routing.md): simple→gpt-6-luna, complex→gpt-6.1-sol, 공식 GMS 요율·같은 모델 사전 카운트/최대 예약·공통 원장. 실제 두 모델 실행과 정수 크레딧 계정 표시를 반영한 예약 보완. 2026-10-15 최신 웹 UI의 두 모델 호출·정산과 reserve_only/5,000 보존·누적 입력 비활성을 검증해 Task는 verified다. 이후 코드·테스트·기계적 문서 작업은 GMS를 최대한 사용한다.
+2026-10-14 [TASK-GMS-MODELS-001](gms-model-routing.md): simple→gpt-6-luna, complex→gpt-6.1-sol, 공식 GMS 요율·같은 모델 사전 카운트/최대 예약·공통 원장. 실제 두 모델 실행·정산 검증 당시의 5,000 보존은 후속 지시로 0으로 해제됐다. 현재는 reserve_only/0 고정 보존이며 활성·불확정 hold와 최대 비용 예약은 계속 보전한다. 이후 코드·테스트·기계적 문서 작업은 GMS를 최대한 사용한다.
 
 2026-10-14 [TASK-HARNESS-001](harness-integration.md): verified (bounded offline core), Phase 0·선택적 native 역할·Python 공통 상태/체크포인트/원장·Mock Provider. [운영](../harness/README.md). 실제 GMS·타 호스트 native는 별도 검증.
 
-2026-10-14 [TASK-GMS-BUDGET-001](gms-budget-work.md): verified, 공식 잔액·5,000 보존·전체/호출 토큰/비용·유료 카운트 조회 비용 예약/대사·최대 생성 예약/usage 정산·GMS 코드 runner와 공통 지침. [Plan](../plans/gms-budget-work.md). 실제 GMS 코드 초안 1회 생성·검토/반영, 최종 잔여 29,845·이번 작업 차감 155, 제품194/팀SDD22·CLI/웹 검증 통과. 초기 전체 한도500 기록이며 현재는 reserve_only·5,000 보존만 적용한다. 만료 2026-10-16 18:00 KST.
+2026-10-14 [TASK-GMS-BUDGET-001](gms-budget-work.md): verified. 실제 GMS 코드 초안·검토/반영, 제품·팀 SDD·CLI/웹 검증을 마쳤다. 당시 5,000 보존과 잔액 수치는 기록 이력이고, 후속 정책은 reserve_only·0 고정 보존이다. [Plan](../plans/gms-budget-work.md). 만료·사전 카운트·최대 호출 예약·미확정 hold 보전 경계는 유지한다.
 
 2026-10-14 [TASK-GMS-001](gms-connection.md): verified, 암호화 보관함의 키 등록/교체와 별도 GMS 연결 확인·3만 크레딧 사용량/시간 계산. 합성 GMS 12개·전체 제품 166개·팀/SDD 22개·CLI 및 브라우저 계산 흐름 검증 통과. 당시의 실제 키 시험 게이트는 후속 TASK-GMS-BUDGET-001/TASK-GMS-MODELS-001의 실제 성공 증거로 해소됐다.
 
@@ -118,4 +118,4 @@ Evaluate each Golden `required_facts` item against its generated answer determin
 
 ## 2026-10-15 GMS·오토커밋 후속
 
-[TASK-HARNESS-OPS-001](harness-operations.md): 현재 GMS 보존1,000, native Codex gateway 호환성 점검, 전용 브랜치와 검증 후 자동 로컬 커밋.
+[TASK-HARNESS-OPS-001](harness-operations.md): 현재 GMS 고정 보존 0, native Codex gateway 호환성 점검, 전용 브랜치와 검증 후 자동 로컬 커밋.

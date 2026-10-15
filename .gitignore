@@ -11,6 +11,8 @@ node_modules/
 *.log
 work/
 outputs/team-share/
+/outputs/budongi_mvp_temp/data/
+/jipdam-branches-pre-delete-20261015.bundle
 # gstack is generated from tooling/gstack.lock.json, never vendored here.
 .agents/skills/gstack/
 .agents/skills/gstack-*/

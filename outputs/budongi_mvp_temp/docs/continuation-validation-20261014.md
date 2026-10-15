@@ -1,5 +1,15 @@
 # 1~5번 후속 검증 — 2026-10-14
 
+## 2026-10-15 후속 준비 재검증
+
+기존 승인 MOLIT 공유 패키지를 고정 ID 검증 CLI로 다시 받아 파일 크기/해시, ZIP SHA-256 `e9eeb0c1057e16f11066c42e704ffd38d88e93bc59dda797a3b250c7366cc013`, CRC를 확인했다. manifest 확인 후 네트워크 차단 재구성에서 관측·정규화·canonical 테이블 기대값이 일치했다. 새로운 출력 경로를 사용했으며 기본 경로 `prepare-rentals`는 exit 0, source v3/serving v2, 관측 238,620건이었다. canonical SHA-256 `04f7e4da5e52884878c957757699c4e1cd44213839a0df2fc9273e911e46b20f`는 prepare 전후 동일하다.
+
+Readiness는 기대한 exit 2/`needs_input`으로, Part 1 ready, Part 2 승인 검수 패키지 미제공, Part 3 확정 관계·좌표·시설·커버리지와 실제 후보 미확보를 보고했다. 사용자가 실제 검수 패키지와 추천용 로컬 모델 준비를 나중으로 미뤘으므로 해당 실제 검증은 수행하지 않았다. `data_not_ready`와 확정 관계 0을 유지한다.
+
+합성 전용 `benchmark_rentals --create-synthetic --allow-synthetic --compare-indexes`는 각 경로 5 warmup/100회로 통과했고 on/off 인덱스 결과 signature가 일치했다. 추천 p95는 indexed 145.243ms/no-index 152.562ms, 상세 p95는 82.065ms/90.655ms였다. 이는 실제 후보 p95나 모델 품질 측정이 아니다.
+
+환경 검증은 제품 282개(104.340초), 루트/팀 27개(1.599초), 모델 없는 합성 CLI smoke가 통과했다. SDD 검사도 기능 15개/AC 87개/Task 34개/변경 경로 5개로 통과했다. Git 공백 검사는 통과했고 사용자 데이터 폴더와 기존 bundle은 ignore 규칙에 포함되며 스테이징 대상에서 제외했다.
+
 ## 조사
 
 기존 serving은 read-only 조회에서 전월세 238,620건, 확정 관계 0건, 좌표/시설/커버리지 false를 반환한다. 기본 canonical 경로는 정리된 canonical-v2-growing을 가리키며 파일이 없다. canonical-v3-20261013/canonical.sqlite3는 존재한다. 이것이 첫 prepare 실패의 원인이다.
