@@ -4,7 +4,9 @@
 
 2026-10-15 [TASK-GMS-BUDGET-001 후속 AC-06](gms-budget-work.md): reserve_only 고정 보존액 0 허용. 최대 비용 사전 예약·활성/미확인 hold·실잔액/만료·기술 상한 유지. 코드와 테스트 및 실제 로컬 정책 저장 확인 완료. 이후 현재 지시는 가능한 코드·테스트·문서 작업을 GMS 우선으로 한다.
 
-2026-10-14 [TASK-RENT-CONTINUE-001](continuation-parts-1to5.md): 1~5번의 현재 준비·검증 작업을 마쳤다. 기본 canonical v3를 승인된 패키지에서 복구하고 prepare 성공, 검수/모델 gate, synthetic benchmark, 기존 Drive 다운로드, GMS 정책 문서와 Git 데이터 제외 규칙을 확인했다. 2·3번 실제 검수 패키지와 추천용 로컬 모델은 사용자가 나중에 준비하기로 해 후속 실검증은 대기 중이다. [Plan](../plans/continuation-parts-1to5.md), [Task 증거](continuation-parts-1to5.md#verification).
+2026-10-15 [TASK-RENT-CANDIDATE-EXPORT-001](rental-candidate-review-export.md): 코드·로컬 검토 CSV 생성·검증 완료, 실제 사람 검수 전이라 `in_progress`. 승인·자동 매칭은 수행하지 않으며 실제 추천은 `data_not_ready` 유지.
+
+2026-10-14 [TASK-RENT-CONTINUE-001](continuation-parts-1to5.md): 1·4번 완료, 2·3번 비모델 준비 검증 완료. 기본 canonical v3 복구/prepare, synthetic benchmark·UI, 기존 Drive 다운로드, GMS 정책 문서와 Git 데이터 제외 규칙을 확인했다. 실제 사람 검수 패키지와 추천용 로컬 모델은 나중에 준비하기로 해 실제 검수/모델 검증은 대기 중이다. [Plan](../plans/continuation-parts-1to5.md), [Task 증거](continuation-parts-1to5.md#verification).
 
 2026-10-14 [TASK-GMS-MODELS-001](gms-model-routing.md): simple→gpt-6-luna, complex→gpt-6.1-sol, 공식 GMS 요율·같은 모델 사전 카운트/최대 예약·공통 원장. 실제 두 모델 실행·정산 검증 당시의 5,000 보존은 후속 지시로 0으로 해제됐다. 현재는 reserve_only/0 고정 보존이며 활성·불확정 hold와 최대 비용 예약은 계속 보전한다. 이후 코드·테스트·기계적 문서 작업은 GMS를 최대한 사용한다.
 

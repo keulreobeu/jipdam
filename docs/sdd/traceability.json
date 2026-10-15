@@ -429,6 +429,21 @@
                   "file": "outputs/budongi_mvp_temp/tests/test_rental_storage.py",
                   "class": "RentalDataContractTests",
                   "method": "test_observation_must_match_manifest_file_hash_and_row_count"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_candidate_export.py",
+                  "class": "RentalCandidateExportTests",
+                  "method": "test_exports_distinct_pending_rental_pairs_and_ambiguous_groups_read_only"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_candidate_export.py",
+                  "class": "RentalCandidateExportTests",
+                  "method": "test_formula_prefixes_are_neutralized"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_rental_candidate_export.py",
+                  "class": "RentalCandidateExportTests",
+                  "method": "test_rejects_existing_or_non_local_output_without_modifying_it"
                 }
               ],
               "manual": [
@@ -2510,6 +2525,7 @@
     "outputs/budongi_mvp_temp/docs/tasks/continuation-parts-1to5.md",
     "outputs/budongi_mvp_temp/docs/tasks/gms-model-routing.md",
     "outputs/budongi_mvp_temp/docs/tasks/cli-harness.md",
-    "outputs/budongi_mvp_temp/docs/tasks/harness-operations.md"
+    "outputs/budongi_mvp_temp/docs/tasks/harness-operations.md",
+    "outputs/budongi_mvp_temp/docs/tasks/rental-candidate-review-export.md"
   ]
 }

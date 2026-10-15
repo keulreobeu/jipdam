@@ -36,4 +36,6 @@ acs = ["RENT-001-AC-07", "RENT-001-AC-10"]
 
 2026-10-14: 기존 전월세 238,620건 수집·canonical은 별도 완료 Task로 보존한다. 실제 확정 관계·좌표·시설·커버리지와 사람 검수 Golden은 아직 없다. 새로운 수집/자동 매칭을 시작하지 않으며 [후속 준비](continuation-parts-1to5.md)와 `rental-readiness`를 통해 필요한 입력을 확인한다.
 
+2026-10-15: 기존 pending/unverified 전월세 후보를 로컬 검토표로 내보내는 준비 도구를 추가한다. 이는 사용자 검수·승인 패키지·확정 관계가 아니며 이 Task의 blocked 상태나 추천의 `data_not_ready`를 바꾸지 않는다. 세부 범위와 검증은 [후보 검토표 Task](rental-candidate-review-export.md)를 따른다.
+
 제품 검증은 **not_run**, 구현 미착수다. [검증 시나리오](../plans/rental-recommendation-mvp.md#product-verification-pending)를 따르고 작성·실행한 실제 unittest 메서드만 추적 원장에 연결한다. README에 계획 명령을 실행 가능한 명령으로 표시하지 않는다.

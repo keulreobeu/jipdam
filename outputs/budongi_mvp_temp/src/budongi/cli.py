@@ -82,6 +82,9 @@ def _parser() -> argparse.ArgumentParser:
     prepare_rentals.add_argument("--output-db", type=Path, default=DEFAULT_RENTAL_SERVING_DB)
     prepare_rentals.add_argument("--review-package", type=Path, help="Already approved offline review package directory")
     prepare_rentals.add_argument("--allow-synthetic", action="store_true", help="Explicitly allow a labelled synthetic review fixture")
+    export_candidates = sub.add_parser("export-rental-review-candidates", help="Export pending rental candidates to a local review-only CSV report")
+    export_candidates.add_argument("--canonical-db", type=Path, required=True)
+    export_candidates.add_argument("--output-dir", type=Path, required=True, help="New folder under .local_runtime")
     readiness = sub.add_parser("rental-readiness", help="Read-only real data/model input gates; no collection or generation")
     readiness.add_argument("--canonical-db", type=Path, default=DEFAULT_CANONICAL_DB)
     readiness.add_argument("--database", type=Path, default=DEFAULT_RENTAL_SERVING_DB)
@@ -104,6 +107,14 @@ def _parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = _parser().parse_args()
+    if args.command == "export-rental-review-candidates":
+        from .rental_candidate_export import CandidateExportError, export_rental_candidates
+        try:
+            _print(export_rental_candidates(args.canonical_db, args.output_dir))
+        except CandidateExportError as exc:
+            _print({"status": "error", "error": str(exc)})
+            raise SystemExit(2) from None
+        return
     if args.command == "rental-readiness":
         from .rental_readiness import rental_readiness
         result = rental_readiness(canonical_db=args.canonical_db, database=args.database,

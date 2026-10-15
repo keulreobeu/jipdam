@@ -26,6 +26,8 @@ python -m budongi.cli rental-mvp --model qwen3.5:4b-q4_K_M --endpoint http://127
 
 ## 승인된 오프라인 검수 패키지
 
+검수 전 후보를 살펴볼 때는 [후보 검토표 Task](tasks/rental-candidate-review-export.md)의 `export-rental-review-candidates` CLI를 사용할 수 있다. 이 CSV는 pending 후보를 정리한 참고자료이며 `rental_review_v1` 승인 패키지가 아니다. importer용 manifest/records를 만들지 않고 실제 관계를 승인하지 않는다.
+
 `rental-readiness`는 canonical/serving의 원본 해시 일치, 검수 패키지 입력, 실제 확정 관계/좌표/시설/커버리지, 지정 모델·loopback 주소를 읽기 전용으로 확인한다. 파일 생성·수집·모델 호출은 없다. 미준비/오류이면 종료 코드 2, 설정 확인이면 0이며 실제 검증 완료를 의미하지 않는다. 현재 기본 canonical은 보존된 `canonical-v3-20261013/canonical.sqlite3`다.
 
 자료가 준비되면 아래 순서로 실행한다. `APPROVED_PACKAGE`, `LOCAL_MODEL`, `ACTUAL_CANDIDATE_ID`는 실제 승인/설치/추천 결과 값으로 바꾼다.
