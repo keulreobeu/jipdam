@@ -47,7 +47,8 @@
       document.getElementById(id).value = gmsBudget.policy[field] ?? 0;
     }
     document.getElementById("gms-enabled").checked = Boolean(gmsBudget.policy.enabled);
-    document.getElementById("gms-ledger").textContent = `이 앱의 누적 사용·예약 ${gmsBudget.accounted_credits.toLocaleString("ko-KR")}크레딧 / ${gmsBudget.accounted_tokens.toLocaleString("ko-KR")}토큰 · 보류 ${gmsBudget.held_credits.toLocaleString("ko-KR")}크레딧`;
+    const ledgerLabel = cumulative ? "이 앱의 누적 사용·예약" : "사용 기록 · 누적 차단 기준 아님";
+    document.getElementById("gms-ledger").textContent = `${ledgerLabel} ${gmsBudget.accounted_credits.toLocaleString("ko-KR")}크레딧 / ${gmsBudget.accounted_tokens.toLocaleString("ko-KR")}토큰 · 보류 ${gmsBudget.held_credits.toLocaleString("ko-KR")}크레딧`;
   }
 
   async function refreshBudget() {

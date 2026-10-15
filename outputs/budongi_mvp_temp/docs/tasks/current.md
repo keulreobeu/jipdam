@@ -2,12 +2,12 @@
 
 2026-10-14 [TASK-RENT-CONTINUE-001](continuation-parts-1to5.md): 1~5번을 목적별로 실행. 기본 canonical v3 복구·실제 prepare, 검수/모델 준비 검사, 실제 Drive 다운로드·해시와 문서/Git 정리. [Plan](../plans/continuation-parts-1to5.md), [후속 검증](../continuation-validation-20261014.md). 사용자 검수 패키지·로컬 모델은 미준비.
 
-2026-10-14 [TASK-GMS-MODELS-001](gms-model-routing.md): simple→gpt-6-luna, complex→gpt-6.1-sol, 공식 GMS 요율·같은 모델 사전 카운트/최대 예약·공통 원장. 실제 두 모델 실행과 정수 크레딧 계정 표시를 반영한 예약 보완. 최신 상태는 해당 Task/후속 검증을 따른다.
+2026-10-14 [TASK-GMS-MODELS-001](gms-model-routing.md): simple→gpt-6-luna, complex→gpt-6.1-sol, 공식 GMS 요율·같은 모델 사전 카운트/최대 예약·공통 원장. 실제 두 모델 실행과 정수 크레딧 계정 표시를 반영한 예약 보완. 2026-10-15 최신 웹 UI의 두 모델 호출·정산과 reserve_only/5,000 보존·누적 입력 비활성을 검증해 Task는 verified다. 이후 코드·테스트·기계적 문서 작업은 GMS를 최대한 사용한다.
 
 
 2026-10-14 [TASK-GMS-BUDGET-001](gms-budget-work.md): verified, 공식 잔액·5,000 보존·전체/호출 토큰/비용·유료 카운트 조회 비용 예약/대사·최대 생성 예약/usage 정산·GMS 코드 runner와 공통 지침. [Plan](../plans/gms-budget-work.md). 실제 GMS 코드 초안 1회 생성·검토/반영, 최종 잔여 29,845·이번 작업 차감 155, 제품194/팀SDD22·CLI/웹 검증 통과. 초기 전체 한도500 기록이며 현재는 reserve_only·5,000 보존만 적용한다. 만료 2026-10-16 18:00 KST.
 
-2026-10-14 [TASK-GMS-001](gms-connection.md): verified, 암호화 보관함의 키 등록/교체와 별도 GMS 연결 확인·3만 크레딧 사용량/시간 계산. 합성 GMS 12개·전체 제품 166개·팀/SDD 22개·CLI 및 브라우저 계산 흐름 검증 통과. 실제 GMS 성공은 사용자 키 시험이 필요하다.
+2026-10-14 [TASK-GMS-001](gms-connection.md): verified, 암호화 보관함의 키 등록/교체와 별도 GMS 연결 확인·3만 크레딧 사용량/시간 계산. 합성 GMS 12개·전체 제품 166개·팀/SDD 22개·CLI 및 브라우저 계산 흐름 검증 통과. 당시의 실제 키 시험 게이트는 후속 TASK-GMS-BUDGET-001/TASK-GMS-MODELS-001의 실제 성공 증거로 해소됐다.
 
 2026-10-13 [TASK-TEAM-DATA-001](team-data-contract.md): 3인 수집 전 공통 제출 스키마·기존 DB 호환을 확정하고 실제 매칭/좌표/도메인 매핑은 수집 후 검수로 분리. [팀 수집 가이드](../team-data-contract.md).
 

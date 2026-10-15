@@ -71,4 +71,4 @@ approval_ref = "GMS 난이도별 SOL/LUNA 사용 및 2026-10-14 '누적사용량
 
 ## 검증·참고
 
-[Plan](../plans/gms-budget-work.md), [ADR](../adr/ADR-011-gms-budgeted-work.md), [Task](../tasks/gms-budget-work.md). GMS key-info는 사용자가 제공한 공식 가이드 내용이 근거다. 입력 카운트/출력 전체 토큰은 [OpenAI 공식 문서](https://developers.openai.com/api/docs/guides/token-counting)를 따른다. GMS count 경유 호환성은 별도 실제 확인이 필요하다.
+[Plan](../plans/gms-budget-work.md), [ADR](../adr/ADR-011-gms-budgeted-work.md), [Task](../tasks/gms-budget-work.md). GMS key-info는 사용자가 제공한 공식 가이드 내용이 근거다. 입력 카운트/출력 전체 토큰은 [OpenAI 공식 문서](https://developers.openai.com/api/docs/guides/token-counting)를 따른다. 두 모델의 GMS count 경유·생성·정산 실제 결과는 [후속 검증](../continuation-validation-20261014.md)에 기록했다.

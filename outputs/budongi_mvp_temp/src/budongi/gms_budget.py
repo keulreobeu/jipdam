@@ -199,6 +199,8 @@ class GMSBudgetManager:
             required_limits = ('max_input_tokens',) if policy['budget_mode'] == 'reserve_only' else (
                 'max_total_credits','max_call_credits','max_total_tokens','max_input_tokens')
             if policy["enabled"] and any(policy[name] <= 0 for name in required_limits):
+                if policy['budget_mode'] == 'reserve_only':
+                    raise GMSBudgetError("호출당 입력 토큰은 0보다 커야 합니다.")
                 raise GMSBudgetError("실행을 활성화하려면 전체/호출 비용과 전체/입력 토큰 한도를 양수로 설정해 주세요.")
             with self._connect() as connection:
                 connection.execute("UPDATE policy SET revision=revision+1,body=? WHERE id=1", (json.dumps(policy),))
