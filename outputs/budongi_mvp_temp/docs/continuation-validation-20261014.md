@@ -116,3 +116,5 @@ LUNA의 활성 오류·기록 라벨 초안과 SOL의 보류/최대예약 차감
 신규 CLI 회귀 2개, canonical rental 22개, legacy rental 15개가 통과했다. `python -X utf8 scripts/verify_environment.py` 최종 실행도 SDD 계약(15 features/87 ACs/34 Tasks), 제품 284 tests, 팀/SDD 27 tests, synthetic CLI smoke 모두 통과했다. 첫 sandbox 실행은 Windows loopback socket 제한으로 일부 실패했지만 승인된 로컬 loopback 실행에서 전체 검증을 완료했다.
 
 GMS SOL 초안 호출은 `uncertain`으로 종료되어 응답 텍스트를 받지 못했고 재호출하지 않았다. 코드 변경은 GMS 초안을 적용한 것이 아니라 로컬 담당자가 작성·검토했다. 호출 전 잔액 확인 28,827크레딧에서 이후 확인 28,787, held 585, active calls 0으로 기록됐다. 이번 시도에서 입력 카운트 합계 40크레딧은 정산됐으며 generation 최대 예약 205크레딧은 미확정 보류다. GMS 원장/잔액 상태를 임의로 해소하지 않았다.
+
+같은 문서 대조에서 root/product README가 과거 5,000크레딧 보존액을 현재 정책처럼 설명하는 것을 찾아 수정했다. 현재 고정 보존액 0, 누적 사용량은 비차단 기록, 활성·불확정 hold와 새 호출 최대 예약은 보호한다고 두 README를 정렬했다. 5,000 보존 상태에서 실행한 과거 UI/정산 결과는 당시 증거로 보존한다.

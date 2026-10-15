@@ -174,7 +174,7 @@ GitHub CI는 Ubuntu/Windows × Python 3.11/3.12의 모델 없는 검증을 실�
 
 채팅 초안 확인·수정, 실제 DB 추천, 후보별 니즈, 100행 거래 상세와 Leaflet+OSM 내장 지도를 구현했다. 현재 실제 확정 연결은 0건이므로 data_not_ready로 표시한다. 검수 자료·실모델은 준비 조건이다. [실행·검수 패키지·성능 재현 안내](outputs/budongi_mvp_temp/docs/rental-review-package.md)를 따른다.
 
-2026-10-15 후속 준비: [1~5번 목적별 계획](outputs/budongi_mvp_temp/docs/plans/continuation-parts-1to5.md)과 [실제 검증](outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md)을 따릅니다. canonical v3 기본 경로·검수/로컬 모델 readiness CLI·Drive 패키지 다운로드·SOL/LUNA 난이도 선택을 연결했습니다. GMS는 최신 사용자 지시에 따라 누적을 차단 기준으로 쓰지 않고 실잔액 5,000을 보존합니다. 두 모델의 최신 설정 UI 호출·정산 검증도 완료했습니다. 실제 검수 자료/모델의 남은 게이트는 Task 기록을 따릅니다.
+2026-10-15 후속 준비: [1~5번 목적별 계획](outputs/budongi_mvp_temp/docs/plans/continuation-parts-1to5.md)과 [실제 검증](outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md)을 따릅니다. canonical v3 기본 경로·검수/로컬 모델 readiness CLI·Drive 패키지 다운로드·SOL/LUNA 난이도 선택을 연결했습니다. 최신 사용자 지시에 따라 GMS는 `reserve_only`, 고정 보존액 0으로 운용하며 현재 잔액은 활성·불확정 호출의 보류액과 새 호출의 최대 예약을 빼고 사용할 수 있습니다. 누적 사용량은 기록으로 유지하고 실행 차단 기준으로 쓰지 않습니다. 실제 검수 자료/모델의 남은 게이트는 Task 기록을 따릅니다.
 
 ### CLI-First 개발 하네스
 
