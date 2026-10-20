@@ -7,6 +7,8 @@ description: Apply this project's Spec, ADR, Task, data provenance, and evaluati
 
 SDD 운영은 루트 `docs/sdd.md`와 별도 Spec·Task·Plan·ADR 템플릿을 따른다. 코드·설정·계약 변경은 같은 변경에서 갱신한 영구 Task와 연결한다. 등록된 요구·AC·테스트 연결과 TOML 상태를 유지하고 `python -X utf8 scripts/verify_environment.py` 및 브랜치의 `scripts/check_sdd.py --base origin/main`으로 검증한다. 제품 요구는 사용자, 세부 구현과 AC별 증거 기반 완료는 담당자가 책임진다. baseline을 소급 승인하거나 합성 검증을 실제 평가 완료로 표시하지 않는다.
 
+저장소의 구현·수정·문서·설정·검증 작업은 Codex와 Claude Code 모두 Jira `KAN` 이슈로 추적한다. 파일 변경이나 외부 설정 전에 명시된 기존 티켓을 연결하거나, 같은 진행 중 티켓이 명확하지 않으면 Jira `작업`을 생성한다. 시작 시 `진행 중`으로 옮기고 host label을 붙인 다음 key를 사용자에게 알린다. 단순 질문·설명·실행 없는 계획·읽기 전용 검토는 티켓 대상이 아니다. 담당자를 추정하지 않는다. 관련 Jira 도구를 쓸 수 없거나 생성이 실패하면 변경 전에 사용자에게 알리고 무티켓 진행 여부를 확인한다. 요청된 작업과 관련 검증이 끝난 뒤에만 연결한 이슈를 완료 처리하며, 차단·부분 완료·실패 시 이슈를 열어 둔다. Jira 종료는 push/merge/deploy 등 별도 승인을 대신하지 않는다. 연결은 Codex Atlassian Jira 도구 또는 Claude Code의 루트 `.mcp.json`에 설정된 공식 Atlassian MCP OAuth를 쓴다. 자격 증명을 저장소에 기록하거나 토큰/API로 우회하지 않는다. 상세 절차는 `docs/specs/jira_task_lifecycle_spec.md`를 따른다.
+
 워크스페이스 루트는 이 스킬 경로의 `.agents/skills/` 위 폴더다. 현재 구현은 `outputs/budongi_mvp_temp/`에 있다. 그 폴더의 `AGENTS.md`, `docs/specs/00_project_spec.md`, `docs/specs/10_rental_recommendation_spec.md`, 관련 기능 Spec·ADR, `docs/plans/rental-recommendation-mvp.md`, `docs/tasks/current.md`를 먼저 읽는다. 과거 `work/source_archive/`의 모델·단계·성과를 현재 구현으로 상속하지 않는다.
 
 요청에 맞는 `gstack-*` 스킬을 선택한다. 모호한 요청은 office-hours, 구조와 계약은 plan-eng-review, 변경 검토는 review, 버그는 investigate, 동작 확인은 qa/qa-only, 문서는 document-release/document-generate를 사용한다. 모든 요청에 전체 체인을 실행하지 않는다.

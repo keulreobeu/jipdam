@@ -31,6 +31,10 @@ Bash에서는 `source scripts/enter-gstack.sh`를 사용한다. 현재 작업 ho
 
 gstack이 제안하는 GitHub issue 작성, push/PR/merge/배포, 외부 CLI 리뷰, 자동화·원격 동기화는 현재 요청이 해당 동작을 포함할 때만 실행한다. 원격·인증·실데이터를 있는 것으로 가정하지 않는다. 브라우저 QA를 위해 실제 데이터 수집 보류를 해제하지 않는다.
 
+## Jira 작업 추적
+
+Codex와 Claude Code의 집담 저장소 구현·수정·문서·설정·검증 작업은 시작 전에 Jira `KAN` 이슈를 연결하거나 생성하고 key를 사용자에게 알린다. 시작할 때 이슈를 진행 중으로 옮기고 `agent-codex` 또는 `agent-claude` label을 붙인다. 단순 질문·설명·실행하지 않는 계획·읽기 전용 검토에는 만들지 않는다. 배정자를 추정하지 않는다. 이슈 생성이 불가능하면 변경 전에 상태를 알리고 무티켓 진행 여부를 묻는다. 요청된 작업과 관련 검증이 완료됐을 때만 이슈를 완료 처리하며 부분 완료·차단·검증 실패는 열어 둔다. 이슈 종료는 push/merge/deploy 승인이 아니다. 상세 규칙은 [Jira Task Lifecycle Spec](docs/specs/jira_task_lifecycle_spec.md) 및 `.agents/skills/jipdam-workflow/SKILL.md`를 따른다. Claude Code는 `.mcp.json`의 공식 Atlassian MCP에 첫 세션에서 `/mcp` OAuth 인증이 필요하다.
+
 ## GMS 코드 작업 — 2026-10-14 승인
 
 사용자는 등록한 GMS 키를 현재 구축 및 이후의 명확한 코드 작성 작업에 사용하도록 승인했고 최소 **5,000크레딧 보존**을 지정했다. [GMS-BUDGET-001](outputs/budongi_mvp_temp/docs/specs/18_gms_budget_spec.md)·[Plan](outputs/budongi_mvp_temp/docs/plans/gms-budget-work.md)·[Task](outputs/budongi_mvp_temp/docs/tasks/gms-budget-work.md)을 따른다. 보관함에 명시적으로 선택·저장한 정책을 사용하며 별칭/폴더에서 키를 추측하지 않는다.

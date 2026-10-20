@@ -2531,6 +2531,68 @@
           ]
         }
       ]
+    },
+    {
+      "id": "JIRA-AUTO-001",
+      "spec": "docs/specs/jira_task_lifecycle_spec.md",
+      "requirements": [
+        {
+          "id": "JIRA-AUTO-001-REQ-01",
+          "acs": [
+            {
+              "id": "JIRA-AUTO-001-AC-01",
+              "manual": [
+                {
+                  "command": "Review Jira lifecycle guidance, Jira issue state, and the official Atlassian MCP configuration",
+                  "evidence": "docs/team_environment_validation.md#jira-task-lifecycle-2026-10-20"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "JIRA-AUTO-001-REQ-02",
+          "acs": [
+            {
+              "id": "JIRA-AUTO-001-AC-02",
+              "manual": [
+                {
+                  "command": "Review Jira lifecycle guidance, Jira issue state, and the official Atlassian MCP configuration",
+                  "evidence": "docs/team_environment_validation.md#jira-task-lifecycle-2026-10-20"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "JIRA-AUTO-001-REQ-03",
+          "acs": [
+            {
+              "id": "JIRA-AUTO-001-AC-03",
+              "manual": [
+                {
+                  "command": "Review Jira lifecycle guidance, Jira issue state, and the official Atlassian MCP configuration",
+                  "evidence": "docs/team_environment_validation.md#jira-task-lifecycle-2026-10-20"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "JIRA-AUTO-001-REQ-04",
+          "acs": [
+            {
+              "id": "JIRA-AUTO-001-AC-04",
+              "manual": [
+                {
+                  "command": "Review Jira lifecycle guidance, Jira issue state, and the official Atlassian MCP configuration",
+                  "evidence": "docs/team_environment_validation.md#jira-task-lifecycle-2026-10-20"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "tasks": [
@@ -2568,6 +2630,7 @@
     "outputs/budongi_mvp_temp/docs/tasks/gms-model-routing.md",
     "outputs/budongi_mvp_temp/docs/tasks/cli-harness.md",
     "outputs/budongi_mvp_temp/docs/tasks/harness-operations.md",
-    "docs/tasks/claude-gstack-support.md"
+    "docs/tasks/claude-gstack-support.md",
+    "docs/tasks/jira-task-lifecycle.md"
   ]
 }
