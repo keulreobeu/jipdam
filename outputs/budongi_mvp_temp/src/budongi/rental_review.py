@@ -76,17 +76,25 @@ def load_review_package(path: Path, source_hash: str, *, allow_synthetic: bool =
             if file_sha256(candidate) != entry['sha256'] or relative in files:
                 raise ValueError('package hash mismatch or duplicate file')
             files[relative] = entry
-        records_ref = manifest['records_file']
-        if records_ref not in files:
-            raise ValueError('records file must be hashed')
-        records = json.loads((root / records_ref).read_bytes())
-        if set(records) - {'relations', 'coordinates', 'facilities', 'coverage'}:
-            raise ValueError('unsupported record collection')
-        for category in ('relations', 'coordinates', 'facilities', 'coverage'):
-            rows = records.setdefault(category, [])
-            if not isinstance(rows, list):
-                raise ValueError('record collection must be list')
-            for row in rows:
+        records_refs = manifest.get('records_files')
+        if records_refs is None:
+            records_refs = [manifest['records_file']]
+        if (not isinstance(records_refs, list) or not records_refs or
+                any(not isinstance(ref, str) or ref not in files for ref in records_refs) or
+                len(set(records_refs)) != len(records_refs)):
+            raise ValueError('records files must be uniquely declared and hashed')
+        records = {category: [] for category in ('relations', 'coordinates', 'facilities', 'coverage')}
+        for records_ref in records_refs:
+            part = json.loads((root / records_ref).read_bytes())
+            if not isinstance(part, dict) or set(part) - set(records):
+                raise ValueError('unsupported record collection')
+            for category in records:
+                rows = part.get(category, [])
+                if not isinstance(rows, list):
+                    raise ValueError('record collection must be list')
+                records[category].extend(rows)
+        for category in records:
+            for row in records[category]:
                 if not isinstance(row, dict) or row['review_status'] not in ('confirmed', 'pending', 'rejected'):
                     raise ValueError('invalid review status')
                 for key in ('evidence', 'reviewed_by', 'source_id', 'source_file_ref'):
@@ -101,7 +109,7 @@ def load_review_package(path: Path, source_hash: str, *, allow_synthetic: bool =
                 if category == 'relations':
                     _text(row['observation_id'])
                     _text(row['complex_id'])
-                    if row.get('source_status') not in ('valid', 'cancelled', 'correction_pending'):
+                    if row.get('source_status') not in ('valid', 'cancelled', 'correction_pending', 'unknown'):
                         raise ValueError('explicit transaction status is required')
                 elif category in ('coordinates', 'facilities'):
                     _coordinate(row)

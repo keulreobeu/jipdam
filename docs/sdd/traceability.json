@@ -439,6 +439,10 @@
                 {
                   "command": "manual: TASK-RENT-RESTORE-001 첨부 합성 DB의 분리 복원, 원본 해시·무결성·합성 거부와 명시 허용 추천 확인; 실제 원천 검수는 미완료",
                   "evidence": "outputs/budongi_mvp_temp/docs/rental-upload-audit-20261012.md#validation"
+                },
+                {
+                  "command": "manual: 사용자 승인 aptSeq 단일 후보 203,159건을 분할 검수 패키지로 canonical serving에 적용; source_status=unknown 추천 차단 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/rental-identity-review-20261020.md#적용-기록"
                 }
               ]
             }

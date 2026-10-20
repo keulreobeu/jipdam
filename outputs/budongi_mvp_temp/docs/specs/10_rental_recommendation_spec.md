@@ -166,7 +166,7 @@ CLI와 HTTP는 같은 후보·순위를 전달한다. 입력 오류·없는 데�
 - 요청 districts는 서울 자치구 이름(예: 종로구) 또는 법정동 앞 5자리 자치구 코드다. 직장은 확인한 latitude/longitude·verified:true·source·source_ref를 받는다. place_id만 있거나 이름만 입력하면 위치 확정 오류다.
 - 시설 source manifest dataset의 `source_date`와 coverage checked_at_utc는 스냅샷 기준 최근 12개월 내에 있어야 한다. 확인 불가·오래된 날짜는 unknown이다.
 - coverage complete라는 자치구 목록만으로 경계 밖 반경까지 완전하다고 추론하지 않는다. 사전 검수 범위를 `raw_payload.coverage_area={latitude,longitude,radius_m}`로 제공하고 요청 반경 전체가 그 원 안에 포함되어야 판정한다. 이는 정규화 입력의 검수 메타데이터이며 특정 원천 API 필드라고 주장하지 않는다. 없거나 범위가 부족하면 unknown이다.
-- source_status의 알려진 정규화 `cancelled`는 제외하고 None은 미확인으로 유지한다. 기타 상태·정정 연결은 검수 완료 전 오류로 처리한다. 현재 실제 원천 상태 매핑은 미구현이다.
+- 검수 관계의 `source_status`는 `valid`/`cancelled`/`correction_pending`/`unknown`이다. 알려진 `cancelled`는 제외하고 `unknown`은 추정하지 않은 채 보존한다. 실제 추천 readiness는 모든 후보 거래의 상태가 `valid`로 확인되기 전까지 통과하지 않는다. 현재 실제 원천 상태 매핑은 미구현이다.
 - CLI: `recommend --rental-db PATH --snapshot-id ID --request UTF8_JSON --allow-synthetic`. 상태는 ok/no_match, 오류는 input_error(종료 2)·data_unavailable(종료 3)·internal_error(종료 1)이다. DB는 mode=ro/query_only로 열며 없는 경로에 DB를 생성하지 않는다.
 - `rental-demo`는 허구 단지 3개·합성 직장과 요청 파일을 만들고 외부 API를 호출하지 않는다. 기본 요청은 직장 직선거리 필수 조건으로 2곳을 반환하며 역 선호는 자료가 없어 unknown으로 표시한다. 기존 데모 DB를 덮어쓰지 않는다.
 

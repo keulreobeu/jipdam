@@ -14,7 +14,7 @@ python -m budongi.cli rental-readiness
 python -m budongi.cli rental-mvp --no-browser
 ```
 
-브라우저에서 `http://127.0.0.1:8766/`을 연다. 모델이 없어도 조건을 직접 확인·검색할 수 있다. 현재 실제 관측은 238,620건, 확정 연결은 0건이다. `data_not_ready`는 정상이며 미확정 후보를 보여주지 않는다. 원본 canonical은 수정하지 않고 serving v2를 재생성한다. 실행 중인 상세 조회가 Windows 파일 교체를 막으면 조회가 끝난 뒤 prepare를 다시 실행한다. 기존 serving은 실패 시 유지된다.
+브라우저에서 `http://127.0.0.1:8766/`을 연다. 모델이 없어도 조건을 직접 확인·검색할 수 있다. 2026-10-20 사용자 검수 결과는 격리된 [사람 검수 serving](../data/rental/serving/reviewed-20261020.sqlite3)에만 203,159건 확정 연결했다. 원천 취소/정정 상태는 `unknown`이므로 추천은 `data_not_ready`가 정상이며 결과를 반환하지 않는다. 미확정 35,461건은 연결하지 않았다. 좌표·시설·커버리지와 실모델도 미준비다. 기본 canonical/serving 경로를 바꾸지 않았다. 원본 canonical은 수정하지 않고 serving v2를 재생성한다. 실행 중인 상세 조회가 Windows 파일 교체를 막으면 조회가 끝난 뒤 prepare를 다시 실행한다. 기존 serving은 실패 시 유지된다.
 
 로컬 4B 모델을 별도로 실행한 경우 실제 설치된 모델명·주소를 지정한다. 예시 이름은 설치 여부를 의미하지 않는다.
 
@@ -45,7 +45,14 @@ importer는 승인된 자료를 읽으며 검수나 승인을 만들어 주지 �
 python -m budongi.cli prepare-rentals --canonical-db PATH_TO_CANONICAL --output-db PATH_TO_SERVING --review-package PATH_TO_APPROVED_PACKAGE
 ```
 
-패키지 디렉터리에 `manifest.json`, 정규화 `records.json`, 검수 근거 파일을 둔다. 모든 파일 경로는 패키지 내부 상대 경로다. 파일마다 최대 50MiB이며 manifest에 SHA-256을 기록한다. 원본 DB의 전체 SHA-256을 `source_db_sha256`으로 대사한다. 누락·충돌·좌표 오류·해시 불일치는 출력 교체 전에 거부한다.
+2026-10-20 승인 패키지를 재현할 때는 [TASK-RENT-REAL-001](tasks/rental-real-data.md)과 [승인·적용 기록](rental-identity-review-20261020.md)을 확인하고 다음 입력을 명시한다.
+
+```powershell
+python -m budongi.cli prepare-rentals --canonical-db data/rental/review_build/canonical-v3-20261020-reviewed-ids/canonical.sqlite3 --output-db data/rental/serving/reviewed-20261020.sqlite3 --review-package data/rental/review_packages/reviewed_20261020
+python -m budongi.cli rental-readiness --canonical-db data/rental/review_build/canonical-v3-20261020-reviewed-ids/canonical.sqlite3 --database data/rental/serving/reviewed-20261020.sqlite3 --review-package data/rental/review_packages/reviewed_20261020
+```
+
+패키지 디렉터리에 `manifest.json`, 정규화 records JSON과 검수 근거 파일을 둔다. 작은 패키지는 기존 `records_file`을, 큰 패키지는 `records_files` 배열을 사용해 관계 레코드를 JSON 파일 여러 개로 나눌 수 있다. 모든 파일 경로는 패키지 내부 상대 경로다. 파일마다 최대 50MiB이며 manifest에 SHA-256을 기록한다. 원본 DB의 전체 SHA-256을 `source_db_sha256`으로 대사한다. 누락·충돌·좌표 오류·해시 불일치는 출력 교체 전에 거부한다.
 
 | manifest 필드 | 계약 |
 |---|---|
@@ -53,7 +60,7 @@ python -m budongi.cli prepare-rentals --canonical-db PATH_TO_CANONICAL --output-
 | `source_db_sha256` | 입력 canonical 파일 SHA-256 |
 | `quality_status` | `reviewed_real` 또는 `synthetic_only` |
 | `approval_ref`, `approved_by`, `approved_at_utc` | 이미 승인된 기록·담당·timezone 포함 시각 |
-| `records_file` | 정규화 레코드 JSON 상대 경로 |
+| `records_file` 또는 `records_files` | 정규화 레코드 JSON 상대 경로 하나 또는 배열. 각 파일은 동일한 `relations`/`coordinates`/`facilities`/`coverage` 배열 계약을 따른다. |
 | `snapshot_date` (선택) | 추가 검수 자료를 함께 비교할 통합 기준일. 원본 배치일 이후이며 승인일(서울 날짜)을 넘지 않음. 생략 시 원본 배치일 |
 | `files` | `{path, sha256}` 목록. 레코드 파일과 모든 근거 파일 포함 |
 
@@ -77,7 +84,7 @@ python -m budongi.cli prepare-rentals --canonical-db PATH_TO_CANONICAL --output-
 
 | 목록 | 추가 필드·제약 |
 |---|---|
-| relations | `observation_id`, `complex_id`, `source_status`(`valid`/`cancelled`/`correction_pending`). 관측·단지의 canonical 존재와 지역 일치 확인, 관측당 확정 관계 1개 |
+| relations | `observation_id`, `complex_id`, `source_status`(`valid`/`cancelled`/`correction_pending`/`unknown`). 관측·단지의 canonical 존재와 지역 일치 확인, 관측당 확정 관계 1개. `unknown`은 상태를 추정하지 않은 값이며 현재 실제 추천 readiness를 통과시키지 않는다. |
 | coordinates | `complex_id`, `latitude`, `longitude`, `crs=EPSG:4326`, `method`. 추천 자격 단지마다 검수 좌표 1개, WGS84 범위·출처·변환 방법·근거 필수 |
 | facilities | `facility_id`, `category`(station/supermarket/park/hospital), `name`, 위경도·crs·method. 검수된 행만 적재 |
 | coverage | category, `sgg_cd`, `coverage_status`(complete/partial/unknown), `checked_at_utc`, `coverage_area={latitude,longitude,radius_m}`. 원과 기준일을 보존 |

@@ -57,7 +57,7 @@ ID는 기존 작업을 계속 추적하기 위해 부여했다. 실제 Golden의
 | 5 | [TASK-RENT-WEB-001 웹 비교](rental-web-demo.md) | draft, 보관함 Task 뒤에 설정 화면과 추천 비교를 통합 |
 | MVP | [TASK-RENT-MVP-001 대화형 DB 추천](rental-mvp.md) | in_progress, 검수 serving v2·공통 판정·채팅/확인·니즈/100행 상세·Leaflet+OSM 구현·검증. 실제 확정 연결·실모델은 사용자 확인 준비 조건 ([최신 증거](../rental-mvp-validation-20261013.md#2026-10-14-구현-검증)) |
 | 6 | [TASK-RENT-LLM-001 설명·평가](rental-explanation-evaluation.md) | draft |
-| 별도 | [TASK-RENT-REAL-001 실데이터](rental-real-data.md) | blocked, 수집·매칭 보류 |
+| 별도 | [TASK-RENT-REAL-001 실데이터](rental-real-data.md) | in_progress, 승인된 203,159건 serving 확정 연결 완료; source status unknown으로 추천 차단, 예외 35,461건 미확정; 좌표·시설·실모델 추가 게이트 |
 | 첨부 점검 | [TASK-RENT-RESTORE-001 DB 복원](rental-upload-restore-20261012.md) | verified, 첨부 합성 DB 복원·조회·수집 범위 점검; 실제 수집 자료 없음 |
 | 수집 기록 | [TASK-COLLECT-001](../../../../docs/tasks/data-collection-record.md) | verified, GitHub 수집 예약·필수 요약·Drive 업로드 전 기록; 첨부 합성 배치 #3 게시 |
 | 원시 수집·오프라인 DB | [TASK-MOLIT-001](molit-collection.md) | verified, 세 API 서울975 query/384,211 원본행·374,892 적재·원본 조인·재생성·ZIP 복원 및 GitHub #5 최종 기록 게시 검증; Drive 업로드는 별도 |
@@ -68,7 +68,7 @@ ID는 기존 작업을 계속 추적하기 위해 부여했다. 실제 Golden의
 
 후속 통합 [TASK-CANONICAL-001](canonical-integration.md)은 verified다. 실제 전체 관측·원본 조인·재실행·확대 증분·v3 사본의 전체 값 보존, 등록 파일 형식·CLI 계약, 최종 환경/SDD를 검증했다. [CANONICAL-001](../specs/13_canonical_integration_spec.md)·ADR-006과 [완료 감사](../canonical-validation-20261013.md#goal-completion-audit)를 따른다. 추천·좌표·시설·Golden·Drive 업로드의 별도 상태는 유지한다.
 
-합성 추천·CLI의 AC-01~06은 추천 Task 검증을 따른다. TASK-RENT-MVP-001에서 canonical serving/API·채팅 확인 폼·니즈/전체 상세·내장 지도와 합성 성공/타일 장애/모바일 브라우저 경로를 검증했다. 실제 확정 단지 연결이 0건이므로 실제 추천·좌표·시설의 성공 경로와 실모델 검증은 준비 조건이다. GMS 코드 초안 활용 및 최신 앱 199개/팀 22개 검사 결과는 [최종 기록](../rental-mvp-validation-20261013.md#2026-10-14-최종-재검증)을 따른다. CRED-001의 OS 저장소 검증은 해당 Task의 실제 기록을 따른다. 문서 완료·합성 성공을 실제 추천 품질로 승격하지 않는다.
+합성 추천·CLI의 AC-01~06은 추천 Task 검증을 따른다. TASK-RENT-MVP-001에서 canonical serving/API·채팅 확인 폼·니즈/전체 상세·내장 지도와 합성 성공/타일 장애/모바일 브라우저 경로를 검증했다. TASK-RENT-REAL-001에서 사용자는 2026-10-20 동일 aptSeq·구·단지명·법정동·지번의 유일 일치 203,159건을 승인하고 예외 35,461건은 미확정으로 남겼다. 원천 취소/정정 상태는 확인 전까지 unknown으로 보존하며 추천을 차단한다. 좌표·시설과 실모델 검증도 미완료다. [사람 검수 및 적용 기록](../rental-identity-review-20261020.md)을 따른다. GMS 코드 초안 활용 및 최신 앱 199개/팀 22개 검사 결과는 [최종 기록](../rental-mvp-validation-20261013.md#2026-10-14-최종-재검증)을 따른다. CRED-001의 OS 저장소 검증은 해당 Task의 실제 기록을 따른다. 문서 완료·합성 성공을 실제 추천 품질로 승격하지 않는다.
 
 보관함 구현의 후속 검증·수정은 [TASK-CRED-QA-001](credential-vault-qa.md)에서 추적한다. 키 비노출·요청 처리·삭제 재확인·수정 창 취소의 회귀 검증이며 실제 API 호출은 포함하지 않는다.
 

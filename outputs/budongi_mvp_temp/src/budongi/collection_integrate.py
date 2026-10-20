@@ -221,6 +221,11 @@ def _raw_input(c, root, plan, status, batch):
                 legacy = observation_id_for(**provenance)
                 _put(c, "raw_items", (raw_item, legacy, file_id, "items", index, _json(raw)))
                 row = normalize_row(raw, provenance, rental=q["service"] == "rental")
+                # A detailed-source aptSeq identifies a source complex independently
+                # of whether this transaction belongs to the canonical observation
+                # window. Preserve that official entity from every retained row.
+                if q["service"] == "trade-detail":
+                    _official_complex(c, batch, raw_item, row, raw)
                 valid = plan["observation_from"] <= row["contract_date"] <= plan["snapshot_date"]
                 _put(c, "staging_items", (batch, raw_item, "valid" if valid else "outside_period",
                      None if valid else "contract_date_outside_observation_period"))
