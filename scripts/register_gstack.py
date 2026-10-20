@@ -10,6 +10,32 @@ from team_tools import WORKSPACE, SOURCE_RELATIVE, load_lock
 MARKER = '.project-gstack.json'
 GENERATED = '<!-- AUTO-GENERATED from'
 
+def skill_destination(root: Path, host: str, name: str, lock: dict) -> Path:
+    """Validate the complete registration boundary before any file is written."""
+    root = root.resolve()
+    skills = root / ('.agents' if host == 'codex' else '.claude') / 'skills'
+    target = skills / name
+    if skills.resolve() != skills or target.resolve() != target:
+        raise ValueError(f'Refusing redirected skill destination: {target}')
+    if target.exists():
+        marker = target / MARKER
+        try:
+            owned = json.loads(marker.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            raise ValueError(f'Refusing to overwrite a user-owned skill: {target}') from None
+        if (not isinstance(owned, dict) or owned.get('repository') != lock['repository']
+                or owned.get('commit') != lock['commit']
+                or (host == 'claude' and owned.get('host') != 'claude')
+                or (target / '.git').exists()):
+            raise ValueError(f'Refusing to overwrite a user-owned skill: {target}')
+    return target
+
+def check_skill_output(target: Path, relative: Path) -> Path:
+    output = target / relative
+    if not output.resolve().is_relative_to(target.resolve()):
+        raise ValueError(f'Refusing redirected skill file: {output}')
+    return output
+
 def manifest_fields(text: str) -> tuple[str, str]:
     match = re.match(r'\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)', text, re.S)
     if not match:
@@ -34,7 +60,7 @@ def manifest_fields(text: str) -> tuple[str, str]:
         raise ValueError('Skill description must contain 1..1024 characters')
     return names[0], value
 
-def adapt(text: str, name: str) -> str:
+def adapt(text: str, name: str, *, host: str = 'codex') -> str:
     front = re.match(r'\A---\r?\n.*?\r?\n---', text, re.S)
     if not front:
         raise ValueError('Generated skill has no frontmatter')
@@ -77,7 +103,7 @@ fi'''
         note = ('\n\n## Team workspace upgrade override\n\n'
                 'This project pins gstack in `tooling/gstack.lock.json`. For an upgrade request, '
                 'preserve local source edits, select and record the new repository/commit/version '
-                'in that lock, and run `python scripts/bootstrap.py`. See `docs/gstack.md`. '
+                f'in that lock, and run `python scripts/bootstrap.py --host {host}`. See `docs/gstack.md`. '
                 'The inline upgrade flow below is upstream reference; do not use it to bypass '
                 'the team lock or register global skills.\n')
         text = text[:end] + note + text[end:]
@@ -88,7 +114,6 @@ def register(root: Path = WORKSPACE) -> int:
     lock = load_lock(root)
     source = root / SOURCE_RELATIVE
     render = source / '.agents/skills'
-    destinations = root / '.agents/skills'
     folders = sorted(p for p in render.iterdir() if p.is_dir()
                      and (p.name == 'gstack' or p.name.startswith('gstack-'))
                      and (p / 'SKILL.md').is_file())
@@ -100,15 +125,11 @@ def register(root: Path = WORKSPACE) -> int:
         if GENERATED not in manifest:
             raise ValueError(f'Not a generated Codex skill: {folder}')
         adapted = adapt(manifest, folder.name)
-        target = destinations / folder.name
-        if target.exists():
-            if (target / '.git').exists():
-                raise ValueError('Move the old source checkout out of .agents/skills first')
-            existing = target / 'SKILL.md'
-            owned = (target / MARKER).is_file()
-            generated = existing.is_file() and GENERATED in existing.read_text(encoding='utf-8')
-            if not owned and not generated:
-                raise ValueError(f'Refusing to overwrite a user-owned skill: {target}')
+        target = skill_destination(root, 'codex', folder.name, lock)
+        for file in folder.rglob('*'):
+            if file.is_file():
+                check_skill_output(target, file.relative_to(folder))
+        check_skill_output(target, Path(MARKER))
         prepared.append((folder, target, adapted))
     # Validate every input before touching the previous installation.
     for folder, target, adapted in prepared:
@@ -128,6 +149,32 @@ def register(root: Path = WORKSPACE) -> int:
                 shutil.copy2(file, output)
         (target / MARKER).write_text(json.dumps({'repository': lock['repository'], 'commit': lock['commit']}) + '\n', encoding='utf-8')
     return len(prepared)
+
+def unregister(root: Path = WORKSPACE) -> int:
+    """Remove only Codex registrations created by this pinned project installer."""
+    root = root.resolve()
+    lock = load_lock(root)
+    skills_root = (root / '.agents/skills').resolve()
+    if skills_root.parent != root / '.agents':
+        raise ValueError('Unexpected Codex skills root')
+    removed = 0
+    if not skills_root.is_dir():
+        return removed
+    for target in sorted(skills_root.iterdir()):
+        if not (target.name == 'gstack' or target.name.startswith('gstack-')) or not target.is_dir():
+            continue
+        marker_path = target / MARKER
+        if not marker_path.is_file():
+            continue
+        marker = json.loads(marker_path.read_text(encoding='utf-8'))
+        if marker.get('repository') != lock['repository'] or marker.get('commit') != lock['commit']:
+            continue
+        resolved = target.resolve()
+        if resolved.parent != skills_root:
+            raise ValueError(f'Refusing to remove a path outside Codex skills: {target}')
+        shutil.rmtree(resolved)
+        removed += 1
+    return removed
 
 def validate_discovery(root: Path = WORKSPACE, *, require_gstack: bool = True) -> int:
     manifests = sorted((root / '.agents/skills').rglob('SKILL.md'))
