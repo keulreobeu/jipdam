@@ -163,3 +163,9 @@ main 기준의 별도 worktree에서 Claude/Codex 설치 지원만 분리했다.
 ### Final verification 2026-10-20
 
 `python -X utf8 scripts/verify_environment.py --gstack --browser --host codex`는 exit 0이었다. 전체 제품/팀 unittest, SDD, 합성 CLI, Codex/project manifest 58개, Chromium 탐색·클릭·DOM·스크린샷·종료를 통과했다. `python -X utf8 scripts/check_sdd.py --base origin/main`은 변경 16개 경로가 TASK-CLAUDE-GSTACK-001에 연결됨을 확인했다. 독립 읽기 전용 재검토의 최종 actionable finding은 0개다.
+
+## Jira task lifecycle 2026-10-20
+
+See [TASK-JIRA-AUTO-001](tasks/jira-task-lifecycle.md) and [JIRA-AUTO-001](specs/jira_task_lifecycle_spec.md). The user approved tracking implementation work in Jira for Codex and Claude Code. Created `KAN-4` before implementing this workflow, added the `agent-codex` label, and moved it to `진행 중`. Codex Atlassian Jira tools were available for issue creation and transition. Claude Code receives the official project-scoped remote MCP endpoint in `.mcp.json`; its first session must run `/mcp` and complete the Atlassian OAuth approval. No token or API key is stored in the repository. Shared AGENTS/Claude instructions and `jipdam-workflow` define create/link-before-edit, in-progress host labeling, verified-only close, unassigned-by-default, and leave-open-on-block/failure behavior.
+
+`python -X utf8 scripts/check_sdd.py --base origin/main` passed with 17 features, 93 acceptance criteria, 36 tasks, and 10 changed paths. Focused checks parsed `.mcp.json` and `docs/sdd/traceability.json`, confirmed all Jira Task scope paths and four AC IDs, inspected the Codex/Claude workflow instructions, and `git diff --check` passed. Claude's interactive OAuth has not been performed in this Codex session and is required at first Claude Code use.

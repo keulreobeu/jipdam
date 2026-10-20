@@ -95,6 +95,8 @@ python -X utf8 scripts/bootstrap.py --host claude
 
 이 명령은 고정된 gstack commit에서 Claude host용 native skill만 생성해 프로젝트 `.claude/skills/`에 등록한다. Codex용 설치는 `--host codex`를 사용한다. host를 바꾸면 bootstrap이 자기 installer marker가 있는 이전 host의 gstack 등록본만 정리한다. 다른 host의 user-owned 파일은 그대로 둔다. gstack은 git/원격 작업 권한을 부여하거나 Claude Code의 권한 승인을 바꾸지 않는다. 일반 코드 작업·검증은 공통 명령으로 수행한다.
 
+집담의 구현·수정·문서·설정·검증 요청은 Jira `KAN` 이슈로 자동 추적한다. Codex 사용자는 Atlassian Jira 앱을 연결하고, Claude Code는 저장소의 [`.mcp.json`](.mcp.json)에 등록된 Atlassian MCP 서버를 사용한다. Claude Code를 처음 열면 `/mcp`를 실행해 Atlassian에 OAuth 인증하고 연결을 승인한다. 연결 뒤 새 작업을 시작하면 에이전트가 이슈를 만들거나 기존 요청 이슈에 연결하고 `진행 중`으로 옮긴다. 검증까지 끝난 경우에만 닫는다. host label은 `agent-codex` 또는 `agent-claude`를 사용하며 담당자를 임의로 지정하지 않는다. 인증 토큰은 저장소에 저장하지 않는다. 자세한 규칙은 [Jira Task Lifecycle Spec](docs/specs/jira_task_lifecycle_spec.md)을 참고한다.
+
 ### Antigravity
 
 저장소 루트를 workspace로 열고 Agent에서 작업한다. 공식 문서의 [프로젝트 규칙](https://www.antigravity.google/docs/rules/)은 `AGENTS.md`를 지원하며, [프로젝트 스킬](https://www.antigravity.google/docs/skills/)은 `.agents/skills/`를 사용한다. 도구 버전에 따라 규칙 인식 여부를 확인하고, 아래 첫 프롬프트로 동일한 파일을 직접 읽게 할 수도 있다.

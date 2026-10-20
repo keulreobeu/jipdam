@@ -9,6 +9,7 @@
 - gstack 원본은 `tooling/gstack.lock.json`의 정확한 commit에서 `.local_runtime/tooling/.agents/skills/gstack/`로 받는다. 전체 bootstrap은 `--host codex` 또는 `--host claude`를 요구하며 선택된 host의 upstream setup/render와 프로젝트 등록만 실행한다. 사용자 전역 host 설정을 변경하지 않는다.
 - 공유하는 스킬 원본은 `.agents/skills/jipdam-workflow/`다. Codex와 Claude Code용 gstack 스킬 지원은 모두 저장소에 두고, 선택한 host의 생성본만 각 프로젝트 탐색 경로에 등록하며 Git 대상에서는 제외한다. 원본·fixture·선택하지 않은 host용 스킬이 프로젝트 탐색 경로에 들어가지 않는다. host를 전환하면 installer marker가 일치하는 이전 등록본만 제거한다.
 - 제품 개발과 Python 검증은 Codex·Claude Code·Antigravity에서 같은 명령과 계약을 사용한다. Claude Code는 `CLAUDE.md`로 공통 규칙을 import하고 `.claude/skills/`에서 Claude host native gstack을 읽는다. Antigravity는 `AGENTS.md`를 사용하며 Codex manifest 호환은 검증됐다고 보지 않는다.
+- Codex와 Claude Code가 요청된 저장소 구현·수정·문서·설정·검증 작업을 Jira `KAN`에서 추적한다. Codex는 연결된 Atlassian Jira 앱을 사용하고 Claude Code는 project `.mcp.json`의 공식 Atlassian MCP OAuth를 사용한다. 시작 전 이슈 연결/생성, 검증 후 완료 처리 세부 규칙은 [Jira Task Lifecycle Spec](specs/jira_task_lifecycle_spec.md)을 따른다.
 - 설치는 요청한 commit과 Bun lockfile을 확인한다. 다른 commit의 기존 checkout은 자동 reset하지 않는다. 설치 실패 시 완료로 보고하지 않는다.
 - 별도 경로로 옮긴 checkout에서 기본 검증·전체 gstack 설치·스킬 중복 검사·브라우저 smoke를 확인한다. 실제 모델·데이터 평가는 별도 완료 조건이다.
 
