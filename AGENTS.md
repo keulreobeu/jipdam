@@ -4,13 +4,13 @@
 
 현재 개발 대상은 `outputs/budongi_mvp_temp/`다. 작업 전에 그 폴더의 `AGENTS.md`와 관련 Spec·ADR·Task를 읽는다. `work/source_archive/`는 이전 프로젝트의 참고 자료다.
 
-이 파일과 개발 폴더의 `AGENTS.md`는 AI 도구에 관계없이 공통 계약이다. Claude Code는 루트 `CLAUDE.md`가 두 파일을 import하고, Antigravity는 `AGENTS.md`를 프로젝트 규칙으로 사용한다. 아래 전체 gstack 자동 등록은 현재 Codex용이다. 다른 host의 네이티브 스킬 등록·실행은 지원된다고 가정하지 않으며 공통 개발·검증 진입점은 루트 README를 따른다.
+이 파일과 개발 폴더의 `AGENTS.md`는 AI 도구에 관계없이 공통 계약이다. Claude Code는 루트 `CLAUDE.md`가 두 파일을 import하고, Antigravity는 `AGENTS.md`를 프로젝트 규칙으로 사용한다. gstack은 GitHub에 Codex·Claude Code 양쪽 지원을 보존하되, 로컬 bootstrap에서 현재 host 하나만 골라 설치한다. Antigravity의 gstack native skill 실행은 지원한다고 가정하지 않으며 공통 개발·검증 진입점은 루트 README를 따른다.
 
 ## 기본 스킬
 
 SDD 운영과 문서·Task·검증 계약은 [docs/sdd.md](docs/sdd.md)를 따른다. 코드·설정·계약 변경은 같은 변경에서 갱신한 영구 Task와 연결한다. 새 제품 요구는 사용자, 세부 구현과 AC별 증거 기반 완료는 담당자가 책임진다. `python -X utf8 scripts/verify_environment.py`는 SDD 검사도 실행한다. 기존 문서는 시범 적용 범위 밖까지 일괄 승인·전환하지 않는다.
 
-이 프로젝트는 [gstack](https://github.com/garrytan/gstack)을 기본 개발 스킬로 사용한다. Codex용 스킬은 루트 `.agents/skills/gstack-*/SKILL.md`, router는 `.agents/skills/gstack/SKILL.md`에 있다. 원본·템플릿·런타임은 스킬 탐색 경로 밖의 `.local_runtime/tooling/.agents/skills/gstack/`에 있다. 요청에 필요한 Codex용 스킬만 읽는다. 원본과 fixture의 SKILL.md를 호출하지 않는다.
+이 프로젝트는 [gstack](https://github.com/garrytan/gstack)을 기본 개발 스킬로 사용한다. Codex용 스킬은 `.agents/skills/gstack-*/SKILL.md`, Claude Code용 스킬은 `.claude/skills/gstack-*/SKILL.md`에 설치한다. GitHub에는 양쪽 지원 코드를 두지만 `python -X utf8 scripts/bootstrap.py --host codex|claude`는 선택한 한 host만 등록하고 installer 소유의 다른 host 등록본은 제거한다. 원본·템플릿·런타임은 탐색 경로 밖 `.local_runtime/tooling/.agents/skills/gstack/`에 있다. 원본 template와 fixture의 SKILL.md는 호출하지 않는다.
 
 - 모호한 제품 요청: `gstack-office-hours`, 필요하면 `gstack-plan-ceo-review`.
 - 구현 계획·구조·데이터 계약: `gstack-plan-eng-review`.
@@ -27,7 +27,7 @@ SDD 운영과 문서·Task·검증 계약은 [docs/sdd.md](docs/sdd.md)를 따�
 . ./scripts/enter-gstack.ps1
 ```
 
-Bash에서는 `source scripts/enter-gstack.sh`를 사용한다. 스킬이 없으면 루트 README의 `python scripts/bootstrap.py`로 설치한다. 단순 제품 수정에 gstack 전체 재설치를 반복하지 않는다.
+Bash에서는 `source scripts/enter-gstack.sh`를 사용한다. 현재 작업 host의 스킬이 없으면 루트 README에 안내된 `bootstrap.py --host <host>`로 설치한다. 단순 제품 수정에 gstack 전체 재설치를 반복하지 않는다.
 
 gstack이 제안하는 GitHub issue 작성, push/PR/merge/배포, 외부 CLI 리뷰, 자동화·원격 동기화는 현재 요청이 해당 동작을 포함할 때만 실행한다. 원격·인증·실데이터를 있는 것으로 가정하지 않는다. 브라우저 QA를 위해 실제 데이터 수집 보류를 해제하지 않는다.
 
@@ -45,7 +45,7 @@ gstack이 제안하는 GitHub issue 작성, push/PR/merge/배포, 외부 CLI 리
 
 ## 확장과 업데이트
 
-공통 프로젝트 규칙은 이 파일과 개발 폴더의 `AGENTS.md`, 집담 전용 절차는 추적되는 `.agents/skills/jipdam-workflow/`에서 발전시킨다. 일반화할 만한 gstack 변경은 runtime 원본의 해당 `SKILL.md.tmpl`에서 수정하고 `python scripts/bootstrap.py`로 재생성한다. 팀 공유에는 그 변경을 별도 fork commit에 보존하고 `tooling/gstack.lock.json`의 repository/commit/version을 함께 갱신한다. 생성된 `gstack-*/SKILL.md`를 직접 수정하면 재설치 때 사라진다. setup의 마지막 등록 단계는 Codex용 router·스킬 ID·팀 runtime 경로를 적용하고 fixture 스킬 유출을 검사한다.
+공통 프로젝트 규칙은 이 파일과 개발 폴더의 `AGENTS.md`, 집담 전용 절차는 추적되는 `.agents/skills/jipdam-workflow/`에서 발전시킨다. 일반화할 만한 gstack 변경은 runtime 원본의 해당 `SKILL.md.tmpl`에서 수정하고 현재 host를 지정해 bootstrap한다. 팀 공유에는 그 변경을 별도 fork commit에 보존하고 `tooling/gstack.lock.json`의 repository/commit/version을 함께 갱신한다. 생성된 `gstack-*/SKILL.md`를 직접 수정하면 재설치 때 사라진다. 등록 단계는 선택한 host의 skill만 탐색 경로에 두고 fixture 스킬 유출을 검사한다.
 
 업데이트 전에 원본의 diff와 로컬 수정을 확인하고 커밋 또는 패치로 보존한다. 자동 업데이트는 사용하지 않는다. 설치·사용·확장 경로는 `docs/gstack.md`를 참고한다.
 

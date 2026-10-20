@@ -1,5 +1,19 @@
 # 팀 환경 검증 기록
 
+## Claude gstack 2026-10-20
+
+See [TASK-CLAUDE-GSTACK-001](tasks/claude-gstack-support.md). The pinned source `96764e80a641e28141ec8297223768029f5bf483` rendered 56 Claude host skills. `register_claude_gstack.py` installed them under the ignored project `.claude/skills/` path; the discovery check confirmed 56 unique names matching their folders. Section links, helper commands, and state paths point into `.local_runtime/`.
+
+Commands run:
+
+```powershell
+bun run scripts/gen-skill-docs.ts --host claude --out-dir .local_runtime/gstack/render/claude
+python -X utf8 scripts/register_claude_gstack.py --render .local_runtime/gstack/render/claude
+python -X utf8 scripts/register_claude_gstack.py --check
+```
+
+The registration code only writes `.claude/skills/gstack*` and does not open or modify Claude global settings. Existing skill names without this install's ownership marker or upstream generated banner are rejected. `CLAUDE.md` says to reopen the project before using `/gstack-*`. A live Claude Code session was not available for invocation smoke; this confirms registration and discovery, not host permissions. Git commits/pushes continue to follow the user's Claude Code permission settings and project approval rules.
+
 기준: 2026-10-01. 제품 데이터·모델 평가와 설치 검증을 구분한다.
 
 ## 현재 확인
@@ -125,3 +139,27 @@ Git Bash의 `--noprofile --norc` helper 호출은 셸 내부 PATH에 Unix 도구
 ```
 
 전체 설치 로그는 `.local_runtime/environment-setup-20261012-full.log`, 화면은 `.local_runtime/team-browser-smoke.png`에 있다. telemetry·auto_upgrade·update_check·원격 자동 리뷰는 꺼져 있다. Docker 실행 환경·Ollama·모델·CSO C++ toolchain은 이번 구성 범위 밖이다. 실제 수집·단지 매칭 보류와 GitHub 수집 범위 예약·결과 기록 계약을 유지한다. 합성 검증을 실제 데이터 수집·추천 품질 완료로 해석하지 않는다.
+
+## Host-specific gstack bootstrap 2026-10-20
+
+요청에 따라 GitHub 공유 소스는 Codex·Claude Code 지원을 모두 유지하고, 로컬 전체 설치는 `scripts/bootstrap.py --host codex|claude` 중 하나를 명시하도록 변경했다. 선택 host만 upstream setup/render 및 프로젝트 등록에 사용하고, 다른 host 등록은 현재 lock과 installer marker가 일치할 때만 제거한다. `verify_environment.py --gstack/--browser`도 동일한 `--host`를 받아 선택 host 등록과 반대 host 부재를 확인한다. README·CLAUDE.md·공통 작업 규칙에 host별 명령을 추가했다.
+
+현재 Codex 작업공간은 Codex 전용 등록 상태다. `register_gstack.py`로 고정 source의 Codex skill 56개를 등록하고, marker 검증을 통과한 Claude 등록본 56개를 제거했다. `register_gstack.py --check`와 Codex 전용 `verify_gstack('codex')`에서 프로젝트 skill 58개가 확인됐고, `.claude/skills/`에 gstack 등록이 없음을 확인했다. Python compile, traceability JSON 파싱, `git diff --check`도 통과했다.
+
+전체 bootstrap 재실행은 이 PC의 Bun 1.3.14가 `bun install --frozen-lockfile` 도중 자체 crash해 완료하지 못했다. 첫 호출은 `.local_runtime` Bun 경로가 PATH에 없어 중단됐고, 로컬 Bun 경로를 PATH에 추가한 재시도는 Bun panic으로 종료됐다. 따라서 전체 `bootstrap.py --host codex|claude` 전환은 end-to-end로 확인되지 않았으며, `CLAUDE-GSTACK-001-AC-03`은 이 첫 시도 시점에는 pending이었다. 이전 검증에서 Claude host renderer와 56개 Claude manifest 등록 자체는 확인했지만, Claude 선택 bootstrap은 다시 실행되지 않았다. 이 작업에서 제품 unittest/전체 verify는 실행하지 않았다.
+
+
+## Claude gstack 2026-10-20
+
+main 기준의 별도 worktree에서 Claude/Codex 설치 지원만 분리했다. Windows, Python 3.12.10, Bun 1.3.14, 고정 gstack commit `96764e80a641e28141ec8297223768029f5bf483`로 실제 설치를 재검증했다. 원래 작업공간의 제품·데이터 변경과 로컬 host 등록은 보존했다.
+
+- `python -X utf8 scripts/bootstrap.py --host claude --skip-verify`: exit 0. 별도 runtime checkout에서 frozen Bun 의존성 설치, 실행 바이너리 빌드, Chromium 설치와 Claude 56개 등록을 완료했다. 루트 스킬에는 다른 스킬/fixture를 중첩 복사하지 않는다.
+- `python -X utf8 scripts/register_claude_gstack.py --check`: exit 0, 고유 Claude 스킬 56개. `verify_gstack('claude')` 및 `verify_browser()`에서 실제 빈 화면 탐색·클릭·DOM 읽기·스크린샷·종료가 통과했다.
+- `python -X utf8 -m unittest discover -s tests -p test_host_gstack.py -v`: 8개 통과. host 전환·반복 설치·custom skill 보존, generated 주석만 있는 사용자 파일 및 다른 lock marker 보호, 중첩 manifest 거부·명시 복구, 이름 정규화 충돌, Windows junction을 통한 skill/asset 외부 쓰기 차단을 확인했다. 공백이 포함된 별도 폴더의 하위 cwd에서 실제 Git Bash로 GSTACK_HOME·GSTACK_PLAN_DIR·BROWSE_STATE_FILE·PLAYWRIGHT_BROWSERS_PATH가 올바른 프로젝트 경로인지 검사했다. Claude upgrade 안내도 `--host claude`를 유지한다.
+- `python -X utf8 scripts/bootstrap.py --host codex --skip-verify`: exit 0. Codex 등록 뒤 installer-owned Claude 등록 56개를 제거했다. `register_gstack.py --check`로 Codex/project manifest를 검증했다.
+
+앞선 Bun crash 기록은 보존한다. 이번 별도 checkout의 사용자 권한 실행에서는 같은 Bun 버전으로 설치가 완료됐으며 도구 업그레이드나 lock 변경은 하지 않았다. 실제 Claude 대화 세션의 native tool/승인 동작, GitHub Claude 앱 설치 및 실모델·실데이터 품질은 이번 완료 범위가 아니다. 생성 스킬·바이너리·캐시·로그·DB·키는 Git에서 제외한다.
+
+### Final verification 2026-10-20
+
+`python -X utf8 scripts/verify_environment.py --gstack --browser --host codex`는 exit 0이었다. 전체 제품/팀 unittest, SDD, 합성 CLI, Codex/project manifest 58개, Chromium 탐색·클릭·DOM·스크린샷·종료를 통과했다. `python -X utf8 scripts/check_sdd.py --base origin/main`은 변경 16개 경로가 TASK-CLAUDE-GSTACK-001에 연결됨을 확인했다. 독립 읽기 전용 재검토의 최종 actionable finding은 0개다.

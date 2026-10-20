@@ -115,3 +115,5 @@ Evaluate each Golden `required_facts` item against its generated answer determin
 ## 2026-10-15 GMS·오토커밋 후속
 
 [TASK-HARNESS-OPS-001](harness-operations.md): 현재 GMS 보존1,000, native Codex gateway 호환성 점검, 전용 브랜치와 검증 후 자동 로컬 커밋.
+
+2026-10-20 [TASK-CLAUDE-GSTACK-001](../../../../docs/tasks/claude-gstack-support.md): Codex/Claude host별 gstack 설치 지원 및 검증.

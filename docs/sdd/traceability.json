@@ -2437,6 +2437,100 @@
           ]
         }
       ]
+    },
+    {
+      "id": "CLAUDE-GSTACK-001",
+      "spec": "docs/specs/claude_gstack_spec.md",
+      "requirements": [
+        {
+          "id": "CLAUDE-GSTACK-001-REQ-01",
+          "acs": [
+            {
+              "id": "CLAUDE-GSTACK-001-AC-01",
+              "manual": [
+                {
+                  "command": "Render Claude host skills from the locked gstack checkout, register project-local manifests, and run the discovery check",
+                  "evidence": "docs/team_environment_validation.md#claude-gstack-2026-10-20"
+                }
+              ],
+              "tests": [
+                {
+                  "file": "tests/test_host_gstack.py",
+                  "class": "HostGstackTests",
+                  "method": "test_host_switch_keeps_only_selected_manifests_and_custom_skills"
+                },
+                {
+                  "file": "tests/test_host_gstack.py",
+                  "class": "HostGstackTests",
+                  "method": "test_nested_manifest_is_rejected_in_existing_install"
+                },
+                {
+                  "file": "tests/test_host_gstack.py",
+                  "class": "HostGstackTests",
+                  "method": "test_normalized_duplicate_names_are_rejected_before_writes"
+                }
+              ]
+            },
+            {
+              "id": "CLAUDE-GSTACK-001-AC-03",
+              "manual": [
+                {
+                  "command": "Install each selected host and verify only that host's project gstack registrations remain",
+                  "evidence": "docs/team_environment_validation.md#host-specific-gstack-bootstrap-2026-10-20"
+                }
+              ],
+              "tests": [
+                {
+                  "file": "tests/test_host_gstack.py",
+                  "class": "HostGstackTests",
+                  "method": "test_host_switch_keeps_only_selected_manifests_and_custom_skills"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CLAUDE-GSTACK-001-REQ-02",
+          "acs": [
+            {
+              "id": "CLAUDE-GSTACK-001-AC-02",
+              "manual": [
+                {
+                  "command": "Inspect the registration boundaries and confirm user-owned conflicts fail closed without writing Claude global settings",
+                  "evidence": "docs/team_environment_validation.md#claude-gstack-2026-10-20"
+                }
+              ],
+              "tests": [
+                {
+                  "file": "tests/test_host_gstack.py",
+                  "class": "HostGstackTests",
+                  "method": "test_generated_banner_without_marker_is_still_user_owned"
+                },
+                {
+                  "file": "tests/test_host_gstack.py",
+                  "class": "HostGstackTests",
+                  "method": "test_foreign_marker_does_not_authorize_overwrite_or_deletion"
+                },
+                {
+                  "file": "tests/test_host_gstack.py",
+                  "class": "HostGstackTests",
+                  "method": "test_claude_helpers_export_relocatable_project_state"
+                },
+                {
+                  "file": "tests/test_host_gstack.py",
+                  "class": "HostGstackTests",
+                  "method": "test_redirected_skill_directory_preserves_external_files"
+                },
+                {
+                  "file": "tests/test_host_gstack.py",
+                  "class": "HostGstackTests",
+                  "method": "test_redirected_asset_directory_is_refused_before_any_write"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "tasks": [
@@ -2473,6 +2567,7 @@
     "outputs/budongi_mvp_temp/docs/tasks/continuation-parts-1to5.md",
     "outputs/budongi_mvp_temp/docs/tasks/gms-model-routing.md",
     "outputs/budongi_mvp_temp/docs/tasks/cli-harness.md",
-    "outputs/budongi_mvp_temp/docs/tasks/harness-operations.md"
+    "outputs/budongi_mvp_temp/docs/tasks/harness-operations.md",
+    "docs/tasks/claude-gstack-support.md"
   ]
 }

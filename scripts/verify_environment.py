@@ -9,6 +9,7 @@ import sys
 import tempfile
 from team_tools import WORKSPACE, APP_RELATIVE, SOURCE_RELATIVE, git, load_lock, require_python, run, runtime_env
 from register_gstack import validate_discovery
+from register_claude_gstack import validate_claude_discovery
 from check_sdd import TEST_ROOTS
 
 def verify_base() -> None:
@@ -37,11 +38,24 @@ def verify_base() -> None:
             raise RuntimeError('The synthetic detail query did not return APT_A')
     print('Application tests and model-free synthetic CLI smoke passed', flush=True)
 
-def verify_gstack() -> None:
+def verify_gstack(host: str) -> None:
     actual = git(['rev-parse', 'HEAD'], cwd=WORKSPACE / SOURCE_RELATIVE, capture=True)
     if actual != load_lock()['commit']:
         raise RuntimeError('Installed gstack does not match the lock')
-    print(f'Pinned gstack and {validate_discovery()} skill manifests verified', flush=True)
+    if host == 'codex':
+        print(f'Pinned gstack and {validate_discovery()} Codex/project skill manifests verified', flush=True)
+        if _has_gstack_registration(WORKSPACE / '.claude/skills'):
+            raise RuntimeError('Claude gstack registrations are present in a Codex-only install')
+    else:
+        print(f'Pinned gstack and {validate_claude_discovery()} Claude skill manifests verified', flush=True)
+        if _has_gstack_registration(WORKSPACE / '.agents/skills'):
+            raise RuntimeError('Codex gstack registrations are present in a Claude-only install')
+
+def _has_gstack_registration(skills_root: Path) -> bool:
+    return skills_root.is_dir() and any(
+        p.is_dir() and (p.name == 'gstack' or p.name.startswith('gstack-'))
+        for p in skills_root.iterdir()
+    )
 
 def verify_browser() -> None:
     binary = WORKSPACE / SOURCE_RELATIVE / ('browse/dist/browse.exe' if os.name == 'nt' else 'browse/dist/browse')
@@ -71,13 +85,16 @@ def verify_browser() -> None:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--gstack', action='store_true')
+    parser.add_argument('--host', choices=('codex', 'claude'), help='Host whose gstack registration should be verified')
     parser.add_argument('--browser', action='store_true')
     args = parser.parse_args()
     try:
         require_python()
         verify_base()
         if args.gstack or args.browser:
-            verify_gstack()
+            if not args.host:
+                parser.error('--host codex or --host claude is required with --gstack/--browser')
+            verify_gstack(args.host)
         if args.browser:
             verify_browser()
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as exc:
