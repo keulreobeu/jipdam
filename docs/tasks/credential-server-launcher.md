@@ -12,7 +12,7 @@ acs = ["CRED-001-AC-01", "CRED-001-AC-03", "CRED-001-AC-05"]
 [[verification]]
 command = "사용자 확인: 보관함 실행 EXE 정상 작동; 서울 열린데이터 광장 폴더의 자격 증명 2개 저장 및 암호문 복호화 가능 확인(키 값 미출력)"
 result = "passed"
-evidence = "사용자 확인 및 Windows 사용자 보관함 읽기 전용 점검"
+evidence = "docs/tasks/credential-server-launcher.md"
 acs = ["CRED-001-AC-01", "CRED-001-AC-03", "CRED-001-AC-05"]
 ```
 
