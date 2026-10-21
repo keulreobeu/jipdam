@@ -2568,6 +2568,7 @@
     "outputs/budongi_mvp_temp/docs/tasks/gms-model-routing.md",
     "outputs/budongi_mvp_temp/docs/tasks/cli-harness.md",
     "outputs/budongi_mvp_temp/docs/tasks/harness-operations.md",
-    "docs/tasks/claude-gstack-support.md"
+    "docs/tasks/claude-gstack-support.md",
+    "docs/tasks/credential-server-launcher.md"
   ]
 }
