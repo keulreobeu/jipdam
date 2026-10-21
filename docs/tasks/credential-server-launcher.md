@@ -6,7 +6,7 @@ id = "TASK-CREDENTIAL-LAUNCHER-001"
 status = "in_progress"
 owner = "Codex"
 specs = ["outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md"]
-scope = ["jipdam-credentials.exe", "docs/tasks/credential-server-launcher.md"]
+scope = ["jipdam-credentials.exe", "docs/sdd/traceability.json", "docs/tasks/credential-server-launcher.md"]
 acs = ["CRED-001-AC-01", "CRED-001-AC-03", "CRED-001-AC-05"]
 
 [[verification]]
