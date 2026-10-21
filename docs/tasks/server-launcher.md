@@ -6,7 +6,7 @@ id = "TASK-SERVER-LAUNCHER-001"
 status = "in_progress"
 owner = "Codex"
 specs = ["outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md"]
-scope = ["jipdam-server.exe", "docs/tasks/server-launcher.md"]
+scope = ["jipdam-server.exe", "docs/sdd/traceability.json", "docs/tasks/server-launcher.md"]
 acs = ["RENT-001-AC-12", "RENT-001-AC-13", "RENT-001-AC-14"]
 
 [[verification]]
