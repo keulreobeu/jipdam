@@ -1,0 +1,29 @@
+```toml
+kind = "task"
+id = "TASK-MAC-LAUNCHER-001"
+status = "in_progress"
+owner = "keulreobeu"
+specs = ["outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md", "outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md"]
+scope = ["jipdam-mac.command", "build_macos_app.sh", "build_credentials_exe.ps1", "build_server_exe.ps1", "server_launcher.py", "credential_launcher.py", "outputs/budongi_mvp_temp/pyproject.toml", "outputs/budongi_mvp_temp/src/budongi/credential_vault.py", "outputs/budongi_mvp_temp/tests/test_credentials.py", "outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md", "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md", "outputs/budongi_mvp_temp/docs/tasks/current.md", "docs/sdd/traceability.json"]
+acs = ["CRED-001-AC-07", "CRED-001-AC-08", "CRED-001-AC-09"]
+```
+
+# TASK-MAC-LAUNCHER-001 — macOS 통합 실행기
+
+## Acceptance criteria
+
+- AC-07: macOS에서 `jipdam-mac.command`를 더블클릭하면 한 터미널 메뉴에서 전월세 서버 또는 API 키 보관함을 시작할 수 있다.
+- AC-08: 자격증명 암호화 키는 macOS Keychain에만 저장하고, 보관함 DB는 사용자 Application Support 경로에 저장한다. Keychain 접근 실패 시 fail-closed한다.
+- AC-09: `build_macos_app.sh`는 macOS에서 `집담.app`을 만들고 실행기를 호출한다. 실제 Mac에서 빌드·실행하지 않은 AC는 완료로 보고하지 않는다.
+
+## Validation
+
+- `zsh -n jipdam-mac.command build_macos_app.sh`
+- `python -X utf8 -m unittest test_credentials -v`: passed (18 tests, including mocked Keychain round-trip and macOS user-local path).
+- Python source parsing and traceability JSON parsing: passed.
+- `python -X utf8 scripts/verify_environment.py`: blocked because the managed worktree's Git metadata rejects `git diff`; SDD validation did not complete.
+- Mac-specific Keychain round-trip and launch verification: `not_run` (this build host is Windows).
+
+## Status
+
+macOS source launcher and secure-storage backend are implemented. Packaged Windows launchers now start their bundled CLI child process so target PCs do not need a separate Python cryptography installation; regenerated EXEs and Mac execution remain unverified.

@@ -5,10 +5,10 @@ kind = "spec"
 id = "CRED-001"
 status = "approved"
 owner = "keulreobeu"
-revision = 4
+revision = 5
 approved_by = "사용자"
 approved_at = "2026-10-12"
-approval_ref = "기존 암호화·폴더 계약 유지; 2026-10-12 사용자가 불완전한 연결 API 목록으로 인한 혼동을 없애도록 전체 목록 또는 별칭만 사용하는 방식으로 수정 요청함. 별칭·폴더 관리 방식을 적용함"
+approval_ref = "기존 암호화·폴더 계약 유지; 2026-10-12 별칭·폴더 중심 관리 승인; 2026-10-21 사용자가 macOS 실행기와 Windows/macOS 통합 실행을 요청함"
 ```
 
 ## 목표·현재 상태·범위
@@ -17,7 +17,7 @@ approval_ref = "기존 암호화·폴더 계약 유지; 2026-10-12 사용자가 
 
 사용자가 만든 평면 폴더 안에 여러 API 키를 저장한다. 폴더는 정리 위치이고 별칭은 사용자가 정한 키 이름이다. 등록·수정·목록 화면에는 별칭과 폴더만 사용하며 불완전한 연결 API 선택 목록은 제거한다. 각 키는 불투명한 자격증명 ID로 참조하며 별칭이나 폴더명에서 API 종류를 추측하지 않는다. 별칭은 표시용이지 인증값이나 파일 경로가 아니다. 기존 공급자 ID는 암호문 호환성 메타데이터로 보존하고 신규 키는 중립적인 `generic` ID를 사용한다.
 
-보관함은 추천·임대차 데이터베이스와 분리된 로컬 전용 저장소다. Windows MVP에서는 사용자 프로필의 `%LOCALAPPDATA%\\Jipdam\\credentials.sqlite3`에 메타데이터와 암호문을 저장하고, AES 키는 `Jipdam/ApiCredentialVault/MasterKey/v1` 이름의 generic credential로 해당 Windows 사용자 계정의 **Windows Credential Manager**에 둔다. API 키 값은 저장 전에 AES-256-GCM으로 암호화하며 인증 태그 검증에 실패한 값은 사용하지 않는다. 운영체제 자격 증명 저장소를 사용할 수 없거나 안전한 백엔드가 확인되지 않으면 저장·복호화·외부 호출을 실패 처리하고 평문 파일·SQLite·환경변수로 대체하지 않는다.
+보관함은 추천·임대차 데이터베이스와 분리된 로컬 전용 저장소다. Windows에서는 `%LOCALAPPDATA%\\Jipdam\\credentials.sqlite3`, macOS에서는 `~/Library/Application Support/Jipdam/credentials.sqlite3`에 메타데이터와 암호문을 저장한다. AES 키는 Windows Credential Manager 또는 현재 macOS 사용자의 **Keychain**에서 `Jipdam/ApiCredentialVault/MasterKey/v1` 이름으로 관리한다. API 키 값은 저장 전에 AES-256-GCM으로 암호화하며 인증 태그 검증에 실패한 값은 사용하지 않는다. 운영체제 자격 증명 저장소를 사용할 수 없거나 안전한 백엔드가 확인되지 않으면 저장·복호화·외부 호출을 실패 처리하고 평문 파일·SQLite·환경변수로 대체하지 않는다. 두 운영체제의 보관함은 동기화되지 않으며 새 기기에서는 키를 다시 등록한다.
 
 현재 역사 데이터 스크립트의 환경변수 계약은 유지한다. 이 보관함은 신규 전월세 공급자 어댑터가 사용할 TARGET다. 실제 전월세·시설 API 호출은 [실데이터 Task](../tasks/rental-real-data.md)의 별도 보류가 풀릴 때까지 하지 않는다. 키 등록·수정·삭제는 외부 API 요청이나 유료 쿼터 활성화를 일으키지 않는다.
 
@@ -80,3 +80,21 @@ Spec, ADR, Plan, Task, runtime·데이터 계약, 개발 규칙과 루트 SDD �
 구현 Task는 합성 키로 다중 공급자·별칭·폴더·재시작·암호화 검증을 수행한다. 테스트에서만 OS Credential Manager adapter를 주입할 수 있지만 제품 실행 경로는 실제 보안 저장소 없이는 fail-closed여야 한다. 폴더 삭제 취소·성공·DB 오류 롤백, 고아 레코드, 암호문 tamper, OS 계정/키 저장소 접근 실패, secret redaction, 외부 네트워크 미호출을 검증한다.
 
 제품 AC-01~05는 구현된 테스트로 검증한다. AC-02의 AES-GCM·fail-closed 동작은 합성 테스트로, Windows Credential Manager의 합성 master-key 영속 round-trip은 현재 Windows 사용자 세션에서 `test_native_credential_manager_round_trip_uses_synthetic_key`로 2026-10-07 확인했다. 문서 적용 AC-06은 [문서 Task](../tasks/credential-vault-sdd.md#doc-validation)에서 검증한다.
+
+## CRED-001-REQ-06 macOS 실행과 Keychain
+
+- macOS 실행 제공물은 서버와 API 키 보관함을 하나의 터미널 메뉴에서 고른다. 소스 실행기는 프로젝트의 로컬 Python 환경을 준비하고 loopback 서버를 시작한다.
+- macOS 암호문 DB는 `~/Library/Application Support/Jipdam/credentials.sqlite3`에 둔다. AES master key는 현재 사용자의 macOS Keychain에 보관한다. Keychain이 없거나 읽기·쓰기에 실패하면 fail-closed하고 평문 fallback을 하지 않는다.
+- macOS와 Windows 간 보관함 동기화는 제공하지 않는다. 다른 OS/기기에서는 API 키를 다시 등록한다.
+
+### CRED-001-AC-07 macOS 통합 실행기
+
+macOS에서 한 실행기로 전월세 서버와 API 키 보관함을 선택해 시작할 수 있다. 서버 주소는 loopback이며 설정 화면은 외부 네트워크 요청을 보내지 않는다.
+
+### CRED-001-AC-08 macOS Keychain
+
+Keychain에 master key를 저장·읽기·삭제해 암호화 왕복을 수행한다. 저장소 접근 실패 및 인증 태그 오류에서는 저장·복호화가 실패하고 평문 파일·환경변수가 생성되지 않는다.
+
+### CRED-001-AC-09 macOS 앱 빌드 안내
+
+macOS 빌드 스크립트가 `집담.app`을 만들고 같은 프로젝트 폴더의 통합 실행기로 연결한다. Windows에서 Mach-O 앱을 빌드한 것으로 주장하지 않으며 Mac에서 실제 실행한 결과를 별도 기록한다.
