@@ -18,11 +18,11 @@ acs = ["CRED-001-AC-07", "CRED-001-AC-08", "CRED-001-AC-09"]
 
 ## Validation
 
-- `zsh -n jipdam-mac.command build_macos_app.sh`
 - `python -X utf8 -m unittest test_credentials -v`: passed (18 tests, including mocked Keychain round-trip and macOS user-local path).
 - Python source parsing and traceability JSON parsing: passed.
-- `python -X utf8 scripts/verify_environment.py`: blocked because the managed worktree's Git metadata rejects `git diff`; SDD validation did not complete.
-- Mac-specific Keychain round-trip and launch verification: `not_run` (this build host is Windows).
+- `python -X utf8 scripts/verify_environment.py`: passed; SDD validation found 16 features, 92 ACs, 36 Tasks and 13 changed paths; 283 product tests, 35 team tests and model-free CLI smoke passed.
+- `git diff --check`: passed. Windows PowerShell build scripts parse successfully.
+- `zsh -n jipdam-mac.command build_macos_app.sh` and Mac-specific Keychain round-trip/launch verification: `not_run` (this build host is Windows).
 
 ## Status
 
