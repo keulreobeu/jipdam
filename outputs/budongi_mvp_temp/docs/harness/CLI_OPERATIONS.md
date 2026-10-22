@@ -2,6 +2,11 @@
 
 # CLI-First 하네스 운영
 
+위키는 [자동 관리 운영](../wiki/AUTOMATION.md)을 따른다. run/validate 검증 성공 뒤
+판단을 report.result.wiki에 기록하고, 미완료 문서는 완료 승인 전에 해결한다.
+worker는 매시간 재검토하며 Codex·Claude는 작업 종료 전 Confluence/Jira outbox를 처리한다.
+팀원은 본인 Atlassian 인증을 사용하며 권한 부족 시 [요청 안내](../wiki/TEAM_ACCESS.md)를 제공하고 DRAFT/SYNC_PENDING을 보존한다.
+
 저장소 루트에서 Python 3.11+로 실행한다. [설계](CLI_ARCHITECTURE.md),
 [검증/구현 결과](CLI_IMPLEMENTATION_REPORT.md), [Task](../tasks/cli-harness.md).
 기존 `scripts/agent_harness.py`는 HARNESS-001 수동/native 역할 인계를 계속 제공한다.

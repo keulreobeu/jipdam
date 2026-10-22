@@ -110,7 +110,7 @@ def validate(body, root):
             raise HarnessError("all_criteria_require_validation")
         return dict(task_id=body["task_id"], objective=body["objective"], priority=priority, scope=scope,
                     acceptance_criteria=acs, execution=execution, safety=safety, depends_on=deps,
-                    context_files=files, validation=checks)
+                    context_files=files, validation=checks, documentation=body.get("documentation", {}))
     except (KeyError, TypeError, AttributeError):
         raise HarnessError("invalid_task") from None
 
@@ -277,6 +277,12 @@ class ManagedStore:
                 raise HarnessError("changes_since_validation")
             if git(Path(r["worktree"]), "rev-parse", "HEAD").strip() != result.get("base_commit"):
                 raise HarnessError("worktree_head_changed")
+            documentation = result.get("wiki")
+            if documentation and documentation.get("blocking"):
+                from .wiki import Wiki
+                decision = Wiki(self.root).decision(documentation["event_id"])
+                if decision.get("blocking"):
+                    raise HarnessError("wiki_review_required_before_completion")
             c.execute("UPDATE managed_tasks SET state='COMPLETED' WHERE id=?", (task,))
             self.event(c, task, "COMPLETED", {"reviewer": reviewer, "result_hash": digest(result)})
         return self.get(task)

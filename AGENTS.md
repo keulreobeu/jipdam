@@ -89,3 +89,23 @@ GMS는 기존 선택 보관함/예산 runner만 사용하며 초안은 수동 �
 기존 선택 키/공통 원장/사전 count/최대 예약/만료·기술 상한을 유지하며 GMS 코드·테스트·문서 초안을 우선 사용한다.
 Codex native GMS는 전체 Responses·도구·스트림·예산 호환이 검증됐을 때만 사용한다. 키를 CLI에 직접 넣어 예산을 우회하지 않는다.
 오토커밋은 검증·필요 승인 후 허용 범위만 codex/ 브랜치에 기록하고 push/merge/amend/reset은 하지 않는다.
+
+## 2026-10-22 위키 자동 생명주기 관리
+
+팀원도 같은 지정 Confluence에 작성한다. 본인 Atlassian 인증을 사용하고 권한이 없으면
+[팀원 권한 요청 안내](outputs/budongi_mvp_temp/docs/wiki/TEAM_ACCESS.md)에 따라 대상 링크와
+실패한 동작을 표시하고 공간 관리자에게 보기·페이지 작성·편집 권한을 요청하도록 안내한다.
+다른 사람의 인증을 공유하지 않고 로컬 DRAFT/SYNC_PENDING과 원래 문서 ID를 보존한다.
+
+사용자 승인 [정책 v1.0](outputs/budongi_mvp_temp/docs/wiki/LIFECYCLE_POLICY.md)과
+[운영](outputs/budongi_mvp_temp/docs/wiki/AUTOMATION.md), WIKI-001/TASK-WIKI-001을 따른다.
+Codex·Claude는 구현/수정 검증 뒤 Jira 완료 전에 별도 요청 없이 wiki maintenance/catalog/search/event를
+실행하고 판단·사유·문서 ID/링크·검증·동기화 상태를 Task/Jira에 기록한다. 불필요하면 SKIP,
+기존 문서로 충분하면 LINK_EXISTING, 신규보다 UPDATE를 우선한다. 의미/근거/권한 검토와
+source hash·문서 revision을 확인한다. 추정·미검증 해결책은 ACTIVE로 게시하지 않는다.
+공식 Atlassian 연결로 [지정 Confluence](https://kwulreobeu.atlassian.net/wiki/spaces/~7120201d82685826914674999dcbf004921921/pages/360449)의
+outbox를 처리하고 실제 read-back URL/버전/hash receipt를 남긴다. 원격 수동 변경은 보존하며
+실패는 SYNC_PENDING이다. 고위험 문서·폐기/대량 병합의 소유자 승인, ACTIVE 검색,
+지원 버전 보존·재검토·영구삭제 금지·민감정보 즉시 격리를 준수한다. 필수 문서 미완료는
+완료를 차단한다. PR merge/배포/의존성/장애 후에도 관련 문서를 재검증한다. 키·DB·runtime은
+문서화하지 않는다. worker/agent 미실행 중 원격 이벤트가 감지된 것처럼 보고하지 않는다.

@@ -27,3 +27,20 @@ QA는 현재 구현의 CLI/API부터 시작한다. 모델 없는 계약 변경�
 외부 CLI 리뷰·유료 평가·원격 동기화·GitHub issue 등록·push/PR/merge/배포는 그 동작이 사용자 요청 범위에 있을 때만 실행한다. 필요한 도구나 인증이 없으면 가능한 로컬 검사와 그 한계를 보고한다.
 
 완료 시 변경, 실제 검사 결과, 남은 조건과 다음 한 단계를 간결하게 보고한다. 이 스킬은 사용 중 발견한 구체적인 프로젝트 차이를 근거로 개선하고, 일반적인 gstack 변경은 원본 템플릿에 반영한다.
+
+## Wiki 자동 생명주기 — 2026-10-22
+
+팀원도 같은 지정 위키를 사용한다. 권한이 없으면 `outputs/budongi_mvp_temp/docs/wiki/TEAM_ACCESS.md`에 따라 대상 링크와
+실패 동작을 알리고 공간 관리자에게 본인 계정의 보기·작성·편집 권한을 요청하도록 안내한다.
+개인 인증을 공유하지 않고 DRAFT/SYNC_PENDING과 stable ID를 보존한다.
+
+구현/수정 검증 완료 뒤 Jira 종료 전에 별도 요청 없이 WIKI-001/TASK-WIKI-001과
+`outputs/budongi_mvp_temp/docs/wiki/LIFECYCLE_POLICY.md`, `AUTOMATION.md`를 따른다.
+`python -m harness wiki maintenance/catalog/search/event`로 기존 문서·의미 중복·근거를 검토하고
+SKIP/LINK_EXISTING/CREATE/UPDATE 등 판단·사유·문서 ID/링크·검증·동기화 상태를 Task/Jira에 기록한다.
+현재 Confluence는 `outputs/budongi_mvp_temp/docs/wiki/connection.json`의 사용자 지정 부모다. pending/delivery를 공식
+host Atlassian 연결 도구로 처리하고 실제 read-back URL/버전/hash receipt를 남긴다.
+낡은 revision·수동 편집·미검증/불완전 검색·권한 부족을 덮어쓰거나 성공으로 표시하지 않는다.
+고위험 게시/폐기/대량병합은 소유자 승인, 지원 버전과 ID 보존, ACTIVE 검색과 영구삭제 금지를
+준수한다. 필수 문서 미완료는 완료를 차단한다. 실패는 SYNC_PENDING으로 복구한다.
+worker 미실행 중에도 원격 이벤트를 감지한다고 주장하지 않는다. 세부 입력/승인/복구는 운영 안내를 따른다.

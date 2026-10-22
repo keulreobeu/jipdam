@@ -34,6 +34,11 @@ class Orchestrator:
         return row["control"]
 
     def finish(self, task, lease, state, **result):
+        if result.get("validation_passed") is True:
+            from .wiki_cli import assess
+            result["wiki"] = assess(self.store, task, result)
+            if state == "COMPLETED" and result["wiki"].get("blocking"):
+                state = "REVIEW_REQUIRED"
         self.store.update(task, lease, state, result=result, release=True)
         if state == "COMPLETED":
             from .autocommit import auto_commit_task
@@ -187,7 +192,16 @@ class Orchestrator:
             return self.store.export(task_id)
 
     def worker(self, *, once=False, poll_seconds=2):
+        from .wiki import Wiki
+        last_maintenance = 0
         while True:
+            if time.monotonic() - last_maintenance >= 3600:
+                last_maintenance = time.monotonic()
+                try:
+                    Wiki(self.store.root).maintain()
+                except (HarnessError, OSError):
+                    with self.store.tx() as c:
+                        self.store.event(c, "MANAGEMENT", "wiki_maintenance_failed", {"reason": "wiki_storage_or_export_unavailable"})
             for task in self.store.tasks("READY"):
                 try:
                     self.run(task["id"])

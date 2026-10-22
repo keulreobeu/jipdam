@@ -74,3 +74,16 @@ HEAD 기준 worktree에는 미커밋 변경을 자동 복사하지 않는다. �
 현재 최소 보존은 **1,000크레딧**이며 이전5,000 지시는 이력으로 보존한다.
 [TASK-HARNESS-OPS-001](docs/tasks/harness-operations.md): 기존 예산/원장을 유지한 GMS 우선 작업과 검증·승인 뒤 범위별 로컬 오토커밋을 허용한다.
 Codex native GMS의 도구/stream/full-payload count 미검증·입력 상한은 우회하지 않는다. 사용자 기존 index와 범위 밖 변경을 보호한다.
+
+## 2026-10-22 Wiki 자동 관리
+
+팀원도 같은 Confluence에 작성한다. 본인 인증으로 접근하고 권한 부족 시 [권한 요청 안내](docs/wiki/TEAM_ACCESS.md)의
+대상 링크·필요한 보기/작성/편집 권한을 사용자에게 안내한다. DRAFT/SYNC_PENDING을 보존하고 우회하지 않는다.
+
+[사용자 정책](docs/wiki/LIFECYCLE_POLICY.md), [운영](docs/wiki/AUTOMATION.md), WIKI-001을 따른다.
+검증 완료 뒤 Jira 종료 전에 별도 요청 없이 python -m harness wiki의 maintenance/catalog/search/event를
+실행한다. 기존 문서 갱신을 우선하고 판단 결과·근거·링크·동기화 상태를 영구 Task/Jira에 남긴다.
+Confluence 대상은 docs/wiki/connection.json이며 공식 host connector로 pending/delivery를 처리하고
+실제 게시 read-back receipt를 기록한다. 실패·충돌·권한 부족은 검토/동기화 대기로 보존한다.
+수동 내용/지원 버전/문서 ID를 보존하고 ACTIVE만 검색한다. 고위험 게시·폐기/대량병합 승인을
+준수하며 영구삭제하지 않는다. 자세한 JSON 및 완료 게이트는 운영 안내를 따른다.

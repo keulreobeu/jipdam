@@ -18,6 +18,8 @@ def main(argv=None, *, workspace=None):
     p.add_argument("--codex-bin", default=None)
     p.add_argument("--gms-port", type=int, default=8786)
     sub = p.add_subparsers(dest="command", required=True)
+    from .wiki_cli import parser as wiki_parser
+    wiki_parser(sub)
     for name in ("status", "tasks"):
         s = sub.add_parser(name); s.add_argument("--task"); s.add_argument("--state")
     for name in ("new-task", "create"):
@@ -38,6 +40,11 @@ def main(argv=None, *, workspace=None):
     s = sub.add_parser("worker"); s.add_argument("--once", action="store_true")
     args = p.parse_args(argv)
     try:
+        if args.command == "wiki":
+            from .wiki_cli import run as wiki_run
+            result = wiki_run(args, root)
+            print(encode(result))
+            return 3 if isinstance(result, dict) and result.get("blocking") else 0
         directory = (root / args.state_dir).resolve()
         if not directory.is_relative_to(root / ".local_runtime"):
             raise HarnessError("state_directory_must_be_local_runtime")

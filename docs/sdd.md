@@ -63,4 +63,9 @@ CI는 PR base/head 또는 push before/after의 실제 파일 차이를 검사한
 
 ## 현재 적용 경계
 
+2026-10-22 이후 위키는 [WIKI-001](../outputs/budongi_mvp_temp/docs/specs/25_wiki_lifecycle_spec.md)과
+[운영](../outputs/budongi_mvp_temp/docs/wiki/AUTOMATION.md)을 따른다. 작업 검증 뒤 Jira 완료 전에
+문서화 판단(SKIP/LINK_EXISTING/CREATE/UPDATE 등), 사유, 문서 ID/링크, 검증·동기화 상태를
+Task/Jira에 기록한다. Spec/ADR/Task의 원본 책임을 유지하며 실제 문서 정합성 검토를 생략하지 않는다.
+
 운영 체계(SDD-001)와 required-fact coverage(EVAL-001)의 기존 등록을 유지하고, 2026-10-06 사용자 승인에 따라 [전월세 추천 RENT-001](../outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md)·[API 키 보관함 CRED-001](../outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md)과 관련 영구 Task를 등록한다. 현재 CRED-001 보관함 구현은 별도 Task에서 추적하며, 전월세 추천·실데이터 수집·단지 매칭·실제 Golden 구성·Router/RAG 확장은 이번 기능 범위에 포함하지 않는다. 문서 완료·합성 데모·실제 성능을 구분하고 데이터 수집 보류를 유지한다.

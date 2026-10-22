@@ -2441,6 +2441,182 @@
           ]
         }
       ]
+    },
+    {
+      "id": "WIKI-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/25_wiki_lifecycle_spec.md",
+      "requirements": [
+        {
+          "id": "WIKI-001-REQ-01",
+          "acs": [
+            {
+              "id": "WIKI-001-AC-01",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_typo_skip_and_unverified_review"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_second_same_cause_creates_then_updates"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_schema_or_runbook_update_and_link_existing"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_temporary_owner_and_expiry_required"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "WIKI-001-REQ-02",
+          "acs": [
+            {
+              "id": "WIKI-001-AC-02",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_sensitive_input_never_persisted_and_exposure_quarantined"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_manual_edits_and_parallel_revision_conflicts_preserved"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_reviewer_catalog_and_source_fingerprints_required"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_core_risk_requires_publication_approval"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_event_idempotence_and_restart"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_path_escape_and_inbound_references"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "WIKI-001-REQ-03",
+          "acs": [
+            {
+              "id": "WIKI-001-AC-03",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_merge_three_documents_and_preserve_old_versions"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_deprecate_archive_trash_and_support_guard"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_review_due_stale_without_deletion"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_source_changed_invalidates_search_before_maintenance"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_broken_local_and_unverified_remote_links_block_publication"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "WIKI-001-REQ-04",
+          "acs": [
+            {
+              "id": "WIKI-001-AC-04",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_connector_failure_pending_bounded_retry_and_receipt"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_stale_delivery_cannot_acknowledge_new_revision"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_no_external_authority_does_not_enqueue_publication"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_export_failure_is_pending_and_recoverable"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_cli_and_metrics"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_resolution_must_match_task"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_managed_verification_hook_and_completion_gate"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_teammate_permission_failure_has_actionable_request_guidance"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_remote_readback_hash_preserves_content_and_normalizes_line_endings"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_teammate_clone_rebuilds_catalog_without_runtime_database"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_wiki_lifecycle.py",
+                  "class": "WikiLifecycleTests",
+                  "method": "test_unreviewed_shared_manual_change_does_not_become_active_on_clone"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "tasks": [
@@ -2477,6 +2653,7 @@
     "outputs/budongi_mvp_temp/docs/tasks/continuation-parts-1to5.md",
     "outputs/budongi_mvp_temp/docs/tasks/gms-model-routing.md",
     "outputs/budongi_mvp_temp/docs/tasks/cli-harness.md",
-    "outputs/budongi_mvp_temp/docs/tasks/harness-operations.md"
+    "outputs/budongi_mvp_temp/docs/tasks/harness-operations.md",
+    "outputs/budongi_mvp_temp/docs/tasks/wiki-lifecycle.md"
   ]
 }
