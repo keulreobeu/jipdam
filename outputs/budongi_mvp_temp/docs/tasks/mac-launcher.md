@@ -4,7 +4,7 @@ id = "TASK-MAC-LAUNCHER-001"
 status = "in_progress"
 owner = "keulreobeu"
 specs = ["outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md", "outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md"]
-scope = ["jipdam-mac.command", "build_macos_app.sh", "build_credentials_exe.ps1", "build_server_exe.ps1", "server_launcher.py", "credential_launcher.py", "outputs/budongi_mvp_temp/pyproject.toml", "outputs/budongi_mvp_temp/src/budongi/credential_vault.py", "outputs/budongi_mvp_temp/tests/test_credentials.py", "outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md", "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md", "outputs/budongi_mvp_temp/docs/tasks/current.md", "docs/sdd/traceability.json"]
+scope = ["jipdam-mac.command", "build_macos_app.sh", "build_credentials_exe.ps1", "build_server_exe.ps1", "server_launcher.py", "credential_launcher.py", "jipdam-server.exe", "jipdam-credentials.exe", "outputs/budongi_mvp_temp/pyproject.toml", "outputs/budongi_mvp_temp/src/budongi/credential_vault.py", "outputs/budongi_mvp_temp/tests/test_credentials.py", "outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md", "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md", "outputs/budongi_mvp_temp/docs/tasks/current.md", "docs/sdd/traceability.json"]
 acs = ["CRED-001-AC-07", "CRED-001-AC-08", "CRED-001-AC-09"]
 ```
 
@@ -22,8 +22,12 @@ acs = ["CRED-001-AC-07", "CRED-001-AC-08", "CRED-001-AC-09"]
 - Python source parsing and traceability JSON parsing: passed.
 - `python -X utf8 scripts/verify_environment.py`: passed; SDD validation found 16 features, 92 ACs, 36 Tasks and 13 changed paths; 283 product tests, 35 team tests and model-free CLI smoke passed.
 - `git diff --check`: passed. Windows PowerShell build scripts parse successfully.
-- `zsh -n jipdam-mac.command build_macos_app.sh` and Mac-specific Keychain round-trip/launch verification: `not_run` (this build host is Windows).
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build_credentials_exe.ps1`: passed; created the executable with cryptography/openpyxl installed in the isolated build environment and bundled.
+- `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build_server_exe.ps1`: passed; reused the dependency-complete build environment.
+- `jipdam-server.exe --jipdam-child rental-mvp --help` and `jipdam-credentials.exe --jipdam-child credentials --help`: passed; both bundled executables loaded their CLI without a separate Python package installation.
+- 2026-10-22 user confirmed the macOS launcher runs normally. Native Keychain failure-path verification was not separately reported.
+- `zsh -n jipdam-mac.command build_macos_app.sh`: not run on this Windows host.
 
 ## Status
 
-macOS source launcher and secure-storage backend are implemented. Packaged Windows launchers now start their bundled CLI child process so target PCs do not need a separate Python cryptography installation; regenerated EXEs and Mac execution remain unverified.
+macOS launcher normal execution was confirmed by the user. Both Windows EXEs were rebuilt and their bundled CLI/dependency load passed; this confirms they no longer require a separate target-PC Python package installation. Native macOS Keychain failure behavior remains unverified.
