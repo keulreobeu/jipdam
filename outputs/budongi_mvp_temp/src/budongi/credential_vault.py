@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ctypes
+import base64
 import os
 import re
 import sqlite3
@@ -67,8 +68,11 @@ class MasterKeyStore(Protocol):
 
 def default_vault_path() -> Path:
     """Return the user-local database path, never a project-relative fallback."""
+    if sys.platform == "darwin":
+        root = Path.home() / "Library" / "Application Support" / "Jipdam"
+        return root / "credentials.sqlite3"
     if os.name != "nt":
-        raise SecureStorageUnavailable("Windows Credential Manager is required for the API key vault.")
+        raise SecureStorageUnavailable("운영체제의 보안 자격증명 저장소가 필요합니다.")
     local_app_data = os.environ.get("LOCALAPPDATA")
     if not local_app_data:
         raise SecureStorageUnavailable("Windows user-local storage is unavailable.")
@@ -175,12 +179,61 @@ class WindowsCredentialManager:
                 raise SecureStorageUnavailable(f"Windows Credential Manager delete failed ({error}).")
 
 
+class MacOSKeychain:
+    """Store only the vault master key in the current user's macOS Keychain."""
+
+    def __init__(self, target: str = MASTER_KEY_TARGET) -> None:
+        if sys.platform != "darwin":
+            raise SecureStorageUnavailable("macOS Keychain을 사용할 수 없는 환경입니다.")
+        try:
+            import keyring
+            from keyring.backends.macOS import Keyring
+
+            backend = Keyring()
+            if not backend.priority:
+                raise RuntimeError("Keychain backend is unavailable")
+            self._keyring = keyring
+            self._backend = backend
+        except Exception as exc:
+            raise SecureStorageUnavailable("macOS Keychain을 사용할 수 없습니다.") from exc
+        self._target = target
+
+    def read(self) -> bytes | None:
+        try:
+            encoded = self._keyring.get_password(self._target, "Jipdam", backend=self._backend)
+            return base64.b64decode(encoded, validate=True) if encoded is not None else None
+        except Exception as exc:
+            raise SecureStorageUnavailable("macOS Keychain에서 암호화 키를 읽을 수 없습니다.") from exc
+
+    def write(self, value: bytes) -> None:
+        if not isinstance(value, bytes) or not value:
+            raise SecureStorageUnavailable("Invalid master key material.")
+        try:
+            encoded = base64.b64encode(value).decode("ascii")
+            self._keyring.set_password(self._target, "Jipdam", encoded, backend=self._backend)
+        except Exception as exc:
+            raise SecureStorageUnavailable("macOS Keychain에 암호화 키를 저장할 수 없습니다.") from exc
+
+    def delete(self) -> None:
+        try:
+            self._keyring.delete_password(self._target, "Jipdam", backend=self._backend)
+        except self._keyring.errors.PasswordDeleteError:
+            return
+        except Exception as exc:
+            raise SecureStorageUnavailable("macOS Keychain에서 암호화 키를 삭제할 수 없습니다.") from exc
+
+
 class CredentialVault:
     """Local metadata DB and AES-256-GCM secrets, with a separate OS-held master key."""
 
     def __init__(self, path: Path | str | None = None, key_store: MasterKeyStore | None = None) -> None:
         self.path = Path(path) if path is not None else default_vault_path()
-        self.key_store = key_store if key_store is not None else WindowsCredentialManager()
+        if key_store is not None:
+            self.key_store = key_store
+        elif sys.platform == "darwin":
+            self.key_store = MacOSKeychain()
+        else:
+            self.key_store = WindowsCredentialManager()
         self._initialize()
 
     def _connect(self) -> sqlite3.Connection:
@@ -303,7 +356,7 @@ class CredentialVault:
         except SecureStorageUnavailable:
             raise
         except Exception as exc:
-            raise SecureStorageUnavailable("Windows 자격 증명 저장소를 사용할 수 없습니다.") from exc
+            raise SecureStorageUnavailable("운영체제 자격 증명 저장소를 사용할 수 없습니다.") from exc
         if key is not None and (not isinstance(key, bytes) or len(key) != MASTER_KEY_BYTES):
             raise SecureStorageUnavailable("저장된 암호화 키를 사용할 수 없습니다.")
         return key
@@ -417,7 +470,7 @@ class CredentialVault:
             message = "" if ready else "기존 암호화 키를 찾을 수 없어 등록된 키를 사용할 수 없습니다."
         except SecureStorageUnavailable:
             ready = False
-            message = "Windows 자격 증명 저장소를 사용할 수 없습니다. 키 저장과 복호화가 중단됩니다."
+            message = "운영체제 자격 증명 저장소를 사용할 수 없습니다. 키 저장과 복호화가 중단됩니다."
         credentials = [
             {
                 "id": row["id"], "folder_id": row["folder_id"],

@@ -6,7 +6,9 @@ import sys
 import tempfile
 import unittest
 import uuid
+import types
 from pathlib import Path
+from unittest.mock import patch
 
 from budongi.credential_vault import (
     CredentialConfirmationRequired,
@@ -16,6 +18,7 @@ from budongi.credential_vault import (
     SecureStorageUnavailable,
     VaultStorageError,
     WindowsCredentialManager,
+    MacOSKeychain,
     default_vault_path,
 )
 
@@ -44,6 +47,37 @@ class MemoryKeyStore:
 
 
 class CredentialVaultTests(unittest.TestCase):
+    def test_macos_default_path_uses_application_support(self) -> None:
+        with patch("budongi.credential_vault.sys.platform", "darwin"), \
+                patch("budongi.credential_vault.Path.home", return_value=Path("/Users/test")):
+            self.assertEqual(default_vault_path(), Path("/Users/test/Library/Application Support/Jipdam/credentials.sqlite3"))
+
+    def test_macos_keychain_round_trip_uses_os_backend(self) -> None:
+        values: dict[tuple[str, str], str] = {}
+
+        class FakeBackend:
+            priority = 1
+
+        class FakeErrors:
+            class PasswordDeleteError(Exception):
+                pass
+
+        fake_keyring = types.ModuleType("keyring")
+        fake_keyring.get_password = lambda service, username, backend=None: values.get((service, username))
+        fake_keyring.set_password = lambda service, username, password, backend=None: values.__setitem__((service, username), password)
+        fake_keyring.delete_password = lambda service, username, backend=None: values.pop((service, username))
+        fake_keyring.errors = FakeErrors
+        fake_backend_module = types.ModuleType("keyring.backends.macOS")
+        fake_backend_module.Keyring = FakeBackend
+        with patch("budongi.credential_vault.sys.platform", "darwin"), \
+                patch.dict("sys.modules", {"keyring": fake_keyring, "keyring.backends": types.ModuleType("keyring.backends"),
+                                            "keyring.backends.macOS": fake_backend_module}):
+            store = MacOSKeychain()
+            store.write(b"synthetic-master-key")
+            self.assertEqual(store.read(), b"synthetic-master-key")
+            store.delete()
+            self.assertIsNone(store.read())
+
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

@@ -976,6 +976,52 @@
               ]
             }
           ]
+        },
+        {
+          "id": "CRED-001-REQ-06",
+          "acs": [
+            {
+              "id": "CRED-001-AC-07",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "manual: macOS 통합 실행기 메뉴 및 loopback 서버 실행",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md#validation"
+                }
+              ]
+            },
+            {
+              "id": "CRED-001-AC-08",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_macos_default_path_uses_application_support"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_credentials.py",
+                  "class": "CredentialVaultTests",
+                  "method": "test_macos_keychain_round_trip_uses_os_backend"
+                }
+              ],
+              "manual": [
+                {
+                  "command": "manual: macOS Keychain 접근 실패 fail-closed 및 실기기 왕복",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md#validation"
+                }
+              ]
+            },
+            {
+              "id": "CRED-001-AC-09",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "manual: build_macos_app.sh를 macOS에서 실행해 집담.app 생성 및 실행",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md#validation"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -2570,6 +2616,7 @@
     "outputs/budongi_mvp_temp/docs/tasks/harness-operations.md",
     "docs/tasks/claude-gstack-support.md",
     "docs/tasks/credential-server-launcher.md",
-    "docs/tasks/server-launcher.md"
+    "docs/tasks/server-launcher.md",
+    "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md"
   ]
 }
