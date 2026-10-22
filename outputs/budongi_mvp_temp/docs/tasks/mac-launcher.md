@@ -25,6 +25,7 @@ acs = ["CRED-001-AC-07", "CRED-001-AC-08", "CRED-001-AC-09"]
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build_credentials_exe.ps1`: passed; created the executable with cryptography/openpyxl installed in the isolated build environment and bundled.
 - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build_server_exe.ps1`: passed; reused the dependency-complete build environment.
 - `jipdam-server.exe --jipdam-child rental-mvp --help` and `jipdam-credentials.exe --jipdam-child credentials --help`: passed; both bundled executables loaded their CLI without a separate Python package installation.
+- The rebuilt executables are 15,070,589 bytes (server) and 15,072,777 bytes (credentials); these updated binaries are included in the branch.
 - 2026-10-22 user confirmed the macOS launcher runs normally. Native Keychain failure-path verification was not separately reported.
 - `zsh -n jipdam-mac.command build_macos_app.sh`: not run on this Windows host.
 
