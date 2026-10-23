@@ -18,6 +18,7 @@
   let gmsBudget = { policy: { enabled: false }, accounted_credits: 0, accounted_tokens: 0, held_credits: 0 };
   let gmsQuote = null;
   let quoteRevision = 0;
+  let historyOffset = 0;
   const policyFields = {
     reserve_credits: "gms-reserve", max_total_credits: "gms-total-credits", max_total_tokens: "gms-total-tokens",
     max_input_tokens: "gms-max-input", max_output_tokens: "gms-max-output",
@@ -53,9 +54,59 @@
       document.getElementById(id).value = gmsBudget.policy[field] ?? 0;
     }
     document.getElementById("gms-enabled").checked = Boolean(gmsBudget.policy.enabled);
+    document.getElementById("gms-owner-label").value = gmsBudget.policy.owner_label || "";
     const ledgerLabel = cumulative ? "이 앱의 누적 사용·예약" : "사용 기록 · 누적 차단 기준 아님";
-    document.getElementById("gms-ledger").textContent = `${ledgerLabel} ${gmsBudget.accounted_credits.toLocaleString("ko-KR")}크레딧 / ${gmsBudget.accounted_tokens.toLocaleString("ko-KR")}토큰 · 보류 ${gmsBudget.held_credits.toLocaleString("ko-KR")}크레딧`;
+    document.getElementById("gms-ledger").textContent = `선택한 개인 키 · ${ledgerLabel} ${gmsBudget.accounted_credits.toLocaleString("ko-KR")}크레딧 / ${gmsBudget.accounted_tokens.toLocaleString("ko-KR")}토큰 · 보류 ${gmsBudget.held_credits.toLocaleString("ko-KR")}크레딧 (사용·예약 포함)`;
+    const legacy = gmsBudget.legacy_unattributed;
+    document.getElementById("gms-legacy").textContent = legacy?.call_count
+      ? `과거 키 귀속 미확인 기록 ${legacy.call_count}건은 별도 보존합니다. 보류 ${legacy.held_credits}크레딧${legacy.held_credits ? " · 귀속 검수 전 유료 요청 보류" : ""}` : "";
+    historyOffset = 0;
+    renderHistory(gmsBudget.calls || [], gmsBudget.call_count || 0);
+    showBalance(gmsBudget.balance);
   }
+
+  function renderHistory(calls, total) {
+    const body = document.getElementById("gms-history");
+    body.replaceChildren();
+    for (const call of calls) {
+      const row = document.createElement("tr");
+      const time = new Date(call.created_at).toLocaleString("ko-KR", {timeZone: "Asia/Seoul"});
+      const tokens = call.operation === "count" ? `계산 입력 ${call.counted_input_tokens ?? "미확인"}토큰 · 생성 실사용 아님`
+        : call.usage_known ? `실사용 ${call.input_tokens}/${call.output_tokens}`
+          : `실사용 미확인 · 예약 ${call.input_tokens}/${call.output_tokens}`;
+      const rate = call.rate_cost_cents == null ? "미확인" : call.rate_cost_cents / 100;
+      const observed = call.account_delta_cents == null ? "미확인" : call.account_delta_cents / 100;
+      for (const value of [`${time} KST · ${call.task_id} · ${call.owner_label || "관리 이름 미지정"}`,
+        `${call.operation === "count" ? "사전 카운트" : "생성"} · ${call.model || "기록 없음"}`,
+        `${call.result_status || call.state} · ${tokens}`,
+        `요율 ${rate} / 계정 관측 ${observed} / 기록·보류 ${call.cost_cents / 100}`]) {
+        const cell = document.createElement("td"); cell.textContent = value; row.append(cell);
+      }
+      body.append(row);
+    }
+    document.getElementById("gms-history-page").textContent = `${total ? historyOffset + 1 : 0}–${Math.min(historyOffset + calls.length, total)} / ${total}건`;
+    document.getElementById("gms-history-prev").disabled = gmsPending || historyOffset === 0;
+    document.getElementById("gms-history-next").disabled = gmsPending || historyOffset + calls.length >= total;
+  }
+
+  async function moveHistory(delta) {
+    if (gmsPending) return;
+    const offset = Math.max(0, historyOffset + delta);
+    gmsPending = true; renderGMS();
+    try {
+      const page = await request("/api/gms/history", {method: "POST", body: JSON.stringify({offset, limit: 30})});
+      if (page.account_id !== gmsBudget.account_id) throw new Error("선택 키가 바뀌었습니다. 다시 선택하세요.");
+      historyOffset = page.offset;
+      renderHistory(page.calls, page.total);
+    } catch (error) { showMessage(error.message, "error-text"); }
+    finally {
+      gmsPending = false; renderGMS();
+      document.getElementById("gms-history-prev").disabled = historyOffset === 0;
+      document.getElementById("gms-history-next").disabled = historyOffset + 30 >= gmsBudget.call_count;
+    }
+  }
+  document.getElementById("gms-history-prev").addEventListener("click", () => moveHistory(-30));
+  document.getElementById("gms-history-next").addEventListener("click", () => moveHistory(30));
 
   async function refreshBudget() {
     gmsBudget = await request("/api/gms/state");
@@ -346,9 +397,15 @@
     dialog.close();
   });
 
-  gmsSelect.addEventListener("change", () => {
+  gmsSelect.addEventListener("change", async () => {
     clearGMSResult();
-    renderGMS();
+    if (!gmsSelect.value) return;
+    gmsPending = true; renderGMS();
+    try {
+      gmsBudget = await request("/api/gms/select", {method: "POST", body: JSON.stringify({credential_id: gmsSelect.value})});
+      renderPolicy();
+    } catch (error) { showMessage(error.message, "error-text"); }
+    finally { gmsPending = false; renderGMS(); }
   });
 
   document.getElementById("gms-form").addEventListener("submit", async (event) => {
@@ -406,9 +463,11 @@
     event.preventDefault();
     if (gmsPending || !gmsSelect.value) return;
     const values = { credential_id: gmsSelect.value, enabled: document.getElementById("gms-enabled").checked,
+      owner_label: document.getElementById("gms-owner-label").value,
       budget_mode: document.getElementById("gms-budget-mode").value };
     for (const [field, id] of Object.entries(policyFields)) values[field] = Number(document.getElementById(id).value);
     clearQuote();
+    gmsPending = true; renderGMS();
     try {
       gmsBudget = await request("/api/gms/policy", { method: "POST", body: JSON.stringify(values) });
       renderPolicy();
@@ -416,7 +475,7 @@
       document.getElementById("gms-policy-result").textContent = "한도를 저장했습니다. 누적 사용량은 유지됩니다. 모델 생성은 하지 않았습니다.";
     } catch (error) {
       document.getElementById("gms-policy-result").textContent = error.message;
-    }
+    } finally { gmsPending = false; renderGMS(); }
   });
 
   document.getElementById("gms-work-form").addEventListener("input", clearQuote);
@@ -435,7 +494,7 @@
     document.getElementById("gms-quote-result").textContent = "실잔액과 전체 입력 토큰을 확인하는 중…";
     try {
       const quote = await request("/api/gms/quote", {
-        method: "POST", body: JSON.stringify({task_id: document.getElementById("gms-task-id").value,
+        method: "POST", body: JSON.stringify({credential_id: gmsSelect.value, task_id: document.getElementById("gms-task-id").value,
           objective: document.getElementById("gms-objective").value, context: document.getElementById("gms-context").value,
           difficulty: document.getElementById("gms-difficulty").value,
           max_output_tokens: Number(document.getElementById("gms-work-limit").value)}),

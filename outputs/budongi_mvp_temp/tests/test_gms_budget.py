@@ -2,6 +2,7 @@ from __future__ import annotations
 import io
 import http.client
 import json
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -155,6 +156,20 @@ class GMSBudgetTests(unittest.TestCase):
         self.assertEqual([payload['model'] for _, _, payload in self.client.requests], ['gpt-6-luna', 'gpt-6-luna'])
         self.assertTrue(all(row['model'] == 'gpt-6-luna' for row in self.manager.state()['calls']))
 
+    def test_rag_prompt_mode_uses_existing_quote_and_settlement_ledger(self):
+        quote = self.manager.quote(task_id='RAG-PARK-PARK-ANSWER',
+            objective='Fixed park answer system', context='{"question":"park"}',
+            expected_output_tokens=700, max_output_tokens=1200, prompt_mode='rag')
+        counted = self.client.requests[-1][2]
+        self.assertIn('text-only park RAG responder', counted['input'])
+        self.assertIn('Fixed park answer system', counted['input'])
+        self.assertIn('{"question":"park"}', counted['input'])
+        self.assertNotIn('Write a code draft', counted['input'])
+        result = self.manager.execute(quote['quote_id'], confirmed=True)
+        self.assertEqual('available', result['status'])
+        self.assertEqual(1, self.client.generated)
+        self.assertEqual(2, self.manager.state()['call_count'])
+
     def test_model_conflicts_and_invalid_difficulty_never_count(self):
         for fields in ({'difficulty': 'simple', 'model': 'gpt-6.1-sol'}, {'difficulty': 'unknown'},
                        {'model': 'gpt-6-astra'}, {'model': []}):
@@ -247,6 +262,8 @@ class GMSBudgetTests(unittest.TestCase):
         with self.assertRaises(GMSBudgetError): self.manager.execute(quote["quote_id"], confirmed=1)
         self.vault.update_credential(self.key_id, api_key="synthetic-rotated-key")
         with self.assertRaises(GMSBudgetError): self.manager.execute(quote["quote_id"], confirmed=True)
+        with self.assertRaises(GMSBudgetError): self.quote()
+        self.manager.save_policy(self.policy)  # Explicitly configure the new personal key.
         quote = self.quote()
         self.manager.save_policy(self.policy)
         with self.assertRaises(GMSBudgetError): self.manager.execute(quote["quote_id"], confirmed=True)
@@ -254,6 +271,104 @@ class GMSBudgetTests(unittest.TestCase):
         self.manager._quotes[quote["quote_id"]]["expires"] = 0
         with self.assertRaises(GMSBudgetError): self.manager.execute(quote["quote_id"], confirmed=True)
         self.assertEqual(self.client.generated, 0)
+    def test_personal_keys_restore_independent_policies_holds_and_history(self):
+        self.manager.save_policy({**self.policy, 'owner_label': 'person-A'})
+        self.client.error = True
+        quote = self.quote()
+        self.manager.execute(quote['quote_id'], confirmed=True)
+        before = self.manager.state()
+        other = self.vault.add_credential(folder_id=self.vault.create_folder('other')['id'],
+                                          alias='person-B', api_key='synthetic-person-B-key')['id']
+        blank = self.manager.select_account(other)
+        self.assertFalse(blank['policy']['enabled'])
+        self.assertEqual(blank['call_count'], 0)
+        self.assertEqual(blank['held_credits'], 0)
+        self.manager.save_policy({**self.policy, 'credential_id': other, 'owner_label': 'person-B', 'max_input_tokens': 3000})
+        self.client.error = False
+        quote = self.quote()
+        self.assertEqual(self.manager.execute(quote['quote_id'], confirmed=True)['status'], 'available')
+        restarted = GMSBudgetManager(self.vault, path=self.manager.path, client=self.client)
+        self.assertEqual(restarted.state()['policy']['owner_label'], 'person-B')
+        self.assertEqual(restarted.state()['accounted_credits'], 4)
+        restored = restarted.select_account(self.key_id)
+        self.assertEqual(restored['policy']['max_input_tokens'], 4000)
+        self.assertEqual(restored['policy']['owner_label'], 'person-A')
+        for field in ('accounted_credits','held_credits','accounted_tokens','call_count'):
+            self.assertEqual(restored[field], before[field])
+        self.assertTrue(all(row['owner_label']=='person-A' for row in restored['calls']))
+
+    def test_duplicate_key_alias_shares_ledger_rotation_requires_new_disabled_policy(self):
+        quote = self.quote(); self.manager.execute(quote['quote_id'], confirmed=True)
+        before = self.manager.state()
+        alias = self.vault.add_credential(folder_id=self.vault.create_folder('alias')['id'],
+                                          alias='same key', api_key=self.secret)['id']
+        shared = self.manager.select_account(alias)
+        self.assertEqual(shared['account_id'], before['account_id'])
+        self.assertEqual(shared['accounted_tokens'], 120)
+        self.vault.update_credential(alias, api_key='synthetic-new-personal-key')
+        with self.assertRaises(GMSBudgetError): self.quote()
+        rotated = self.manager.select_account(alias)
+        self.assertNotEqual(rotated['account_id'], before['account_id'])
+        self.assertFalse(rotated['policy']['enabled'])
+        self.assertEqual(rotated['call_count'], 0)
+        self.assertEqual(self.manager.select_account(self.key_id)['accounted_tokens'], 120)
+
+    def test_automatic_audit_separates_rate_observed_cost_and_reservation(self):
+        self.client.count_charge = 2
+        self.client.generation_charge = 5
+        quote = self.quote(); self.manager.execute(quote['quote_id'], confirmed=True)
+        rows = {r['operation']: r for r in self.manager.state()['calls']}
+        self.assertEqual(rows['count']['account_delta_cents'], 200)
+        self.assertEqual(rows['count']['counted_input_tokens'], 100)
+        self.assertEqual(rows['generation']['rate_cost_cents'], 400)
+        self.assertEqual(rows['generation']['account_delta_cents'], 500)
+        self.assertEqual(rows['generation']['usage_known'], 1)
+        self.assertIsNotNone(rows['generation']['completed_at'])
+        self.assertEqual(self.manager.state()['balance']['remain_credit'], 29993)
+        self.assertEqual(self.manager.history(offset=1,limit=1)['total'], 2)
+        self.assertEqual(len(self.manager.history(offset=1,limit=1)['calls']), 1)
+        with self.assertRaises(GMSBudgetError): self.manager.history(offset=-1)
+        self.assertNotIn(self.secret, json.dumps(self.manager.state()))
+        with self.manager._connect() as db:
+            self.assertNotIn('Write boundary tests', '\n'.join(db.iterdump()))
+
+    def test_failure_audit_marks_usage_unknown_and_keeps_hold(self):
+        self.client.missing_usage = True
+        quote = self.quote(); self.manager.execute(quote['quote_id'], confirmed=True)
+        row = next(r for r in self.manager.state()['calls'] if r['operation']=='generation')
+        self.assertEqual((row['state'],row['result_status'],row['usage_known']), ('uncertain','uncertain',0))
+        self.assertIsNone(row['rate_cost_cents'])
+        self.assertGreater(self.manager.state()['held_credits'],0)
+
+    def test_unattributed_legacy_rows_survive_migration_without_owner_guess(self):
+        path = Path(self.temp.name)/'legacy.sqlite3'
+        db = sqlite3.connect(path)
+        with db:
+            db.execute('CREATE TABLE policy(id INTEGER PRIMARY KEY,revision INTEGER,body TEXT)')
+            db.execute('INSERT INTO policy VALUES(1,3,?)', (json.dumps(self.policy),))
+            db.execute('CREATE TABLE calls(id TEXT PRIMARY KEY,task_id TEXT,created_at TEXT,state TEXT,cost_cents INTEGER,tokens INTEGER,input_tokens INTEGER,output_tokens INTEGER,payload_hash TEXT)')
+            db.execute("INSERT INTO calls VALUES('old','TASK-OLD','2026-10-15','uncertain',12300,20,10,10,'old-hash')")
+        db.close()
+        migrated = GMSBudgetManager(self.vault,path=path,client=self.client)
+        state = migrated.select_account(self.key_id)
+        self.assertEqual(state['legacy_unattributed']['held_credits'],123)
+        self.assertEqual(state['call_count'],0)
+        migrated.save_policy(self.policy)
+        with self.assertRaises(GMSBudgetError): migrated.quote(task_id='TASK-TEST',objective='no generation')
+        with migrated._connect() as db:
+            self.assertEqual(db.execute('SELECT state,cost_cents FROM calls').fetchone()[:], ('uncertain',12300))
+        self.assertEqual(self.client.requests,[])
+
+    def test_explicit_personal_selection_and_labels_reject_secret_or_stale_ui(self):
+        self.manager.select_account(self.key_id)
+        with self.assertRaises(GMSBudgetError):
+            self.manager.quote(task_id='TASK-TEST',objective='no network',credential_id='another-key')
+        with self.assertRaises(GMSBudgetError):
+            self.manager.save_policy({**self.policy,'owner_label':self.secret})
+        with self.assertRaises(GMSBudgetError):
+            self.manager.save_policy({**self.policy,'owner_label':'\ud800'})
+        self.assertEqual(self.manager.history()['calls'],[])
+        self.assertEqual(self.client.requests,[])
     def test_uncertain_reservation_survives_restart(self):
         for failure in ("error", "missing_usage"):
             setattr(self.client, failure, True)
@@ -411,6 +526,26 @@ class GMSBalanceTests(unittest.TestCase):
 
 
 class GMSBudgetHTTPTests(unittest.TestCase):
+    def test_personal_account_selection_history_are_local_and_guarded(self):
+        self.request('/api/gms/policy', {**self.policy(), 'owner_label': 'person-A'})
+        task={'task_id':'TASK-X','objective':'bounded draft'}
+        worker=LocalGMSWork(self.server.server_port)
+        worker.work(task,execute=True)
+        status,history=self.request('/api/gms/history',{'limit':1,'offset':1})
+        self.assertEqual(status,200)
+        self.assertEqual((history['total'],len(history['calls'])),(2,1))
+        requests_before=len(self.client.requests)
+        folder=self.vault.create_folder('another-person')['id']
+        other=self.vault.add_credential(folder_id=folder,alias='person-B',api_key='synthetic-person-B')['id']
+        status,selected=self.request('/api/gms/select',{'credential_id':other})
+        self.assertEqual(status,200)
+        self.assertFalse(selected['policy']['enabled'])
+        self.assertEqual(self.request('/api/gms/history',{})[1]['total'],0)
+        self.assertEqual(self.client.requests.__len__(),requests_before)
+        for path in ('/api/gms/select','/api/gms/history'):
+            self.assertEqual(self.request(path,{'credential_id':other},origin='https://evil.example')[0],403)
+        self.assertEqual(self.request('/api/gms/history',{'offset':-1})[0],400)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
         self.vault = CredentialVault(Path(self.temp.name)/"vault.sqlite3", MemoryKeyStore())

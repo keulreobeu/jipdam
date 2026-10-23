@@ -33,10 +33,14 @@ def rental_readiness(*, canonical_db=DEFAULT_CANONICAL_DB, database=DEFAULT_RENT
         except (OSError, RentalDataUnavailable, ValueError):
             gate(2, '승인된 검수 자료 반영', 'blocked', '패키지 승인·원본 해시·계보를 확인하세요.')
     state = None
+    reviewed_status_counts = {}
     try:
         with closing(open_rental_serving_reader(database)) as serving:
             state = canonical_rental_status(serving)
             metadata = dict(serving.execute('SELECT key,value FROM metadata'))
+            reviewed_status_counts = {row['source_status']: row['count'] for row in serving.execute(
+                'SELECT o.source_status,COUNT(*) AS count FROM rental_observations o '
+                'JOIN reviewed_relations r ON r.observation_id=o.observation_id GROUP BY o.source_status')}
         if source_hash is None or metadata['source_db_sha256'] != source_hash:
             gate(3, '실제 추천·상세 성능 검증', 'blocked', '현재 canonical로 prepare-rentals를 다시 실행하세요.')
         elif (state['status'] != 'ready' or not all(state[field] for field in
@@ -45,7 +49,20 @@ def rental_readiness(*, canonical_db=DEFAULT_CANONICAL_DB, database=DEFAULT_RENT
         else:
             gate(3, '실제 추천·상세 성능 검증', 'ready', '실제 후보를 선택해 추천/상세 benchmark와 내용을 검증하세요.')
     except (OSError, RentalDataUnavailable, sqlite3.Error, ValueError, KeyError, TypeError):
+        state = None
+        reviewed_status_counts = {}
         gate(3, '실제 추천·상세 성능 검증', 'blocked', 'serving 파일·스키마를 확인하세요.')
+    unresolved_status_count = sum(count for status, count in reviewed_status_counts.items()
+                                  if status not in ('valid', 'cancelled'))
+    if state is not None and sum(reviewed_status_counts.values()) != state['confirmed_complex_observations']:
+        gate(3, '확정 연결 거래의 취소·정정 상태', 'blocked', '확정 관계와 상태 집계 건수가 다릅니다. serving을 검증하세요.')
+    elif unresolved_status_count:
+        gate(3, '확정 연결 거래의 취소·정정 상태', 'needs_input',
+             f'확정 연결 관측 {unresolved_status_count:,}건의 상태가 valid로 확인되지 않았습니다.')
+    elif state is not None and state['status'] == 'ready':
+        gate(3, '확정 연결 거래의 취소·정정 상태', 'ready', '확정 연결 관측의 상태가 valid 또는 cancelled로 검수됐습니다.')
+    else:
+        gate(3, '확정 연결 거래의 취소·정정 상태', 'blocked', '읽을 수 있는 확정 연결 serving이 필요합니다.')
     try:
         parsed = urlsplit(endpoint)
         valid_endpoint = (parsed.scheme == 'http' and parsed.hostname in ('127.0.0.1','localhost','::1')

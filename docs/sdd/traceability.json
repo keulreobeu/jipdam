@@ -2,6 +2,91 @@
   "schema_version": 1,
   "features": [
     {
+      "id": "DATA-CATALOG-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/26_data_catalog_spec.md",
+      "requirements": [
+        {
+          "id": "DATA-CATALOG-001-REQ-01",
+          "acs": [
+            {
+              "id": "DATA-CATALOG-001-AC-01",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "MOLIT/Canonical/Statistics/Legal RAG 원천·현황·기준일을 기존 승인 Spec 및 validation 기록과 대조",
+                  "evidence": "outputs/budongi_mvp_temp/docs/data-catalog.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "DATA-CATALOG-001-REQ-02",
+          "acs": [
+            {
+              "id": "DATA-CATALOG-001-AC-02",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "표의 활용 방법·상태·제한 문구와 승인 경계 검토",
+                  "evidence": "outputs/budongi_mvp_temp/docs/data-catalog.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "DATA-CATALOG-001-REQ-03",
+          "acs": [
+            {
+              "id": "DATA-CATALOG-001-AC-03",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "문서 근거 링크·기준일·diff whitespace 검사 확인",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/data-catalog.md"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "LEGAL-CORPUS-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/24_legal_rag_corpus_spec.md",
+      "requirements": [
+        {
+          "id": "LEGAL-CORPUS-001-REQ-01",
+          "acs": [
+            {
+              "id": "LEGAL-CORPUS-001-AC-01",
+              "manual": [
+                {
+                  "command": "Read-only ZIP CRC/entries and manifest bytes/SHA-256 comparison",
+                  "evidence": "outputs/budongi_mvp_temp/data/raw/legal_rag/institutional_20261021_v1/validation.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "LEGAL-CORPUS-001-REQ-02",
+          "acs": [
+            {
+              "id": "LEGAL-CORPUS-001-AC-02",
+              "manual": [
+                {
+                  "command": "Inspect separate raw package and confirm no API key, product index, serving import or source-file sharing upload",
+                  "evidence": "outputs/budongi_mvp_temp/data/raw/legal_rag/institutional_20261021_v1/validation.md"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "SDD-001",
       "spec": "docs/specs/sdd_workflow_spec.md",
       "requirements": [
@@ -2055,6 +2140,46 @@
               ]
             }
           ]
+        },
+        {
+          "id": "GMS-BUDGET-001-REQ-06",
+          "acs": [
+            {
+              "id": "GMS-BUDGET-001-AC-06",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_personal_keys_restore_independent_policies_holds_and_history"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_duplicate_key_alias_shares_ledger_rotation_requires_new_disabled_policy"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_automatic_audit_separates_rate_observed_cost_and_reservation"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_failure_audit_marks_usage_unknown_and_keeps_hold"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_unattributed_legacy_rows_survive_migration_without_owner_guess"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_gms_budget.py",
+                  "class": "GMSBudgetTests",
+                  "method": "test_explicit_personal_selection_and_labels_reject_secret_or_stale_ui"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -2443,6 +2568,219 @@
       ]
     },
     {
+      "id": "TEAM-REF-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/22_team_reference_import_spec.md",
+      "requirements": [
+        {
+          "id": "TEAM-REF-001-REQ-01",
+          "acs": [
+            {
+              "id": "TEAM-REF-001-AC-01",
+              "manual": [
+                {
+                  "command": "Verify source ZIP SHA-256, CRC, manifest and every manifest file size/hash",
+                  "evidence": "outputs/budongi_mvp_temp/docs/team-reference-import-validation-20261020.md#result"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TEAM-REF-001-REQ-02",
+          "acs": [
+            {
+              "id": "TEAM-REF-001-AC-02",
+              "manual": [
+                {
+                  "command": "Compare imported per-source accepted/rejected row counts to verified manifests",
+                  "evidence": "outputs/budongi_mvp_temp/docs/team-reference-import-validation-20261020.md#result"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TEAM-REF-001-REQ-03",
+          "acs": [
+            {
+              "id": "TEAM-REF-001-AC-03",
+              "manual": [
+                {
+                  "command": "Run the package importer and read-only SQLite integrity/foreign-key audit",
+                  "evidence": "outputs/budongi_mvp_temp/docs/team-reference-import-validation-20261020.md#commands"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "TEAM-REF-001-REQ-04",
+          "acs": [
+            {
+              "id": "TEAM-REF-001-AC-04",
+              "manual": [
+                {
+                  "command": "Confirm isolated output path and source_unverified quality boundary; canonical and serving DBs remain unchanged",
+                  "evidence": "outputs/budongi_mvp_temp/docs/team-reference-import-validation-20261020.md#result"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CLAUDE-GSTACK-001",
+      "spec": "docs/specs/claude_gstack_spec.md",
+      "requirements": [
+        {
+          "id": "CLAUDE-GSTACK-001-REQ-01",
+          "acs": [
+            {
+              "id": "CLAUDE-GSTACK-001-AC-01",
+              "manual": [
+                {
+                  "command": "Render Claude host skills from the locked gstack checkout, register project-local manifests, and run the discovery check",
+                  "evidence": "docs/team_environment_validation.md#claude-gstack-2026-10-20"
+                }
+              ]
+            },
+            {
+              "id": "CLAUDE-GSTACK-001-AC-03",
+              "manual": [
+                {
+                  "command": "Install each selected host and verify only that host's project gstack registrations remain",
+                  "evidence": "docs/team_environment_validation.md#host-specific-gstack-bootstrap-2026-10-20"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CLAUDE-GSTACK-001-REQ-02",
+          "acs": [
+            {
+              "id": "CLAUDE-GSTACK-001-AC-02",
+              "manual": [
+                {
+                  "command": "Inspect the registration boundaries and confirm user-owned conflicts fail closed without writing Claude global settings",
+                  "evidence": "docs/team_environment_validation.md#claude-gstack-2026-10-20"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "JIRA-AUTO-001",
+      "spec": "docs/specs/jira_task_lifecycle_spec.md",
+      "requirements": [
+        {
+          "id": "JIRA-AUTO-001-REQ-01",
+          "acs": [
+            {
+              "id": "JIRA-AUTO-001-AC-01",
+              "manual": [
+                {
+                  "command": "Inspect Codex/Claude shared instructions for create-or-link-before-edit Jira requirement and exclusions",
+                  "evidence": "docs/team_environment_validation.md#jira-task-lifecycle-2026-10-20"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "JIRA-AUTO-001-REQ-02",
+          "acs": [
+            {
+              "id": "JIRA-AUTO-001-AC-02",
+              "manual": [
+                {
+                  "command": "Inspect lifecycle rules for verified-only completion and open blocked/partial work",
+                  "evidence": "docs/team_environment_validation.md#jira-task-lifecycle-2026-10-20"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "JIRA-AUTO-001-REQ-03",
+          "acs": [
+            {
+              "id": "JIRA-AUTO-001-AC-03",
+              "manual": [
+                {
+                  "command": "Parse project MCP JSON and inspect host setup guidance",
+                  "evidence": "docs/team_environment_validation.md#jira-task-lifecycle-2026-10-20"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "JIRA-AUTO-001-REQ-04",
+          "acs": [
+            {
+              "id": "JIRA-AUTO-001-AC-04",
+              "manual": [
+                {
+                  "command": "Inspect rules that prevent guessed assignees, untracked changes, and unrelated issue transitions",
+                  "evidence": "docs/team_environment_validation.md#jira-task-lifecycle-2026-10-20"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PARK-RAG-GATEWAY-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/23_park_rag_gateway_spec.md",
+      "requirements": [
+        {
+          "id": "PARK-RAG-GATEWAY-001-REQ-01",
+          "acs": [
+            {
+              "id": "PARK-RAG-GATEWAY-001-AC-01",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_park_gateway.py",
+                  "class": "ParkGatewayTests",
+                  "method": "test_quote_uses_fixed_system_and_budget_manager"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_park_gateway.py",
+                  "class": "ParkGatewayTests",
+                  "method": "test_quote_rejects_untrusted_prompt_mode_and_oversized_input"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "PARK-RAG-GATEWAY-001-REQ-02",
+          "acs": [
+            {
+              "id": "PARK-RAG-GATEWAY-001-AC-02",
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_park_gateway.py",
+                  "class": "ParkGatewayTests",
+                  "method": "test_seoul_proxy_requires_allowlisted_service_and_selected_provider"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_park_gateway.py",
+                  "class": "ParkGatewayTests",
+                  "method": "test_seoul_proxy_rejects_bad_service_date_range_and_redirect"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "WIKI-001",
       "spec": "outputs/budongi_mvp_temp/docs/specs/25_wiki_lifecycle_spec.md",
       "requirements": [
@@ -2654,6 +2992,16 @@
     "outputs/budongi_mvp_temp/docs/tasks/gms-model-routing.md",
     "outputs/budongi_mvp_temp/docs/tasks/cli-harness.md",
     "outputs/budongi_mvp_temp/docs/tasks/harness-operations.md",
-    "outputs/budongi_mvp_temp/docs/tasks/wiki-lifecycle.md"
+    "outputs/budongi_mvp_temp/docs/tasks/team-reference-import-20261020.md",
+    "docs/tasks/claude-gstack-support.md",
+    "docs/tasks/jira-task-lifecycle.md",
+    "outputs/budongi_mvp_temp/docs/tasks/audit-personal-gms-20261021.md",
+    "docs/tasks/server-launcher.md",
+    "docs/tasks/credential-server-launcher.md",
+    "outputs/budongi_mvp_temp/docs/tasks/park-rag-gateway.md",
+    "outputs/budongi_mvp_temp/docs/tasks/legal-rag-source-snapshot-20261021.md",
+    "outputs/budongi_mvp_temp/docs/tasks/wiki-lifecycle.md",
+    "outputs/budongi_mvp_temp/docs/tasks/data-catalog.md",
+    "outputs/budongi_mvp_temp/docs/tasks/personal-data-metadata-20261022.md"
   ]
 }

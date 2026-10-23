@@ -14,3 +14,7 @@ outputs/team-share/
 # gstack is generated from tooling/gstack.lock.json, never vendored here.
 .agents/skills/gstack/
 .agents/skills/gstack-*/
+.claude/skills/gstack/
+.claude/skills/gstack-*/
+# Personal metadata contains real source examples; keep the deliverable local.
+/outputs/personal_metadata_20261022_01a162be/

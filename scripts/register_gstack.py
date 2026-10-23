@@ -129,6 +129,32 @@ def register(root: Path = WORKSPACE) -> int:
         (target / MARKER).write_text(json.dumps({'repository': lock['repository'], 'commit': lock['commit']}) + '\n', encoding='utf-8')
     return len(prepared)
 
+def unregister(root: Path = WORKSPACE) -> int:
+    """Remove only Codex registrations created by this pinned project installer."""
+    root = root.resolve()
+    lock = load_lock(root)
+    skills_root = (root / '.agents/skills').resolve()
+    if skills_root.parent != root / '.agents':
+        raise ValueError('Unexpected Codex skills root')
+    removed = 0
+    if not skills_root.is_dir():
+        return removed
+    for target in sorted(skills_root.iterdir()):
+        if not (target.name == 'gstack' or target.name.startswith('gstack-')) or not target.is_dir():
+            continue
+        marker_path = target / MARKER
+        if not marker_path.is_file():
+            continue
+        marker = json.loads(marker_path.read_text(encoding='utf-8'))
+        if marker.get('repository') != lock['repository'] or marker.get('commit') != lock['commit']:
+            continue
+        resolved = target.resolve()
+        if resolved.parent != skills_root:
+            raise ValueError(f'Refusing to remove a path outside Codex skills: {target}')
+        shutil.rmtree(resolved)
+        removed += 1
+    return removed
+
 def validate_discovery(root: Path = WORKSPACE, *, require_gstack: bool = True) -> int:
     manifests = sorted((root / '.agents/skills').rglob('SKILL.md'))
     names = []

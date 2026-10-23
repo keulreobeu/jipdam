@@ -10,7 +10,8 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from .gms import estimate_usage
-from .gms_budget import GMSBudgetManager
+from .gms_budget import GMSBudgetError, GMSBudgetManager
+from .park_gateway import ParkGatewayError, execute_rag, quote_rag, seoul_rows, PARK_DATASETS
 from .http_helpers import discard_rejected_body
 
 from .credential_vault import (
@@ -115,7 +116,7 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
             length = int(raw_length) if raw_length is not None else -1
         except ValueError as exc:
             raise CredentialValidationError("요청 크기를 확인할 수 없습니다.") from exc
-        maximum = 256 * 1024 if self.path == "/api/gms/quote" else MAX_REQUEST_BYTES
+        maximum = 256 * 1024 if self.path in {"/api/gms/quote", "/api/rag/quote"} else MAX_REQUEST_BYTES
         if length < 0 or length > maximum:
             raise CredentialValidationError("요청 크기가 허용 범위를 벗어났습니다.")
         try:
@@ -169,6 +170,14 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
             except Exception:
                 self._json(503, {"error": "GMS 예산 원장을 읽을 수 없습니다."})
             return
+        if path == "/api/rag/capabilities":
+            self._json(200, {"contract_version": "1.0", "budget_enforced": True,
+                             "gms_key_vault": True, "generation": True, "embeddings": False})
+            return
+        if path == "/api/seoul/capabilities":
+            self._json(200, {"contract_version": "1.0", "key_material_exported": False,
+                             "allowlisted_datasets": sorted(PARK_DATASETS)})
+            return
         self._json(404, {"error": "요청한 경로를 찾을 수 없습니다."})
 
     def _send_static(self, filename: str, content_type: str) -> None:
@@ -192,7 +201,7 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
         if not self._guard_request():
             return
         if not self._origin_and_csrf_valid():
-            discard_rejected_body(self, 256 * 1024 if self.path == '/api/gms/quote' else MAX_REQUEST_BYTES)
+            discard_rejected_body(self, 256 * 1024 if self.path in {'/api/gms/quote', '/api/rag/quote'} else MAX_REQUEST_BYTES)
             self._json(403, {"error": "로컬 화면에서 다시 요청해 주세요."})
             return
         path = self._route()
@@ -200,6 +209,12 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
             return
         try:
             body = self._body_object()
+            if method == "POST" and path == "/api/gms/select":
+                self._json(200, self.server.gms_budget.select_account(body.get('credential_id')))
+                return
+            if method == "POST" and path == "/api/gms/history":
+                self._json(200, self.server.gms_budget.history(offset=body.get('offset', 0), limit=body.get('limit', 30)))
+                return
             if method == "POST" and path == "/api/gms/check":
                 self._json(200, self.server.gms_budget.check(body.get("credential_id"), confirmed=body.get("confirm")))
                 return
@@ -212,10 +227,20 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
             if method == "POST" and path == "/api/gms/quote":
                 self._json(200, self.server.gms_budget.quote(task_id=body.get("task_id"), objective=body.get("objective"),
                            context=body.get("context", ""), expected_output_tokens=body.get("expected_output_tokens"),
-                           difficulty=body.get("difficulty"), model=body.get("model"), max_output_tokens=body.get("max_output_tokens")))
+                           difficulty=body.get("difficulty"), model=body.get("model"), max_output_tokens=body.get("max_output_tokens"),
+                           credential_id=body.get('credential_id')))
                 return
             if method == "POST" and path == "/api/gms/execute":
                 self._json(200, self.server.gms_budget.execute(body.get("quote_id"), confirmed=body.get("confirm")))
+                return
+            if method == "POST" and path == "/api/rag/quote":
+                self._json(200, quote_rag(self.server.gms_budget, body))
+                return
+            if method == "POST" and path == "/api/rag/execute":
+                self._json(200, execute_rag(self.server.gms_budget, body))
+                return
+            if method == "POST" and path == "/api/seoul/rows":
+                self._json(200, seoul_rows(self.server.vault, body))
                 return
             if method == "POST" and path == "/api/gms/estimate":
                 self._json(200, estimate_usage(body))
@@ -255,6 +280,10 @@ class _CredentialRequestHandler(BaseHTTPRequestHandler):
                 self._json(200, result)
                 return
             self._json(404, {"error": "요청한 경로를 찾을 수 없습니다."})
+        except ParkGatewayError as exc:
+            self._json(400, {"error": str(exc)})
+        except GMSBudgetError as exc:
+            self._json(400, {"error": str(exc)})
         except TimeoutError:
             self._json(408, {"error": "요청 시간이 초과되었습니다. 다시 요청해 주세요."})
         except CredentialContentsChanged as exc:

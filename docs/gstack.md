@@ -10,6 +10,7 @@
 | `.agents/skills/jipdam-workflow/` | 팀이 수정하는 집담 전용 스킬 | 포함 |
 | `.agents/skills/gstack/` | Codex용 router manifest·metadata만 | 생성, 제외 |
 | `.agents/skills/gstack-*/` | Codex용 manifest·section·metadata | 생성, 제외 |
+| `.claude/skills/gstack*/` | Claude Code용 native skill과 보조 파일 | 생성, 제외 |
 | `.local_runtime/tooling/.agents/skills/gstack/` | 원본 Git checkout·템플릿·helper·빌드 결과 | 제외 |
 | `.local_runtime/gstack/` | gstack 프로젝트 상태·계획·브라우저 로그 | 제외 |
 | `.local_runtime/playwright/` | Chromium | 제외 |
@@ -18,9 +19,9 @@
 
 ## 팀원 설치와 검증
 
-루트 README의 필수 도구를 설치한 뒤 `python -X utf8 scripts/bootstrap.py`를 실행한다. Windows의 `scripts/setup-gstack.ps1`, Linux/macOS의 `bash scripts/setup-gstack.sh`도 같은 bootstrap을 호출한다. Python만으로 확인하려면 `--app-only`를 추가한다.
+루트 README의 필수 도구를 설치한 뒤 현재 작업 host를 지정해 `python -X utf8 scripts/bootstrap.py --host codex` 또는 `--host claude`를 실행한다. Windows의 `scripts/setup-gstack.ps1`, Linux/macOS의 `bash scripts/setup-gstack.sh`도 인자를 그대로 bootstrap에 전달한다. Python만으로 확인하려면 `--app-only`를 추가한다.
 
-bootstrap은 exact commit을 fetch하고 `VERSION`, 의존성 manifest, Bun lock을 확인한다. `bun install --frozen-lockfile` 뒤 공식 `setup --host codex --prefix`를 runtime namespace에서 실행한다. 등록 단계는 Codex 스킬만 루트로 복사하고 `name`을 디렉터리와 일치시키며, 스킬 preamble을 팀 runtime 경로로 연결한다. 원본·fixture·다른 host용 스킬은 복사하지 않는다.
+bootstrap은 exact commit을 fetch하고 `VERSION`, 의존성 manifest, Bun lock을 확인한다. `bun install --frozen-lockfile` 뒤 선택한 host에 대해 upstream setup/render를 실행하고 그 host 스킬만 프로젝트 탐색 경로에 등록한다. Codex는 `.agents/skills/`, Claude Code는 `.claude/skills/`를 사용한다. 다른 host로 전환할 때 이 설치기가 만든 이전 gstack 등록본은 marker와 lock을 확인한 뒤 제거한다. 등록본은 전역 host 설정을 바꾸지 않으며 upstream 실행 파일·helper는 runtime checkout에 둔다. 원본·fixture·선택하지 않은 host용 스킬은 복사하지 않는다.
 
 개인 전역 Codex 설정과 전역 스킬은 변경하지 않는다. 공식 setup 자체는 사용자 `~/.gstack/`에 설치 버전·welcome 표시 파일을 남길 수 있다. 프로젝트 상태는 telemetry off, auto-upgrade false, 외부 CLI 자동 리뷰 disabled로 시작한다. 전체 설치는 인터넷과 디스크 공간이 필요하다.
 
@@ -35,9 +36,9 @@ $gstack-qa CLI의 입력과 반환 결과를 검증해줘
 $gstack-document-release 구현과 문서를 맞춰줘
 ```
 
-등록된 스킬은 working directory에서 상위 lock을 찾아 환경을 설정한다. helper 직접 실행에는 PowerShell에서 `. ./scripts/enter-gstack.ps1`, Bash에서 `source scripts/enter-gstack.sh`를 사용한다. 원본의 Claude용 SKILL.md를 직접 호출하지 않는다.
+등록된 Codex skill preamble은 working directory에서 상위 lock을 찾아 환경을 설정한다. Claude skill의 helper/state 경로는 프로젝트 `.local_runtime/`를 사용한다. helper를 직접 실행할 때는 PowerShell에서 `. ./scripts/enter-gstack.ps1`, Bash에서 `source scripts/enter-gstack.sh`를 사용한다.
 
-설치 확인은 `python scripts/verify_environment.py --gstack --browser`, 재등록만 할 때는 `python scripts/register_gstack.py`를 실행한다. 형식·중복·nested fixture 검사는 `python scripts/register_gstack.py --check`로 실행한다. 필요하면 skill-creator의 `quick_validate.py`를 Python UTF-8 모드로 추가 실행한다.
+설치 확인은 `python -X utf8 scripts/verify_environment.py --gstack --browser --host codex` 또는 host를 `claude`로 지정해 실행한다. Codex 재등록은 `python scripts/register_gstack.py`, Claude 재등록은 upstream renderer를 먼저 실행한 뒤 `python scripts/register_claude_gstack.py`를 사용한다. 형식·중복·nested fixture 검사는 각각 `register_gstack.py --check` 또는 `register_claude_gstack.py --check`로 실행한다. 필요하면 skill-creator의 `quick_validate.py`를 Python UTF-8 모드로 추가 실행한다.
 
 ## 팀에서 발전시키기
 
@@ -51,7 +52,7 @@ gstack 자체를 수정하려면 runtime checkout의 `SKILL.md.tmpl` 또는 sect
 
 제품 코드·Spec·ADR·Task와 Python 검증 명령은 Codex·Claude Code·Antigravity에서 공통으로 사용한다. 도구별 시작 방법은 루트 README에 있다. Claude Code는 루트 `CLAUDE.md`에서 공통 `AGENTS.md`를 import하고, Antigravity는 공식 프로젝트 규칙의 `AGENTS.md`를 사용한다.
 
-현재 bootstrap과 adapter는 Codex용 gstack만 등록한다. Claude Code의 `.claude/skills/` 등록은 구현하지 않았으며, Antigravity가 `.agents/skills/`를 탐색하더라도 생성된 Codex manifest·preamble의 실행 호환성을 검증한 것은 아니다. 이 도구들의 기본 개발은 `--app-only`와 추적되는 `jipdam-workflow`의 공통 절차로 시작한다. host별 네이티브 gstack 연결은 등록·runtime·동작 검증이 필요한 별도 확장이다.
+Codex는 `.agents/skills/`, Claude Code는 `.claude/skills/`의 host별 생성본을 사용한다. 두 형식의 소스는 GitHub에 함께 두지만 실제 설치는 명시한 한 host만 대상으로 한다. Claude용 skill은 upstream의 Claude host renderer에서 만들고, helper·state 경로를 프로젝트 runtime으로 연결한다. Anthropic Claude Code의 Git 권한·승인 정책은 host 설정이므로 이 등록은 우회하지 않는다. Antigravity의 생성 Codex manifest·preamble 실행 호환성은 검증하지 않았다.
 
 Windows 전체 설치와 브라우저 smoke를 검증한다. Linux/macOS 진입점을 제공하되 해당 OS의 전체 설치 실행 결과는 별도 검증 대상이다. CSO 네이티브 실행에는 추가 C++ toolchain, iOS에는 기기와 관련 플랫폼, 외부 CLI 리뷰와 원격 동기화에는 별도 인증이 필요하다. 실제 모델·실데이터 정확도는 설치 검증에 포함하지 않는다.
 

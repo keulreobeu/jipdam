@@ -15,7 +15,7 @@ approval_ref = "PLEASE IMPLEMENT THIS PLAN 및 2026-10-14 1~5번 목적별 후�
 
 신혼·첫집·사회초년생이 예산·직장 위치·생활시설 조건에 맞는 **서울 아파트 단지 후보**를 비교하는 팀 MVP·발표 데모다. [Plan](../plans/rental-recommendation-mvp.md), [ADR](../adr/ADR-003-rental-recommendation-first.md), [문서 Task](../tasks/rental-spec-transition.md), [API 자격증명 보관함 CRED-001](11_api_credential_vault_spec.md)을 따른다.
 
-**CURRENT:** 매매 중심 `serving_v1`, 2023 이하 역사 importer, 세 Data Tool, 단일 로컬 4B Tool Calling, 합성 테스트와 required-fact 평가기가 있다. 별도로 실제 MOLIT 관측이 포함된 `canonical_real_estate_v3` 통합 DB가 있고, 전월세 관측 238,620건의 확정 단지 연결은 0건이다. 최신 canonical에서 재생성하는 read-only 전월세 serving DB, loopback 채팅/API, draft를 사용자가 확인하는 웹 폼, 니즈 비교·전체 상세/지도 화면의 첫 구현을 추가했다. 초안은 명시 allowlist로 제한하고 추천은 deterministic backend만 수행한다. 현재 실제 결과는 `data_not_ready`다. 검수 패키지 importer·공통 판정·채팅 복구·니즈/100행 상세·Leaflet+OSM 내장 지도와 합성 성공 경로를 검증했다. 실제 확정 매칭 성공 경로와 실모델 상호작용은 사용자 답변대로 자료 준비 후 검증한다. 검수 좌표/시설 데이터는 없다. 문서 승인이나 합성 저장 테스트를 실제 추천 품질 완료로 해석하지 않는다.
+**CURRENT:** 매매 중심 `serving_v1`, 2023 이하 역사 importer, 세 Data Tool, 단일 로컬 4B Tool Calling, 합성 테스트와 required-fact 평가기가 있다. 별도로 실제 MOLIT 관측이 포함된 `canonical_real_estate_v3` 통합 DB가 있고, 2026-10-20 검수 serving `data/rental/serving/reviewed-20261020.sqlite3`에는 238,620건 중 203,159건(5,156개 단지)의 승인 관계가 반영됐다. 예외 35,461건은 미확정이며 연결 거래의 상태도 모두 `unknown`이라 실제 추천은 `data_not_ready`다. 보존한 이전 canonical의 0건 연결과 이 검수 serving을 구분한다. 최신 canonical에서 재생성하는 read-only 전월세 serving DB, loopback 채팅/API, draft를 사용자가 확인하는 웹 폼, 니즈 비교·전체 상세/지도 화면의 첫 구현을 추가했다. 초안은 명시 allowlist로 제한하고 추천은 deterministic backend만 수행한다. 현재 실제 결과는 `data_not_ready`다. 검수 패키지 importer·공통 판정·채팅 복구·니즈/100행 상세·Leaflet+OSM 내장 지도와 합성 성공 경로를 검증했다. 실제 확정 매칭 성공 경로와 실모델 상호작용은 사용자 답변대로 자료 준비 후 검증한다. 검수 좌표/시설 데이터는 없다. 문서 승인이나 합성 저장 테스트를 실제 추천 품질 완료로 해석하지 않는다.
 
 **TARGET:** Python·SQLite 단일 로컬 앱에서 채팅형 조건 입력과 로컬 LLM의 추가 질문, DB 기반 결정적 추천, 후보 목록·지도·상세·니즈 비교 화면을 제공한다. 상세 화면은 DB에 적재된 전체 정규화 필드와 출처·기준일을 표시하고 새 등록 데이터의 필드도 계약을 통해 확장한다. 지도는 실제 검수된 위경도가 있을 때 그 위치를 표시하며, 없으면 위치 미제공을 분명히 나타낸다. 사용자에게 노출하는 거래·시설·주소는 실행 DB의 근거가 있어야 한다. 기존 보류 경계와 후보 자동 확정·거래 병합 금지를 지키며, 합성 자료와 실제 관측을 명확히 나눈다. 추천·순위는 로컬 LLM이 결정하지 않는다.
 
@@ -151,7 +151,9 @@ CLI와 HTTP는 같은 후보·순위를 전달한다. 입력 오류·없는 데�
 
 ## 실제 전월세 후보 자격 — 사용자 결정 2026-10-13
 
-사용자는 실제 전월세 추천을 **확정 매칭된 단지에 한해서만** 허용했다. `pending`·`rejected` 후보와 단지에 연결되지 않은 관측은 추천 후보·지도 표식·니즈 순위에 포함하지 않는다. 현재 canonical DB의 전월세 후보 271,299건은 모두 `pending`이며 `observations.complex_id`가 있는 전월세는 0건이므로, 실제 추천 요청은 정상 빈 결과가 아니라 `data_not_ready`로 반환한다. 화면은 이용 가능한 실제 거래 관측과 미확정 후보 수를 데이터 준비 상태로 표시할 수 있지만, 거래를 단지로 추정 연결하거나 병합하지 않는다. 이후 사용자 승인과 사람 검수에 따라 `confirmed`가 생기면 해당 링크만 추천 질의에서 사용한다.
+사용자는 실제 전월세 추천을 **확정 매칭된 단지에 한해서만** 허용했다. `pending`·`rejected` 후보와 단지에 연결되지 않은 관측은 추천 후보·지도 표식·니즈 순위에 포함하지 않는다. 2026-10-13 기준 보존 canonical DB의 전월세 후보 271,299건은 모두 `pending`이며 `observations.complex_id`가 있는 전월세는 0건이므로, 실제 추천 요청은 정상 빈 결과가 아니라 `data_not_ready`로 반환한다. 화면은 이용 가능한 실제 거래 관측과 미확정 후보 수를 데이터 준비 상태로 표시할 수 있지만, 거래를 단지로 추정 연결하거나 병합하지 않는다. 이후 사용자 승인과 사람 검수에 따라 `confirmed`가 생기면 해당 링크만 추천 질의에서 사용한다.
+
+2026-10-20 검수 serving `data/rental/serving/reviewed-20261020.sqlite3`에는 238,620건 중 203,159건(5,156개 단지)의 승인 관계가 반영됐다. 예외 35,461건은 미확정이며 연결 거래의 상태도 모두 `unknown`이라 실제 추천은 `data_not_ready`다. 보존한 이전 canonical의 0건 연결과 이 검수 serving을 구분한다.
 
 ## 검증 명령과 결과
 

@@ -1,6 +1,18 @@
 # Current Tasks — 전월세 제품 전환과 보존된 평가 기록
 
+2026-10-22 [TASK-PERSONAL-METADATA-001](personal-data-metadata-20261022.md): KAN-21. 이진호 수집·제공 원본만 4시트 메타데이터 Excel 작성. 실측/수집 이력/원본 미확보를 구분한다.
+
 2026-10-22 [TASK-WIKI-001](wiki-lifecycle.md): KAN-19. 사용자 정책 v1.0 기반 위키 판단·갱신·상태·재검토·복구·Confluence 연동.
+
+2026-10-21 [TASK-LEGAL-RAG-CORPUS-001](legal-rag-source-snapshot-20261021.md): KAN-13. 별도 RAG 실험용 법률·표준계약서·보증기관 원문 패키지와 출처 기록; 원문 미리보기 1차 완료, 법률 검수·semantic eval·문서별 이용조건은 미완료.
+
+2026-10-21 [TASK-CREDENTIAL-LAUNCHER-001](../../../../docs/tasks/credential-server-launcher.md): API 키 보관함 서버 Windows EXE 실행기.
+
+2026-10-21 [TASK-SERVER-LAUNCHER-001](../../../../docs/tasks/server-launcher.md): Windows 저장소 루트 런처로 현재 검수 serving 전월세 MVP 서버를 원클릭 실행.
+
+2026-10-21 [TASK-AUDIT-GMS-001](audit-personal-gms-20261021.md): 현재 문서/SDD/readiness 재검증과 개인 GMS 키별 정책·자동 사용 내역. 아래 과거 GMS 5,000·만료 기록은 당시 이력이며 현재 최소 보존은1,000이다. 2026-10-20 승인 검수 serving의 연결은203,159건이고 거래 상태 unknown으로 추천 차단을 유지한다.
+
+2026-10-20 [TASK-JIRA-AUTO-001](../../../../docs/tasks/jira-task-lifecycle.md): Codex·Claude 저장소 작업 전 Jira 이슈 생성/연결, 검증 후 완료 처리. Claude Code 공식 Atlassian MCP OAuth 설정 포함.
 
 2026-10-14 [TASK-RENT-CONTINUE-001](continuation-parts-1to5.md): 1~5번을 목적별로 실행. 기본 canonical v3 복구·실제 prepare, 검수/모델 준비 검사, 실제 Drive 다운로드·해시와 문서/Git 정리. [Plan](../plans/continuation-parts-1to5.md), [후속 검증](../continuation-validation-20261014.md). 사용자 검수 패키지·로컬 모델은 미준비.
 
@@ -47,6 +59,8 @@ ID는 기존 작업을 계속 추적하기 위해 부여했다. 실제 Golden의
 ## 전월세 제품 우선 작업
 
 2026-10-13 제공 통계 수입: [TASK-STATS-001](statistics-import.md)에서 이전 12개+신규 18개 엑셀의 통계 전용 DB/raw 보존과 530,556셀 대사·심리 중복/파일 기준 검수를 완료했다. 통계 8개 검사 통과, 전체 검증의 기존 수집 rename 접근 오류는 [검증 기록](../statistics-validation-20261013.md)에 남겼다. 실제 거래 canonical/추천 데이터와 별도다.
+
+2026-10-20 팀 reference 자료 수입: [TASK-TEAM-REF-001](team-reference-import-20261020.md)에서 HUG 전세보증 사고·학원·도서관·어린이보호구역 4개 ZIP의 Issue 해시/manifest를 대조하고 157,602 accepted 행을 별도 `team_reference.sqlite3`에 보존했다. `source_unverified`를 유지하며 전월세 canonical/serving·추천·좌표 매칭과 분리한다.
 
 2026-10-06 승인된 [RENT-001](../specs/10_rental_recommendation_spec.md)·[PLAN-RENT-001](../plans/rental-recommendation-mvp.md)을 따른다. 이 파일의 TASK-EVAL-001 메타데이터와 체크·검증 이력은 그대로 보존하며, 실제 역사 Golden 미완료로 in_progress를 유지한다. 해당 연구 완료는 새 전월세 추천의 선행 조건이 아니다.
 
@@ -117,3 +131,8 @@ Evaluate each Golden `required_facts` item against its generated answer determin
 ## 2026-10-15 GMS·오토커밋 후속
 
 [TASK-HARNESS-OPS-001](harness-operations.md): 현재 GMS 보존1,000, native Codex gateway 호환성 점검, 전용 브랜치와 검증 후 자동 로컬 커밋.
+
+2026-10-21 [TASK-PARK-RAG-GATEWAY-001](park-rag-gateway.md): KAN-18, 서울 공원 RAG GMS 키 보관함 generation과 Seoul Open Data 프록시.
+
+
+2026-10-22 [TASK-DATA-CATALOG-001](data-catalog.md): KAN-20. 수집·통합·통계·법률 원문 데이터의 상태와 활용 가이드.
