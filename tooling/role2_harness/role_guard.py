@@ -119,6 +119,11 @@ def _family_of_attempt(unit_dir: Path) -> str | None:
                 continue
             if event.get("type") == "init" and event.get("model"):
                 return event["model"]
+    log = latest.with_name(f"{latest.stem}.agy.log")
+    if log.is_file():
+        for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
+            if "] workdir=" in line and " model=" in line:
+                return line.split(" model=", 1)[1].split()[0]
     return None
 
 
