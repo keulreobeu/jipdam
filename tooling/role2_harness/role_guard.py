@@ -7,7 +7,7 @@ model run through agy is labelled as Gemini.
   python tooling/role2_harness/role_guard.py check --contractor agy:gemini-3.8-flash --auditor sonnet --referee haiku
   python tooling/role2_harness/role_guard.py outsource run PLAN --contractor agy:gemini-3.8-flash -- -j 4 --timeout 30
   python tooling/role2_harness/role_guard.py outsource audit PLAN --auditor sonnet
-  python tooling/role2_harness/role_guard.py outsource triage PLAN UNIT --referee haiku
+  python tooling/role2_harness/role_guard.py outsource triage PLAN --unit UNIT --referee haiku --contractor agy:gemini-3.8-flash
   python tooling/role2_harness/role_guard.py verify-run PLAN --contractor agy:gemini-3.8-flash
   python tooling/role2_harness/role_guard.py delegate --model gemini-3.8-flash-medium -- run -w DIR -f TASK.md ...
 """
@@ -160,19 +160,18 @@ def main(argv=None) -> int:
     o = sub.add_parser("outsource")
     o.add_argument("action", choices=["run", "audit", "triage"])
     o.add_argument("plan")
-    o.add_argument("unit", nargs="?")
+    o.add_argument("--unit", help="triage only: the unit to referee")
     o.add_argument("--contractor")
     o.add_argument("--auditor")
     o.add_argument("--referee")
-    o.add_argument("rest", nargs=argparse.REMAINDER)
     v = sub.add_parser("verify-run")
     v.add_argument("plan")
     v.add_argument("--contractor", required=True)
     v.add_argument("--run-dir")
     d = sub.add_parser("delegate")
     d.add_argument("--model", required=True)
-    d.add_argument("rest", nargs=argparse.REMAINDER)
-    args = parser.parse_args(argv)
+    args, unknown = parser.parse_known_args(argv)
+    args.rest = unknown
     try:
         if args.command == "check":
             print(json.dumps(check_roles(contractor=args.contractor, auditor=args.auditor, referee=args.referee)))
