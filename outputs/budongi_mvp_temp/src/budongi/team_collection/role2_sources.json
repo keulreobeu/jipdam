@@ -1,0 +1,543 @@
+{
+  "schema_version": "role2_sources_v1",
+  "approval_ref": "2026-10-29 사용자 승인: ROLE2-COLLECT-001 (AGENTS.md 2번 수집 한정 승인), 2026-10-29 gh로 예약 Issue #42~#63 게시 지시",
+  "http_key_exposure_ack": {
+    "date": "2026-10-29",
+    "ref": "사용자 답변: 허용, 수집 후 키 재발급",
+    "origins": [
+      "http://openapi.seoul.go.kr:8088",
+      "http://ws.bus.go.kr"
+    ]
+  },
+  "credentials": {
+    "datagokr": "f1c6233d-7138-4cda-9a80-0d3bb325720a",
+    "seoul_open_data": "25a5d5e2-8411-4b4e-ba7a-af3ec8aac920",
+    "safemap": "ca4f8be2-7072-4353-8c65-2c352c1fabcb"
+  },
+  "sources": [
+    {
+      "t_id": "T001",
+      "source_id": "kric_urban_rail_station_std",
+      "dataset_id": "15013205",
+      "title": "전국도시철도역사정보표준데이터",
+      "provider": "국가철도공단 철도산업정보센터(레일포털 data.kric.go.kr 파일데이터 '표준데이터 역사정보(전체 기관)', 원자료 전국도시철도운영기관; 소관 국토교통부)",
+      "documentation_url": "https://www.data.go.kr/data/15013205/standard.do",
+      "status": "approved",
+      "lane": "A1",
+      "record_type": "facility",
+      "license": {
+        "class": "unrestricted",
+        "ref": "https://www.data.go.kr/data/15013205/standard.do",
+        "text": "이용허락범위 제한 없음 (data.go.kr 15013205/15093755). 레일포털 약관 제16조④: 공유서비스 저작권은 제공기관에 있음"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/46",
+      "origin_allowlist": [
+        "https://data.kric.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "f001",
+          "url_template": "https://data.kric.go.kr/rips/dataset/download.file?type=filedata&id=32&operation=1",
+          "expected_kind": "xlsx",
+          "section": "kric:id32"
+        }
+      ]
+    },
+    {
+      "t_id": "T002",
+      "source_id": "seoulmetro_line9_stage23_station_coord",
+      "dataset_id": "OA-22447",
+      "title": "서울교통공사_9호선 2_3단계 역사 좌표(위경도) 정보",
+      "provider": "서울교통공사 9호선운영부문 (서울 열린데이터광장 등록; 저작권자 서울특별시)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-22447/F/1/datasetView.do",
+      "status": "approved",
+      "lane": "A2",
+      "record_type": "facility",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-22447/F/1/datasetView.do",
+        "text": "공공누리 1유형 : 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/47",
+      "origin_allowlist": [
+        "https://datafile.seoul.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "f2",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-22447&seqNo=&seq=2&infSeq=2",
+          "expected_kind": "csv",
+          "section": "OA-22447:seq2"
+        }
+      ]
+    },
+    {
+      "t_id": "T004",
+      "source_id": "seoul_flood_trace_map",
+      "dataset_id": "OA-15636",
+      "title": "서울시 침수흔적도",
+      "provider": "서울특별시 물순환안전국 치수안전과 (02-2133-3873)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-15636/F/1/datasetView.do",
+      "status": "approved",
+      "lane": "A2",
+      "record_type": "spatial_layer",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-15636/F/1/datasetView.do",
+        "text": "공공누리 1유형 : 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/49",
+      "origin_allowlist": [
+        "https://datafile.seoul.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "f103",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=103&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq103"
+        },
+        {
+          "request_id": "f32",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=32&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq32"
+        },
+        {
+          "request_id": "f31",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=31&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq31"
+        },
+        {
+          "request_id": "f30",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=30&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq30"
+        },
+        {
+          "request_id": "f13",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=13&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq13"
+        },
+        {
+          "request_id": "f12",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=12&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq12"
+        },
+        {
+          "request_id": "f11",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=11&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq11"
+        },
+        {
+          "request_id": "f10",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=10&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq10"
+        },
+        {
+          "request_id": "f9",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=9&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq9"
+        },
+        {
+          "request_id": "f8",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=8&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq8"
+        },
+        {
+          "request_id": "f7",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=7&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq7"
+        },
+        {
+          "request_id": "f6",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=6&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq6"
+        },
+        {
+          "request_id": "f5",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=5&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq5"
+        },
+        {
+          "request_id": "f4",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15636&seqNo=&seq=4&infSeq=1",
+          "expected_kind": "zip",
+          "section": "OA-15636:seq4"
+        }
+      ]
+    },
+    {
+      "t_id": "T005",
+      "source_id": "seoul_bus_stop_location",
+      "dataset_id": "OA-15067",
+      "title": "서울시 버스정류소 위치정보",
+      "provider": "서울특별시 (교통실 교통기획관 미래첨단교통과)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-15067/F/1/datasetView.do",
+      "status": "approved",
+      "lane": "A2",
+      "record_type": "facility",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-15067/F/1/datasetView.do",
+        "text": "공공누리 1유형 : 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/50",
+      "origin_allowlist": [
+        "https://datafile.seoul.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "f58",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15067&seqNo=&seq=58&infSeq=1",
+          "expected_kind": "xlsx",
+          "section": "OA-15067:seq58"
+        },
+        {
+          "request_id": "f31",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15067&seqNo=&seq=31&infSeq=1",
+          "expected_kind": "xlsx",
+          "section": "OA-15067:seq31"
+        }
+      ]
+    },
+    {
+      "t_id": "T006",
+      "source_id": "seoul_bus_route_stop_sequence",
+      "dataset_id": "OA-1095",
+      "title": "서울시 버스 노선 정보 조회 (노선별 정류장 순서: 서울시버스노선별정류소정보)",
+      "provider": "서울특별시 (교통실 교통기획관 미래첨단교통과)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-1095/F/1/datasetView.do",
+      "status": "approved",
+      "lane": "A2",
+      "record_type": "transit_stop_link",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-1095/F/1/datasetView.do",
+        "text": "공공누리 1유형 : 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/51",
+      "origin_allowlist": [
+        "https://datafile.seoul.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "f58",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-1095&seqNo=&seq=58&infSeq=2",
+          "expected_kind": "xlsx",
+          "section": "OA-1095:seq58"
+        }
+      ]
+    },
+    {
+      "t_id": "T007",
+      "source_id": "seoul_bus_route_id_list",
+      "dataset_id": "OA-15262",
+      "title": "서울시 버스노선 기본정보 항목정보",
+      "provider": "서울특별시 (교통실 교통기획관 미래첨단교통과)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-15262/F/1/datasetView.do",
+      "status": "approved",
+      "lane": "A2",
+      "record_type": "transit_route",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-15262/F/1/datasetView.do",
+        "text": "공공누리 1유형 : 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/52",
+      "origin_allowlist": [
+        "https://datafile.seoul.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "f49",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15262&seqNo=&seq=49&infSeq=2",
+          "expected_kind": "xlsx",
+          "section": "OA-15262:seq49"
+        },
+        {
+          "request_id": "f26",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15262&seqNo=&seq=26&infSeq=2",
+          "expected_kind": "xlsx",
+          "section": "OA-15262:seq26"
+        }
+      ]
+    },
+    {
+      "t_id": "T011",
+      "source_id": "seoul_air_pollution_hourly_files",
+      "dataset_id": "OA-15526",
+      "title": "서울시 대기오염 측정정보",
+      "provider": "서울특별시 (제공부서: 보건환경연구원 대기질통합분석센터; 원본시스템: 대기오염측정망시스템)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-15526/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "A2",
+      "record_type": "time_observation",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-15526/S/1/datasetView.do",
+        "text": "공공누리 1유형 : 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/55",
+      "origin_allowlist": [
+        "https://datafile.seoul.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "f122",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15526&seqNo=&seq=122&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-15526:seq122"
+        },
+        {
+          "request_id": "f120",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15526&seqNo=&seq=120&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-15526:seq120"
+        },
+        {
+          "request_id": "f119",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15526&seqNo=&seq=119&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-15526:seq119"
+        }
+      ]
+    },
+    {
+      "t_id": "R1",
+      "source_id": "seoul_living_population_dong_domestic",
+      "dataset_id": "OA-14991",
+      "title": "행정동 단위 서울 생활인구(내국인)",
+      "provider": "서울특별시 (제공부서 디지털도시국 데이터전략과; 원본시스템 빅데이터 서비스 플랫폼)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-14991/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "A2",
+      "record_type": "regional_statistic",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-14991/S/1/datasetView.do",
+        "text": "공공누리 1유형 : 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/43",
+      "origin_allowlist": [
+        "https://datafile.seoul.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "f2508",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2508&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2508"
+        },
+        {
+          "request_id": "f2509",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2509&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2509"
+        },
+        {
+          "request_id": "f2510",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2510&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2510"
+        },
+        {
+          "request_id": "f2511",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2511&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2511"
+        },
+        {
+          "request_id": "f2512",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2512&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2512"
+        },
+        {
+          "request_id": "f2601",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2601&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2601"
+        },
+        {
+          "request_id": "f2602",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2602&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2602"
+        },
+        {
+          "request_id": "f2603",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2603&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2603"
+        },
+        {
+          "request_id": "f2604",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2604&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2604"
+        },
+        {
+          "request_id": "f2605",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2605&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2605"
+        },
+        {
+          "request_id": "f2606",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2606&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2606"
+        },
+        {
+          "request_id": "f2607",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-14991&seqNo=&seq=2607&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-14991:seq2607"
+        }
+      ]
+    },
+    {
+      "t_id": "R2",
+      "source_id": "seoul_subway_station_daily_ridership",
+      "dataset_id": "OA-12914",
+      "title": "서울시 지하철호선별 역별 승하차 인원 정보",
+      "provider": "서울특별시 교통실 교통기획관 교통정책과 (저작권자 서울특별시, 코레일, 공항철도; 원본 교통카드 정산시스템, 티머니 제공)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-12914/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "A2",
+      "record_type": "raw_only",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-12914/S/1/datasetView.do",
+        "text": "공공누리 1유형 : 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/44",
+      "origin_allowlist": [
+        "https://datafile.seoul.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "f147",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=147&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq147"
+        },
+        {
+          "request_id": "f148",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=148&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq148"
+        },
+        {
+          "request_id": "f149",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=149&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq149"
+        },
+        {
+          "request_id": "f150",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=150&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq150"
+        },
+        {
+          "request_id": "f151",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=151&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq151"
+        },
+        {
+          "request_id": "f152",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=152&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq152"
+        },
+        {
+          "request_id": "f153",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=153&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq153"
+        },
+        {
+          "request_id": "f154",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=154&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq154"
+        },
+        {
+          "request_id": "f155",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=155&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq155"
+        },
+        {
+          "request_id": "f156",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=156&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq156"
+        },
+        {
+          "request_id": "f157",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=157&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq157"
+        },
+        {
+          "request_id": "f158",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-12914&seqNo=&seq=158&infSeq=3",
+          "expected_kind": "csv",
+          "section": "OA-12914:seq158"
+        }
+      ]
+    },
+    {
+      "t_id": "T021",
+      "source_id": "seoul_commercial_area_polygon",
+      "dataset_id": "OA-15560",
+      "title": "서울시 상권분석서비스(영역-상권)",
+      "provider": "서울특별시 (제공기관 서울신용보증재단 데이터분석팀)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-15560/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "A2",
+      "record_type": "spatial_layer",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-15560/S/1/datasetView.do",
+        "text": "공공누리 1유형 : 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/63",
+      "origin_allowlist": [
+        "https://datafile.seoul.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "f5",
+          "url_template": "https://datafile.seoul.go.kr/bigfile/iot/inf/nio_download.do?useCache=false&infId=OA-15560&seqNo=&seq=5&infSeq=3",
+          "expected_kind": "zip",
+          "section": "OA-15560:seq5"
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "source": "#40 OA-394",
+      "reason": "keulreobeu KAN-9 수집, 참조만"
+    },
+    {
+      "source": "#41 15099316",
+      "reason": "keulreobeu KAN-9 수집, 참조만"
+    }
+  ]
+}

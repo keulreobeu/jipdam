@@ -18,3 +18,4 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 budongi = ["static/*.html", "static/*.js", "static/*.css", "static/vendor/leaflet/*", "static/vendor/leaflet/images/*.png", "source_registry.json", "statistics_sources.json"]
+"budongi.team_collection" = ["*.json", "mappings/*.json"]

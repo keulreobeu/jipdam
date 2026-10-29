@@ -52,6 +52,8 @@
 
 2026-10-15 추가 승인: 사용자가 제공 통계의 거래량 기간과 같은 서울25구 202401~202608 아파트 전월세·매매 일반·매매 상세 수집을 요청했다. [MOLIT-001](docs/specs/12_molit_collection_spec.md)·[TASK-MOLIT-HISTORY-001](docs/tasks/molit-statistics-history.md) 및 GitHub #7을 따른다. 검증된 기존202510~202608 XML을 재사용하고 202401~202509 누락만 수집한다. 범위를 전국·다른 dataset·매칭/좌표/시설/추천·Drive 업로드로 확대하지 않는다.
 
+2026-10-29 2번(재난·대중교통·생활 인프라) 수집 한정 승인: 사용자는 [ROLE2-COLLECT-001](docs/specs/27_role2_collection_spec.md)·[TASK-ROLE2-COLLECT-001](docs/tasks/role2-collection-run.md)과 `team_collection/role2_sources.json`에 approved로 등록된 출처·범위만, 배치별 COLLECT-001 예약 Issue 확인 뒤 원본 수집·오프라인 team_collection_v1 정규화·로컬 ZIP·메타데이터 XLSX(담당 cannedJean, 접두어 T) 작성을 승인한다. 공식 문서 확인과 서울 열린데이터 sample 키 5행 형상 확인을 포함한다. 서울 열린데이터(:8088)·TOPIS(ws.bus.go.kr)의 HTTP 평문 키 전송을 인지·허용하며 수집 후 두 키를 재발급한다. 공공누리3·4·비영리 출처는 원본+메타데이터만 공유하고 정리본 공유는 팀 확인 후로 보류한다. 이 작업의 코드는 Claude Code 중심·agy 아웃소싱으로 작성하며 GMS는 사용하지 않는다(2026-10-15 GMS 우선 지시의 이 작업 한정 예외). #40·#41은 참조만 한다. 모델에 키·원본·DB·로그·.env를 보내지 않는다. 좌표 변환 확정·지오코딩·단지 매칭·추천/serving 연결·DB 적재·GitHub 자동 게시·Drive 업로드(배치별 별도 승인)·push/merge는 포함하지 않으며 다른 보류와 `source_registry.json`은 유지한다.
+
 2026-10-14 MVP 실행 계약: 검수 패키지의 승인 근거·검수자·시각·원본 해시가 있는 관계/좌표만 serving v2에 반영한다. 단지 ID/verified bool만으로 승격하지 않는다. Leaflet 1.9.4 로컬 자산과 OSM 타일은 사용자 승인 지도 보기 동작에 포함되며 지오코딩/시설 수집은 승인하지 않았다. 검수 패키지·실모델 미제공은 사용자 답변대로 데이터 준비 게이트로 관리한다.
 
 2026-10-14 GMS 난이도별 선택: `difficulty=simple`→`gpt-6-luna`, `complex`→`gpt-6.1-sol`(기본). 작업 출력 상한은 정책 이내로 낮추며 동일 모델 count/생성·공통 원장·5,000 보존을 유지한다. [Task](docs/tasks/gms-model-routing.md), GMS-BUDGET-001-AC-04.

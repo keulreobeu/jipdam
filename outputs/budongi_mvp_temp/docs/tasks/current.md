@@ -1,5 +1,7 @@
 # Current Tasks — 전월세 제품 전환과 보존된 평가 기록
 
+2026-10-29 [TASK-ROLE2-HARNESS-001](role2-collection-harness.md)·[TASK-ROLE2-COLLECT-001](role2-collection-run.md): 2번(재난·대중교통·생활 인프라) 수집 런타임·team_collection_v1 패키저·4시트 메타데이터 작성기 구현과 실제 수집·Issue 초안·다중 LLM 교차검증 기록. [ROLE2-COLLECT-001](../specs/27_role2_collection_spec.md), [ADR-025](../adr/ADR-025-role2-collection-harness.md), [Plan](../plans/role2-collection.md), [검증](../role2-collection-validation-20261029.md). in_progress.
+
 2026-10-21 [TASK-MAC-LAUNCHER-001](mac-launcher.md): macOS 통합 터미널 실행기와 Keychain 기반 API 키 보관함 지원. 네이티브 앱 빌드 및 Mac 실행 검증은 Mac 호스트에서 수행해야 한다.
 
 2026-10-14 [TASK-RENT-CONTINUE-001](continuation-parts-1to5.md): 1~5번을 목적별로 실행. 기본 canonical v3 복구·실제 prepare, 검수/모델 준비 검사, 실제 Drive 다운로드·해시와 문서/Git 정리. [Plan](../plans/continuation-parts-1to5.md), [후속 검증](../continuation-validation-20261014.md). 사용자 검수 패키지·로컬 모델은 미준비.

@@ -2577,6 +2577,132 @@
           ]
         }
       ]
+    },
+    {
+      "id": "ROLE2-COLLECT-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/27_role2_collection_spec.md",
+      "requirements": [
+        {
+          "id": "ROLE2-COLLECT-001-REQ-01",
+          "acs": [
+            {
+              "id": "ROLE2-COLLECT-001-AC-01",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "출처 게이트 unittest(네트워크 없음) — 통합 후 테스트 참조로 교체",
+                  "evidence": "outputs/budongi_mvp_temp/docs/role2-collection-validation-20261029.md#ac-01-06-단위-테스트"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ROLE2-COLLECT-001-REQ-02",
+          "acs": [
+            {
+              "id": "ROLE2-COLLECT-001-AC-02",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "저널·쿼터·상태 unittest — 통합 후 테스트 참조로 교체",
+                  "evidence": "outputs/budongi_mvp_temp/docs/role2-collection-validation-20261029.md#ac-01-06-단위-테스트"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ROLE2-COLLECT-001-REQ-03",
+          "acs": [
+            {
+              "id": "ROLE2-COLLECT-001-AC-03",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "키 비노출·비밀 스윕 unittest — 통합 후 테스트 참조로 교체",
+                  "evidence": "outputs/budongi_mvp_temp/docs/role2-collection-validation-20261029.md#ac-01-06-단위-테스트"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ROLE2-COLLECT-001-REQ-04",
+          "acs": [
+            {
+              "id": "ROLE2-COLLECT-001-AC-04",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "정규화 unittest — 통합 후 테스트 참조로 교체",
+                  "evidence": "outputs/budongi_mvp_temp/docs/role2-collection-validation-20261029.md#ac-01-06-단위-테스트"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ROLE2-COLLECT-001-REQ-05",
+          "acs": [
+            {
+              "id": "ROLE2-COLLECT-001-AC-05",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "패키지 게이트 unittest — 통합 후 테스트 참조로 교체",
+                  "evidence": "outputs/budongi_mvp_temp/docs/role2-collection-validation-20261029.md#ac-01-06-단위-테스트"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ROLE2-COLLECT-001-REQ-06",
+          "acs": [
+            {
+              "id": "ROLE2-COLLECT-001-AC-06",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "워크북 재읽기 unittest — 통합 후 테스트 참조로 교체",
+                  "evidence": "outputs/budongi_mvp_temp/docs/role2-collection-validation-20261029.md#ac-01-06-단위-테스트"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ROLE2-COLLECT-001-REQ-07",
+          "acs": [
+            {
+              "id": "ROLE2-COLLECT-001-AC-07",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "배치별 Issue·건수·ZIP·SHA-256·검사기 일치 기록",
+                  "evidence": "outputs/budongi_mvp_temp/docs/role2-collection-validation-20261029.md#ac-07-수집-배치-기록"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ROLE2-COLLECT-001-REQ-08",
+          "acs": [
+            {
+              "id": "ROLE2-COLLECT-001-AC-08",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "role_guard·판정 원장 요약 기록",
+                  "evidence": "outputs/budongi_mvp_temp/docs/role2-collection-validation-20261029.md#ac-08-다중-llm-검증-기록"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "tasks": [
@@ -2617,6 +2743,8 @@
     "docs/tasks/claude-gstack-support.md",
     "docs/tasks/credential-server-launcher.md",
     "docs/tasks/server-launcher.md",
-    "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md"
+    "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md",
+    "outputs/budongi_mvp_temp/docs/tasks/role2-collection-harness.md",
+    "outputs/budongi_mvp_temp/docs/tasks/role2-collection-run.md"
   ]
 }
