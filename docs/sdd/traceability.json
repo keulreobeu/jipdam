@@ -2577,6 +2577,87 @@
           ]
         }
       ]
+    },
+    {
+      "id": "GIT-AUTO-001",
+      "spec": "docs/specs/git_lifecycle_spec.md",
+      "requirements": [
+        {
+          "id": "GIT-AUTO-001-REQ-01",
+          "acs": [
+            {
+              "id": "GIT-AUTO-001-AC-01",
+              "tests": [],
+              "manual": [
+                {
+                  "command": ".venv/Scripts/python.exe -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_git_lifecycle.py -v",
+                  "evidence": "docs/tasks/git-lifecycle.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GIT-AUTO-001-REQ-02",
+          "acs": [
+            {
+              "id": "GIT-AUTO-001-AC-02",
+              "tests": [],
+              "manual": [
+                {
+                  "command": ".venv/Scripts/python.exe -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_git_lifecycle.py -v",
+                  "evidence": "docs/tasks/git-lifecycle.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GIT-AUTO-001-REQ-03",
+          "acs": [
+            {
+              "id": "GIT-AUTO-001-AC-03",
+              "tests": [],
+              "manual": [
+                {
+                  "command": ".venv/Scripts/python.exe -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_git_lifecycle.py -v",
+                  "evidence": "docs/tasks/git-lifecycle.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GIT-AUTO-001-REQ-04",
+          "acs": [
+            {
+              "id": "GIT-AUTO-001-AC-04",
+              "tests": [],
+              "manual": [
+                {
+                  "command": ".venv/Scripts/python.exe -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_git_lifecycle.py -v",
+                  "evidence": "docs/tasks/git-lifecycle.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "GIT-AUTO-001-REQ-05",
+          "acs": [
+            {
+              "id": "GIT-AUTO-001-AC-05",
+              "tests": [],
+              "manual": [
+                {
+                  "command": "python -m harness git --help; branch publication diff and remote SHA read-back by committer subagent",
+                  "evidence": "docs/tasks/git-lifecycle.md"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "tasks": [
@@ -2617,6 +2698,7 @@
     "docs/tasks/claude-gstack-support.md",
     "docs/tasks/credential-server-launcher.md",
     "docs/tasks/server-launcher.md",
-    "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md"
+    "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md",
+    "docs/tasks/git-lifecycle.md"
   ]
 }

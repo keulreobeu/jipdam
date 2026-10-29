@@ -1,2 +1,6 @@
 [agents]
 max_concurrent_threads_per_session = 2
+
+[agents.gstack_committer]
+description = "집담 작업의 고정 스냅샷을 전담하여 커밋·push하고 Git 완료 상태를 관리합니다."
+config_file = "../tooling/codex-agents/gstack_committer.toml"

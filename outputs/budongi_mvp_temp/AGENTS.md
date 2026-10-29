@@ -74,3 +74,20 @@ HEAD 기준 worktree에는 미커밋 변경을 자동 복사하지 않는다. �
 현재 최소 보존은 **1,000크레딧**이며 이전5,000 지시는 이력으로 보존한다.
 [TASK-HARNESS-OPS-001](docs/tasks/harness-operations.md): 기존 예산/원장을 유지한 GMS 우선 작업과 검증·승인 뒤 범위별 로컬 오토커밋을 허용한다.
 Codex native GMS의 도구/stream/full-payload count 미검증·입력 상한은 우회하지 않는다. 사용자 기존 index와 범위 밖 변경을 보호한다.
+
+## 2026-10-29 Git 자동 생명주기와 전담 서브에이전트
+
+[GIT-AUTO-001](../../docs/specs/git_lifecycle_spec.md)·[운영](../../docs/git-lifecycle.md)·[TASK-GIT-AUTO-001](../../docs/tasks/git-lifecycle.md)을 따른다.
+사용자는 작업 시작 branch 생성·단계별 commit/push·최종 검증 뒤 main 반영과 branch 정리를 승인했다.
+현재 요청이 branch만 남기도록 한 경우 completion_mode=branch_only를 우선한다. KAN-29 전달은 branch_only다.
+정책 ../../tooling/git-lifecycle.json은 활성화되어 있다. 새 구현/수정 작업은 Jira/Task/scope를 정한 뒤
+Git 전담 서브에이전트를 배정한다. 메인은 구현·snapshot 확정·검증 판단을 맡고 commit/push는 하지 않는다.
+Codex는 gstack_committer, 이미 실행 중인 세션에 역할이 없으면 같은 지침을 받은 worker를 사용한다.
+Claude도 native 하위 에이전트에 동일 책임을 넘긴다. 위임 도구가 없으면 직접 Git 쓰기로 대체하지 않는다.
+메인이 source를 편집하는 동안 서브에이전트는 고정 snapshot을 별도 publisher worktree에서만 저장한다.
+python -m harness git start/snapshot/checkpoint/status/verify/prepare-finish/receipt를 사용한다.
+공유 원격에는 exact scope와 이번 변경만 포함하고 기존 index·다른 작업·키·DB/raw/runtime을 보존한다.
+필수 문서와 최신 후보의 검증/CI를 확인한 뒤 승인 범위의 PR/merge를 처리한다. force/amend/reset,
+보호 규칙/hook 우회는 하지 않는다. 실제 read-back 전에 원격 저장·병합·정리 완료라 하지 않는다.
+이 규칙은 기존 로컬 autocommit/원격 Git 보류 문구보다 현재 승인 범위에서 우선한다.
+agent가 실행 중일 때만 단계 저장이 동작하며 상시 OS 감시 서비스나 역할 기반 보안 격리는 아니다.

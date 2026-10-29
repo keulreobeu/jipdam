@@ -192,3 +192,10 @@ GitHub CI는 Ubuntu/Windows × Python 3.11/3.12의 모델 없는 검증을 실�
 
 현재 GMS 최소 보존은1,000이고 검증·승인 후 로컬 오토커밋이 활성화됐습니다.
 [최신 GMS·자동커밋 운영/호환성](outputs/budongi_mvp_temp/docs/harness/OPERATIONS_UPDATE_20261015.md)을 따릅니다.
+
+## 작업별 Git 자동 저장
+
+[Git 자동 저장 운영](docs/git-lifecycle.md)을 따른다. 작업 시작 시 전용 branch를 만들고,
+메인이 확정한 단계의 snapshot은 Git 전담 서브에이전트가 별도 작업 공간에서 commit/push한다.
+로컬 진입점은 `python -m harness git --help`다. 정책은 `tooling/git-lifecycle.json`이며
+현재 KAN-29 전달은 main 병합 없이 자동화 전용 branch를 남긴다.

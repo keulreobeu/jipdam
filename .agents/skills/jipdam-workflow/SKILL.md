@@ -27,3 +27,20 @@ QA는 현재 구현의 CLI/API부터 시작한다. 모델 없는 계약 변경�
 외부 CLI 리뷰·유료 평가·원격 동기화·GitHub issue 등록·push/PR/merge/배포는 그 동작이 사용자 요청 범위에 있을 때만 실행한다. 필요한 도구나 인증이 없으면 가능한 로컬 검사와 그 한계를 보고한다.
 
 완료 시 변경, 실제 검사 결과, 남은 조건과 다음 한 단계를 간결하게 보고한다. 이 스킬은 사용 중 발견한 구체적인 프로젝트 차이를 근거로 개선하고, 일반적인 gstack 변경은 원본 템플릿에 반영한다.
+
+## 2026-10-29 Git 자동 생명주기와 전담 서브에이전트
+
+[GIT-AUTO-001](docs/specs/git_lifecycle_spec.md)·[운영](docs/git-lifecycle.md)·[TASK-GIT-AUTO-001](docs/tasks/git-lifecycle.md)을 따른다.
+사용자는 작업 시작 branch 생성·단계별 commit/push·최종 검증 뒤 main 반영과 branch 정리를 승인했다.
+현재 요청이 branch만 남기도록 한 경우 completion_mode=branch_only를 우선한다. KAN-29 전달은 branch_only다.
+정책 tooling/git-lifecycle.json은 활성화되어 있다. 새 구현/수정 작업은 Jira/Task/scope를 정한 뒤
+Git 전담 서브에이전트를 배정한다. 메인은 구현·snapshot 확정·검증 판단을 맡고 commit/push는 하지 않는다.
+Codex는 gstack_committer, 이미 실행 중인 세션에 역할이 없으면 같은 지침을 받은 worker를 사용한다.
+Claude도 native 하위 에이전트에 동일 책임을 넘긴다. 위임 도구가 없으면 직접 Git 쓰기로 대체하지 않는다.
+메인이 source를 편집하는 동안 서브에이전트는 고정 snapshot을 별도 publisher worktree에서만 저장한다.
+python -m harness git start/snapshot/checkpoint/status/verify/prepare-finish/receipt를 사용한다.
+공유 원격에는 exact scope와 이번 변경만 포함하고 기존 index·다른 작업·키·DB/raw/runtime을 보존한다.
+필수 문서와 최신 후보의 검증/CI를 확인한 뒤 승인 범위의 PR/merge를 처리한다. force/amend/reset,
+보호 규칙/hook 우회는 하지 않는다. 실제 read-back 전에 원격 저장·병합·정리 완료라 하지 않는다.
+이 규칙은 기존 로컬 autocommit/원격 Git 보류 문구보다 현재 승인 범위에서 우선한다.
+agent가 실행 중일 때만 단계 저장이 동작하며 상시 OS 감시 서비스나 역할 기반 보안 격리는 아니다.

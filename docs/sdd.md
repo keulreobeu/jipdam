@@ -64,3 +64,10 @@ CI는 PR base/head 또는 push before/after의 실제 파일 차이를 검사한
 ## 현재 적용 경계
 
 운영 체계(SDD-001)와 required-fact coverage(EVAL-001)의 기존 등록을 유지하고, 2026-10-06 사용자 승인에 따라 [전월세 추천 RENT-001](../outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md)·[API 키 보관함 CRED-001](../outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md)과 관련 영구 Task를 등록한다. 현재 CRED-001 보관함 구현은 별도 Task에서 추적하며, 전월세 추천·실데이터 수집·단지 매칭·실제 Golden 구성·Router/RAG 확장은 이번 기능 범위에 포함하지 않는다. 문서 완료·합성 데모·실제 성능을 구분하고 데이터 수집 보류를 유지한다.
+
+## Git 단계 저장과 종료
+
+[Git 생명주기](git-lifecycle.md)·[GIT-AUTO-001](specs/git_lifecycle_spec.md)을 따른다.
+작업 시작에 branch를 생성하고 메인이 확정한 snapshot의 commit/push는 전담 서브에이전트가 수행한다.
+최종 검증과 필수 위키를 해결한 뒤 최신 PR CI·main 반영을 확인하며, Git 저장/병합/정리 상태를 분리한다.
+branch_only 요청은 branch를 남긴다. 메인 source/index 및 다른 작업의 미저장 내용은 자동 포함하지 않는다.
