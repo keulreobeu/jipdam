@@ -97,8 +97,16 @@ python -m harness git prepare-finish --task TASK-EXAMPLE-001 --documentation .lo
 
 이 명령은 병합 자체가 아니라 서브에이전트가 처리할 GitHub connector 요청을 만든다.
 서브에이전트는 PR·필수 CI·최신 main 통합 상태를 확인하고 검증한 expected_head_sha로 병합한다.
-main이 앞서가면 기존 합격을 재사용하지 않는다. 새 후보 통합/검증을 완료할 때까지 종료 대기다.
-현재 구현이 자동 충돌 해결이나 병합 큐 서비스를 제공하는 것은 아니다.
+main이 앞서가면 기존 합격을 재사용하지 않는다. 전담 서브에이전트가 아래 명령으로 충돌 없는
+최신 main 통합 후보를 만들고 다시 verify한다. 충돌은 자동 해결하지 않고 원본과 branch를 보존한다.
+
+```powershell
+python -m harness git refresh-base --task TASK-EXAMPLE-001
+python -m harness git verify --task TASK-EXAMPLE-001
+```
+
+통합 후 코드 추가 수정이 필요하면 source를 최신 후보와 대조해야 한다. 오래된 source snapshot을
+그대로 재적용하지 않는다. 자동 충돌 해결이나 원격 병합 큐 서비스를 제공하는 것은 아니다.
 
 실제 connector 응답과 main read-back으로 receipt를 기록한다. 상세 필드는 CLI의 finish_request와
 구현된 receipt 계약을 따른다. 확인하지 않은 merged/check 성공을 JSON에 넣지 않는다.

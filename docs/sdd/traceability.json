@@ -2587,7 +2587,23 @@
           "acs": [
             {
               "id": "GIT-AUTO-001-AC-01",
-              "tests": [],
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_multiple_frozen_checkpoints_preserve_source_index_and_future_edits"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_common_repository_lock_blocks_second_worktree_controller"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_explicit_staging_source_and_predeclared_absent_file"
+                }
+              ],
               "manual": [
                 {
                   "command": ".venv/Scripts/python.exe -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_git_lifecycle.py -v",
@@ -2602,7 +2618,28 @@
           "acs": [
             {
               "id": "GIT-AUTO-001-AC-02",
-              "tests": [],
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_failed_push_and_lost_success_response_are_idempotent"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_scope_secrets_and_snapshot_tampering_are_rejected"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_outgoing_history_and_changed_origin_are_rejected"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_commit_hook_rewrite_is_retained_locally_but_never_pushed"
+                }
+              ],
               "manual": [
                 {
                   "command": ".venv/Scripts/python.exe -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_git_lifecycle.py -v",
@@ -2617,7 +2654,23 @@
           "acs": [
             {
               "id": "GIT-AUTO-001-AC-03",
-              "tests": [],
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_verification_failure_and_finish_gates"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_zero_discovered_tests_do_not_verify"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_unsafe_validation_options_and_diff_only_success_are_rejected"
+                }
+              ],
               "manual": [
                 {
                   "command": ".venv/Scripts/python.exe -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_git_lifecycle.py -v",
@@ -2632,7 +2685,23 @@
           "acs": [
             {
               "id": "GIT-AUTO-001-AC-04",
-              "tests": [],
+              "tests": [
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_branch_only_and_cli_status_do_not_merge"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_advanced_main_refresh_reverify_and_prepare_finish"
+                },
+                {
+                  "file": "outputs/budongi_mvp_temp/tests/test_git_lifecycle.py",
+                  "class": "GitLifecycleTests",
+                  "method": "test_conflicting_main_refresh_does_not_modify_source_or_publisher"
+                }
+              ],
               "manual": [
                 {
                   "command": ".venv/Scripts/python.exe -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_git_lifecycle.py -v",

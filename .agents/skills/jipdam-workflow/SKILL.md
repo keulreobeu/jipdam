@@ -30,7 +30,7 @@ QA는 현재 구현의 CLI/API부터 시작한다. 모델 없는 계약 변경�
 
 ## 2026-10-29 Git 자동 생명주기와 전담 서브에이전트
 
-[GIT-AUTO-001](docs/specs/git_lifecycle_spec.md)·[운영](docs/git-lifecycle.md)·[TASK-GIT-AUTO-001](docs/tasks/git-lifecycle.md)을 따른다.
+[GIT-AUTO-001](../../../docs/specs/git_lifecycle_spec.md)·[운영](../../../docs/git-lifecycle.md)·[TASK-GIT-AUTO-001](../../../docs/tasks/git-lifecycle.md)을 따른다.
 사용자는 작업 시작 branch 생성·단계별 commit/push·최종 검증 뒤 main 반영과 branch 정리를 승인했다.
 현재 요청이 branch만 남기도록 한 경우 completion_mode=branch_only를 우선한다. KAN-29 전달은 branch_only다.
 정책 tooling/git-lifecycle.json은 활성화되어 있다. 새 구현/수정 작업은 Jira/Task/scope를 정한 뒤

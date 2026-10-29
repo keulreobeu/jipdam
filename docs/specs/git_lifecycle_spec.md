@@ -62,6 +62,8 @@ branch_only는 원격 브랜치에 보존한다. reviewed_merge의 prepare-finis
 전담 서브에이전트는 실제 PR과 필수 CI·최신 main을 확인하고 expected_head_sha를 지정해 병합한다.
 명령·네트워크 성공 코드만으로 병합 완료라 하지 않는다. 실제 read-back·URL·SHA를 receipt로 남긴다.
 다른 PC와의 경합은 원격 조건부 병합/보호 규칙으로 처리하며 로컬 잠금만으로 해결했다고 주장하지 않는다.
+최신 main이 앞서가면 refresh-base는 충돌 없는 Git 계산 결과와 실제 통합 tree가 같을 때만
+새 후보를 저장하고 기존 검증을 무효화한다. 충돌·main 이력 재작성·외부 HEAD 변경은 보류한다.
 병합 후 위키 재검증·Jira 종료와 브랜치 정리를 별도 기록한다. 정리 실패는 병합을 되돌리지 않는다.
 브랜치 추가 커밋·다른 worktree 사용·미저장/ignored 파일이 있으면 강제 삭제하지 않는다.
 
