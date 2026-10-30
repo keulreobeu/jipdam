@@ -1,0 +1,51 @@
+{
+  "t_id": "T005",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul-busstop-v1",
+    "record_type": "facility",
+    "fields": [
+      {
+        "target": "name",
+        "source": "정류소명",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "facility_type_raw",
+        "source": "정류소타입",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "topis.bus_stop",
+        "type": "code"
+      },
+      {
+        "target": "source_entity_id",
+        "source": "NODE_ID",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "ars_id",
+        "source": "ARS_ID",
+        "type": "code"
+      },
+      {
+        "target": "source_x",
+        "source": "X좌표",
+        "type": "decimal"
+      },
+      {
+        "target": "source_y",
+        "source": "Y좌표",
+        "type": "decimal"
+      }
+    ],
+    "unmapped": [],
+    "header_row": 1
+  }
+}

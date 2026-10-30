@@ -1,0 +1,68 @@
+{
+  "t_id": "T021",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul-tradearea-v1",
+    "record_type": "spatial_layer",
+    "fields": [
+      {
+        "target": "trade_area_type_code",
+        "source": "TRDAR_SE_C",
+        "type": "code"
+      },
+      {
+        "target": "trade_area_type_name",
+        "source": "TRDAR_SE_1",
+        "type": "text"
+      },
+      {
+        "target": "trade_area_code",
+        "source": "TRDAR_CD",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "trade_area_name",
+        "source": "TRDAR_CD_N",
+        "type": "text"
+      },
+      {
+        "target": "source_x",
+        "source": "XCNTS_VALU",
+        "type": "decimal"
+      },
+      {
+        "target": "source_y",
+        "source": "YDNTS_VALU",
+        "type": "decimal"
+      },
+      {
+        "target": "sgg_cd",
+        "source": "SIGNGU_CD",
+        "type": "code"
+      },
+      {
+        "target": "sgg_name_raw",
+        "source": "SIGNGU_CD_",
+        "type": "text"
+      },
+      {
+        "target": "adm_cd",
+        "source": "ADSTRD_CD",
+        "type": "code"
+      },
+      {
+        "target": "adm_dong_name_raw",
+        "source": "ADSTRD_CD_",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "area_raw",
+        "source": "RELM_AR",
+        "type": "decimal"
+      }
+    ],
+    "unmapped": []
+  }
+}

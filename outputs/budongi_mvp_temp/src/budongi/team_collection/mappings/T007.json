@@ -1,0 +1,30 @@
+{
+  "t_id": "T007",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul-routeid-v1",
+    "record_type": "transit_route",
+    "fields": [
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "topis.bus_route",
+        "type": "code"
+      },
+      {
+        "target": "source_entity_id",
+        "source": "ROUTEID",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "name",
+        "source": "노선명",
+        "type": "text",
+        "required": true
+      }
+    ],
+    "unmapped": [],
+    "header_row": 1
+  }
+}

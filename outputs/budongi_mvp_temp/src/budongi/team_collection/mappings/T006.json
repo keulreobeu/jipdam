@@ -1,0 +1,62 @@
+{
+  "t_id": "T006",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul-routestop-v1",
+    "record_type": "transit_stop_link",
+    "fields": [
+      {
+        "target": "route_namespace",
+        "source": null,
+        "const": "topis.bus_route",
+        "type": "code"
+      },
+      {
+        "target": "source_route_id",
+        "source": "ROUTE_ID",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "route_name_raw",
+        "source": "노선명",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "stop_sequence",
+        "source": "순번",
+        "type": "int",
+        "required": true
+      },
+      {
+        "target": "stop_namespace",
+        "source": null,
+        "const": "topis.bus_stop",
+        "type": "code"
+      },
+      {
+        "target": "source_stop_id",
+        "source": "NODE_ID",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "ars_id",
+        "source": "ARS_ID",
+        "type": "code"
+      },
+      {
+        "target": "stop_name_raw",
+        "source": "정류소명",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unmapped": [
+      "X좌표",
+      "Y좌표"
+    ],
+    "header_row": 1
+  }
+}

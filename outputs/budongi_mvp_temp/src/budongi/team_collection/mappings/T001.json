@@ -1,0 +1,87 @@
+{
+  "t_id": "T001",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "kric-station-v1",
+    "record_type": "facility",
+    "fields": [
+      {
+        "target": "name",
+        "source": "역사명",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "facility_type_code",
+        "source": null,
+        "const": "rail_station",
+        "type": "code"
+      },
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "kric.station",
+        "type": "code"
+      },
+      {
+        "target": "source_entity_id",
+        "source": "역번호",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "line_code_raw",
+        "source": "노선번호",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "line_name_raw",
+        "source": "노선명",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "operator_name_raw",
+        "source": "운영기관명",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "source_y",
+        "source": "역위도",
+        "type": "decimal"
+      },
+      {
+        "target": "source_x",
+        "source": "역경도",
+        "type": "decimal"
+      },
+      {
+        "target": "road_address_raw",
+        "source": "역사도로명주소",
+        "type": "text"
+      },
+      {
+        "target": "phone_number_raw",
+        "source": "역사전화번호",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "base_date",
+        "source": "데이터기준일자",
+        "type": "date",
+        "required": false
+      }
+    ],
+    "unmapped": [
+      "영문역사명",
+      "한자역사명",
+      "환승역구분",
+      "환승노선번호",
+      "환승노선명"
+    ],
+    "header_row": 1
+  }
+}

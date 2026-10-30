@@ -1,0 +1,59 @@
+{
+  "t_id": "T011",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul-airhour-v1",
+    "record_type": "time_observation",
+    "fields": [
+      {
+        "target": "observed_at_raw",
+        "source": "측정일시",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "source_subject_id",
+        "source": "측정소 코드",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "subject_namespace",
+        "source": null,
+        "const": "seoul.air_quality.station",
+        "type": "code"
+      },
+      {
+        "target": "metric_name_raw",
+        "source": "측정항목",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "value_raw",
+        "source": "평균값",
+        "type": "text"
+      },
+      {
+        "target": "instrument_status_raw",
+        "source": "측정기 상태",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "national_standard_exceeded_raw",
+        "source": "국가 기준초과 구분",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "local_standard_exceeded_raw",
+        "source": "지자체 기준초과 구분",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unmapped": [],
+    "header_row": 1
+  }
+}

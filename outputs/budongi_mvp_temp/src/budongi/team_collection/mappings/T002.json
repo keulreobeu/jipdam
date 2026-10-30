@@ -1,0 +1,62 @@
+{
+  "t_id": "T002",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul9-coords-v1",
+    "record_type": "facility",
+    "fields": [
+      {
+        "target": "name",
+        "source": "역명",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "facility_type_code",
+        "source": null,
+        "const": "rail_station",
+        "type": "code"
+      },
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "seoul_metro9.station",
+        "type": "code"
+      },
+      {
+        "target": "source_entity_id",
+        "source": "역번호",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "line_name_raw",
+        "source": "호선",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "source_y",
+        "source": "위도",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "source_x",
+        "source": "경도",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "base_date",
+        "source": "데이터기준일자",
+        "type": "date",
+        "required": false
+      }
+    ],
+    "unmapped": [
+      "연번"
+    ],
+    "header_row": 1
+  }
+}
