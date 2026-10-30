@@ -1,0 +1,69 @@
+{
+  "schema": "role2_staging_config_v1",
+  "note": "cli stage wiring per t_id: reader selection, scope policy, coordinate declaration. CRS values carry WF-0 dossier evidence; 'unknown' keeps lat/lon NULL (coordinate_null_reason crs_unknown). Doc-only payloads are packaged in raw but never staged.",
+  "sources": {
+    "T001": {
+      "reader": {"kind": "xlsx", "sheet": "표준데이터 역사", "section": "station", "header_row": 1},
+      "scope": {"policy": "seoul_address_prefix", "field": "road_address_raw", "prefix": "서울특별시",
+                "evidence": "dossier g01 kric_urban_rail_station_std.seoul_scope"},
+      "coords": {"source_crs": "EPSG:4326", "axis_order": "x=lon,y=lat",
+                 "evidence": "제공기관 문서: WGS84 위도좌표계 사용 (dossier g01 crs.evidence_url)"},
+      "normalize": {"record_type": "facility", "type_namespace": "transit"}
+    },
+    "T002": {
+      "reader": {"kind": "csv", "section": "station", "header_row": 1},
+      "scope": {"policy": "always_in", "evidence": "9호선 2·3단계 전 역 서울 소재 (dossier g01)"},
+      "coords": {"source_crs": "unknown", "axis_order": null,
+                 "evidence": "dossier g01: 경위도 서술만 있고 좌표계 공식 근거 없음 -> lat/lon 비노출"},
+      "normalize": {"record_type": "facility", "type_namespace": "transit"}
+    },
+    "T004": {
+      "reader": {"kind": "shp_zip", "section": "flood_trace_{year}",
+                 "variant_by_header": true},
+      "scope": {"policy": "always_in", "evidence": "서울특별시 발행 침수흔적도"},
+      "coords": {"source_crs": "per_file_prj", "axis_order": null,
+                 "evidence": "각 ZIP의 .prj를 C4 epsg_from_prj로 판정 (2022 표본: GRS80 FE 1000000 FN 2000000 CM 127.5 -> EPSG:5179)"},
+      "normalize": {"record_type": "spatial_layer", "representation": "vector",
+                    "layer_id": "seoul_flood_trace_{year}", "event_date_field": "event_start_date"}
+    },
+    "T005": {
+      "reader": {"kind": "xlsx", "sheet": "Data", "section": "bus_stop", "header_row": 1,
+                 "doc_files": ["컬럼정의_서울시 버스정류소 위치정보.xlsx"]},
+      "scope": {"policy": "always_in", "evidence": "서울시 파일"},
+      "coords": {"source_crs": "unknown", "axis_order": null,
+                 "evidence": "X좌표/Y좌표 좌표계 공식 근거 미확정(컬럼정의 CRDNT 설명 불충분) -> source_x/y 보존만"},
+      "normalize": {"record_type": "facility", "type_namespace": "seoul.bus_stop_type"}
+    },
+    "T006": {
+      "reader": {"kind": "xlsx", "sheet": "Data", "section": "route_stop", "header_row": 1},
+      "scope": {"policy": "always_in", "evidence": "서울시 파일"},
+      "coords": {"source_crs": null, "axis_order": null, "evidence": "좌표 열 unmapped (T005 보유)"},
+      "normalize": {"record_type": "transit_stop_link"}
+    },
+    "T007": {
+      "reader": {"kind": "xlsx", "sheet": "Data", "section": "route", "header_row": 1,
+                 "doc_files": ["컬럼정의_서울시 버스노선 기본정보 항목정보.xlsx"]},
+      "scope": {"policy": "always_in", "evidence": "서울시 파일"},
+      "coords": {"source_crs": null, "axis_order": null, "evidence": "좌표 없음"},
+      "normalize": {"record_type": "transit_route", "namespace": "seoul.bus_route"}
+    },
+    "T011": {
+      "reader": {"kind": "csv", "section": "air_hour_{year}", "header_row": 1},
+      "scope": {"policy": "always_in", "evidence": "서울시 측정소 자료"},
+      "coords": {"source_crs": null, "axis_order": null, "evidence": "좌표 없음"},
+      "normalize": {"record_type": "time_observation", "long_format": true,
+                    "metric_namespace": "seoul.air", "subject_namespace": "seoul.air_station",
+                    "observed_at": "kst_hourly_24rule", "value_field": "value_raw"}
+    },
+    "T021": {
+      "reader": {"kind": "shp_zip", "section": "trade_area", "variant_by_header": false},
+      "scope": {"policy": "always_in", "evidence": "서울시 상권 레이어"},
+      "coords": {"source_crs": "per_file_prj", "axis_order": null,
+                 "evidence": ".prj 판정; 중심점 XCNTS/YDNTS는 source_x/y 보존만"},
+      "normalize": {"record_type": "spatial_layer", "representation": "vector",
+                    "layer_id": "seoul_trade_area"}
+    },
+    "R1": {"raw_only": true, "note": "생활인구: 정규화 없이 raw 패키징 (TEAM-DATA-001 개정 대기)"},
+    "R2": {"raw_only": true, "note": "승하차: 정규화 없이 raw 패키징 (TEAM-DATA-001 개정 대기)"}
+  }
+}
