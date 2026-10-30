@@ -37,6 +37,32 @@ class RoleGuardTests(unittest.TestCase):
             with self.subTest(code=code), self.assertRaisesRegex(role_guard.RoleError, code):
                 role_guard.check_roles(**kwargs)
 
+    def test_r2_overlap_waiver_relaxes_only_the_contractor_clause(self):
+        # with a reason, the auditor may share the contractor's family, and the waiver is recorded
+        ok = role_guard.check_roles(contractor="agy:claude-sonnet-5-5-high", auditor="sonnet",
+                                    referee="haiku", waive_overlap="2026-10-30 user decision")
+        self.assertEqual(ok["waiver"]["rule"], "R2_auditor_contractor_overlap")
+        self.assertEqual(ok["waiver"]["reason"], "2026-10-30 user decision")
+        # no waiver is recorded when there is no overlap
+        ok = role_guard.check_roles(contractor="agy:gemini-3.8-flash", auditor="sonnet",
+                                    waive_overlap="unused")
+        self.assertNotIn("waiver", ok)
+        # a blank reason does not waive, and the hard core of R1/R2/R3 never bends
+        for kwargs, code in [
+            ({"contractor": "agy:claude-sonnet-5-5", "auditor": "sonnet", "waive_overlap": " "},
+             "R2_auditor_family_conflict"),
+            ({"contractor": "agy:claude-sonnet-5-5", "auditor": "opus", "waive_overlap": "r"},
+             "R2_auditor_family_conflict"),
+            ({"contractor": "agy:gemini-3.8-flash", "auditor": "gemini-4-argon", "waive_overlap": "r"},
+             "R2_auditor_family_conflict"),
+            ({"contractor": "agy:claude-opus-5-5-high", "auditor": "sonnet", "waive_overlap": "r"},
+             "R1_contractor_is_lead_family"),
+            ({"contractor": "agy:claude-sonnet-5-5", "auditor": "sonnet", "referee": "sonnet",
+              "waive_overlap": "r"}, "R3_referee_family_conflict"),
+        ]:
+            with self.subTest(code=code), self.assertRaisesRegex(role_guard.RoleError, code):
+                role_guard.check_roles(**kwargs)
+
     def test_agy_inputs_exclude_hidden_tests_data_and_repo_workdirs(self):
         role_guard.check_inputs(["C:/tmp/spec/tests/test_x.py"], workdir="C:/Users/x/AppData/Local/agy-r2/u1")
         with self.assertRaisesRegex(role_guard.RoleError, "R5_forbidden_input"):

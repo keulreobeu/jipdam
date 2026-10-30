@@ -40,3 +40,12 @@ Status: Accepted (2026-10-29, 사용자 계획 승인)
 ## Verification
 
 ROLE2-COLLECT-001-AC-01~06은 unittest, AC-07~08은 [검증 문서](../role2-collection-validation-20261029.md)로 확인한다. 현재 상태 not_run.
+
+## Amendment — 2026-10-30 R2 중첩 예외(기록형)와 계약자 전환
+
+사용자 지시(2026-10-30)로 agy 계약자를 Claude 모델 위주로 전환하면서 역할 규칙을 다음과 같이 유연화했다.
+
+- **배경:** agy gemini-3.8-flash 세션이 산출물과 `DONE`을 쓰고도 종료하지 않는 접합부 문제로 X1·E2·P3·P5·P6이 반복 timeout 됐다(약 12시간 손실 포함). 한편 2026-10-29 "감사는 haiku보다 좋은 모델" 지시로 전 계획 감사자가 Sonnet이어서, 계약자를 `agy:claude-sonnet`으로 바꾸면 R2(감사자 ≠ 계약자 계열)와 충돌했다.
+- **판단:** Sonnet 감사 지시 자체는 유지한다. 감사는 계약자 코드가 아니라 **리드(Opus)의 테스트·스펙**을 코드 작성 전에 판정하므로, 감사자의 핵심 독립성은 리드로부터의 독립이다. 실제로 Sonnet 감사가 Haiku가 놓치기 쉬운 스펙 모호성을 잡아낸 기록이 있다(2026-10-29 감사 지적 반영 목록, 2026-10-30 E9·E10). 또한 Fable(claude -p)이 크레딧 문제로 불가한 상황에서 감사를 haiku로 되돌리면 sonnet 계약자 기준 심판(R3) 가용 계열이 없다 — sonnet 감사 유지 + R2 중첩 예외가 유일한 실행 가능 구성이다.
+- **변경:** `role_guard.py`의 R2에서 "감사자 ≠ 계약자 계열" 절만 **명시적 사유가 있는 waiver**(`--waive-r2-overlap REASON`)로 완화한다. 감사자가 Anthropic이고 리드 계열·gemini가 아니어야 한다는 핵심은 불변이며, waiver는 실행 로그에 JSON으로 남는다. R1(계약자 ≠ Opus, agy 경유 Opus 금지)과 R3(심판 분리: sonnet 계약자+sonnet 감사 시 심판 haiku)는 그대로다. 근거 테스트: `tests/test_role2_harness.py::test_r2_overlap_waiver_relaxes_only_the_contractor_clause`.
+- **운용(2026-10-30 10:30 갱신):** agy 토큰 리셋 후 사용자 지시로 특정 모델 우선은 해제하고 용도 기반으로 라우팅한다. effort 기본 high와 `-j 2`(Claude 미터 한도)는 유지. 구현 계약자는 `agy:claude-sonnet-5-5`(R2 waiver 기록) — gemini는 같은 유닛에서 미종료가 반복된 반면 sonnet은 정상 종료·빠른 수락을 확인(P5 57초). 교차검증 측(X1·X3 readback, X2 recount, 매핑 A안, 리드 셸 적대 테스트, 서술 초안)은 벤더 분리를 위해 gemini flash를 유지한다.

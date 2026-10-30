@@ -6,6 +6,8 @@ model run through agy is labelled as Gemini.
 
   python tooling/role2_harness/role_guard.py check --contractor agy:gemini-3.8-flash --auditor sonnet --referee haiku
   python tooling/role2_harness/role_guard.py outsource run PLAN --contractor agy:gemini-3.8-flash -- -j 4 --timeout 30
+  python tooling/role2_harness/role_guard.py outsource run PLAN --contractor agy:claude-sonnet-5-5 \
+      --waive-r2-overlap "2026-10-30 user decision: ..." -- -j 4   # auditor may share the contractor's family
   python tooling/role2_harness/role_guard.py outsource audit PLAN --auditor sonnet
   python tooling/role2_harness/role_guard.py outsource triage PLAN --unit UNIT --referee haiku --contractor agy:gemini-3.8-flash
   python tooling/role2_harness/role_guard.py verify-run PLAN --contractor agy:gemini-3.8-flash
@@ -59,8 +61,14 @@ def parse_contractor(spec: str) -> tuple[str, str]:
 
 
 def check_roles(*, contractor: str, auditor: str | None = None, referee: str | None = None,
-                lead: str = LEAD) -> dict:
-    """R1-R3: contractor != lead family; auditor/referee are claude, not lead, not gemini, all distinct."""
+                lead: str = LEAD, waive_overlap: str | None = None) -> dict:
+    """R1-R3: contractor != lead family; auditor/referee are claude, not lead, not gemini, all distinct.
+
+    waive_overlap (a non-empty reason string) relaxes ONE clause of R2: the auditor may share the
+    CONTRACTOR's family, because the audit judges the lead's tests before any code exists. The hard
+    core of R2 is never waived: the auditor stays Anthropic, never the lead's family, never gemini.
+    The waiver is returned in the result so callers can put it in the run log and the ledger.
+    """
     tool, model = parse_contractor(contractor)
     lead_family = identify(lead)[1]
     vendor, family = identify(model)
@@ -71,8 +79,13 @@ def check_roles(*, contractor: str, auditor: str | None = None, referee: str | N
     result = {"contractor": {"tool": tool, "model": model, "vendor": vendor, "family": family}}
     if auditor is not None:
         a_vendor, a_family = identify(auditor)
-        if a_vendor != "anthropic" or a_family in {lead_family, family}:
+        if a_vendor != "anthropic" or a_family == lead_family:
             raise RoleError("R2_auditor_family_conflict")
+        if a_family == family:
+            if not (waive_overlap or "").strip():
+                raise RoleError("R2_auditor_family_conflict")
+            result["waiver"] = {"rule": "R2_auditor_contractor_overlap", "reason": waive_overlap,
+                                "auditor_family": a_family, "contractor_family": family}
         result["auditor"] = {"model": auditor, "family": a_family}
     if referee is not None:
         r_vendor, r_family = identify(referee)
@@ -162,6 +175,7 @@ def main(argv=None) -> int:
     c.add_argument("--contractor", required=True)
     c.add_argument("--auditor")
     c.add_argument("--referee")
+    c.add_argument("--waive-r2-overlap", dest="waive", metavar="REASON")
     o = sub.add_parser("outsource")
     o.add_argument("action", choices=["run", "audit", "triage"])
     o.add_argument("plan")
@@ -169,6 +183,8 @@ def main(argv=None) -> int:
     o.add_argument("--contractor")
     o.add_argument("--auditor")
     o.add_argument("--referee")
+    o.add_argument("--waive-r2-overlap", dest="waive", metavar="REASON",
+                   help="allow the auditor to share the contractor's family; the reason is logged")
     v = sub.add_parser("verify-run")
     v.add_argument("plan")
     v.add_argument("--contractor", required=True)
@@ -179,7 +195,8 @@ def main(argv=None) -> int:
     args.rest = unknown
     try:
         if args.command == "check":
-            print(json.dumps(check_roles(contractor=args.contractor, auditor=args.auditor, referee=args.referee)))
+            print(json.dumps(check_roles(contractor=args.contractor, auditor=args.auditor, referee=args.referee,
+                                         waive_overlap=args.waive)))
             return 0
         if args.command == "verify-run":
             run_dir = Path(args.run_dir) if args.run_dir else Path(args.plan).parent / ".agy_outsource"
@@ -199,18 +216,23 @@ def main(argv=None) -> int:
         if identify(roles.get("lead"))[1] != identify(LEAD)[1]:
             raise RoleError("plan_lead_must_be_opus")
         if args.action == "run":
-            info = check_roles(contractor=args.contractor, auditor=roles.get("auditor"))
+            info = check_roles(contractor=args.contractor, auditor=roles.get("auditor"), waive_overlap=args.waive)
+            if info.get("waiver"):
+                print(json.dumps({"status": "r2_overlap_waived", **info["waiver"]}, ensure_ascii=False))
             tool, model = info["contractor"]["tool"], info["contractor"]["model"]
             extra = ["--model", model] if tool == "agy" else ["--contractor", f"claude:{model}"]
             return _run([str(OUTSOURCE), "run", args.plan, *extra, *rest])
         if args.action == "audit":
             auditor = args.auditor or roles.get("auditor")
             if args.contractor:
-                check_roles(contractor=args.contractor, auditor=auditor)
+                check_roles(contractor=args.contractor, auditor=auditor, waive_overlap=args.waive)
             return _run([str(OUTSOURCE), "audit", args.plan, "--auditor", auditor, *rest])
         if not args.unit or not args.referee or not args.contractor:
             raise RoleError("triage_needs_unit_referee_and_contractor")
-        check_roles(contractor=args.contractor, auditor=roles.get("auditor"), referee=args.referee)
+        info = check_roles(contractor=args.contractor, auditor=roles.get("auditor"), referee=args.referee,
+                           waive_overlap=args.waive)
+        if info.get("waiver"):
+            print(json.dumps({"status": "r2_overlap_waived", **info["waiver"]}, ensure_ascii=False))
         return _run([str(OUTSOURCE), "triage", args.plan, args.unit, "--auditor", args.referee, *rest])
     except RoleError as exc:
         print(json.dumps({"status": "role_violation", "error": str(exc)}))

@@ -54,6 +54,11 @@
 - 감사 지적 반영: contract.py 상수값·ContractError 메시지·base dataclass를 전 계획 conventions에 명시, C1 T-ID 예시 수정, C10 튜플 명시, P4 VALUE_TYPES/STATUSES 추가, H8 `missing()` 호출 횟수 규칙, P3 수동 규칙 번호 제거, E1 재감사 통과.
 - 2026-10-29 19:06~10-30 09:20 구현(agy gemini-3.8-flash): 채택 20/38(core 10/10 통합 passed, edge 5/6, xcheck 1/3, pack 3/11, hard 미시작). `role_guard verify-run` 결과 xcheck·core·edge 위반 0·모델 미확인 0.
 - 미채택 X1·E2·P3·P5·P6은 agy가 산출물을 쓰고 `DONE`을 출력한 뒤 프로세스가 종료되지 않은 경우였다(30분 timeout 3건, 밤사이 약 12시간 멈춤 2건). 2026-10-30 09:20 실행을 중지하고 이 작업의 프로세스만 종료, 숨김 테스트 평문 사본 0건을 확인했다. 재개 절차는 [인계 기록](role2-handoff-20261030.md#4-외주-빌드-상태2026-10-30-0920-중지-시점)을 따른다.
+- 2026-10-30 09:36 r2-pack을 gemini(`--timeout 15`, `-j 4`)로 재개: P3·P5·P6이 같은 미종료 문제로 다시 timeout 소진(15분), P2는 forbid 게이트 실패 후 2차 시도. 접합부 문제가 재현되어 10:04 실행을 중지했다(이 작업 프로세스만 종료).
+- 2026-10-30 사용자 지시로 agy 계약자를 `agy:claude-sonnet-5-5`(effort 기본 high)로 전환. 전 계획 감사자가 Sonnet이라 R2와 충돌 → `role_guard.py`에 기록형 waiver(`--waive-r2-overlap`)를 추가해 "감사자 ≠ 계약자 계열" 절만 사유 명시 시 완화(감사자 Anthropic·비리드·비gemini 핵심은 불변, R1·R3 불변). 근거: [ADR-025 Amendment](adr/ADR-025-role2-collection-harness.md), `python -m unittest tests.test_role2_harness` → 6 tests OK. r2-pack·r2-xcheck·r2-edge·r2-adapt effort를 high로 변경(outsource 감사 해시는 effort를 판정 대상에서 제외).
+- 2026-10-30 r2-adapt(어댑터 유닛 E6·E7·E8·E9·E10·E12, WF-0 도시에 기반) 계획 작성: `check --red` 통과, Sonnet 감사 6/6 pass(E9·E10은 1차 지적 → 스펙 보강 → 재감사 pass). 리드 셸 `transport.py` 작성, team_collection 테스트 20개 OK.
+- 2026-10-30 10:05~10:59 r2-pack을 `agy:claude-sonnet-5-5`(effort high, `-j 2`, R2 waiver 기록)로 실행: P5·P11·P12 수락(기존 P1·P4·P7 포함 6/11). P2는 3회 전부 forbid 게이트 거부 — 원인은 스펙 필수 식별자 `requests`(manifest 요청 목록 키·시그니처)가 네트워크 금지 단어 패턴에 걸리는 **게이트 오탐**(공개 6·숨김 25 테스트는 통과). P3·P6·P9·P10은 agy 프로세스 잔류로 timeout(sonnet 세션 자체는 39~57초 완료, 잔류는 간헐·벤더 공통, 15분 timeout으로 수습).
+- 2026-10-30 11:00 forbid 패턴 세분화: r2-pack·r2-hard·r2-adapt에서 `requests` 단어 매칭을 import/호출 형태 매칭 2건으로 교체(라이브러리 import 차단은 imports 게이트가 별도 수행, urllib·socket·subprocess 단어 차단 유지). 게이트 변경으로 r2-pack은 수락분 포함 전체 재검증 실행. 수정이 불필요한 r2-edge·r2-xcheck는 원본 패턴으로 원복해 기존 수락 6유닛(E1·E3·E4·E5·E11·X2)의 상태를 보존(r2-core와 패턴 일치 확인).
 
 ## sdd 검증
 
