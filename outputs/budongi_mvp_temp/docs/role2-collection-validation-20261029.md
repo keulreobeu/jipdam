@@ -8,8 +8,8 @@
 |---|---|
 | S0 준비(브랜치·venv·agy) | passed |
 | AC-01~06 단위 테스트 | not_run |
-| AC-07 수집 배치 기록 | not_run |
-| AC-08 다중 LLM 검증 기록 | not_run |
+| AC-07 수집 배치 기록 | in_progress(raw 10배치, 패키징 전) |
+| AC-08 다중 LLM 검증 기록 | in_progress(감사 38/38, 채택 20/38) |
 | SDD·전체 환경 검사 | not_run |
 
 ## s0 준비
@@ -48,7 +48,12 @@
 
 ## ac-08 다중 llm 검증 기록
 
-not_run. 유닛별 생산자·감사자·심판 모델, role_guard 위반 수, 판정 원장 요약을 기록한다.
+진행 중. 유닛별 생산자·감사자·심판 모델, role_guard 위반 수, 판정 원장 요약을 기록한다.
+
+- 2026-10-29 사용자 지시("감사 계획은 haiku 보다 더 좋은 모델을 사용해야해")로 5개 계획 38유닛 전부를 Sonnet(`claude-sonnet-5-5`)으로 재감사해 모두 pass. 위 S0 메모의 "감사자 Haiku 통일"은 이 결정으로 대체됐고 Haiku는 심판(triage)만 맡는다. Fable은 usage credits가 필요해 쓰지 않았고 r2-hard 계약자는 agy gemini-3.8-flash(effort high)로 바꿨다.
+- 감사 지적 반영: contract.py 상수값·ContractError 메시지·base dataclass를 전 계획 conventions에 명시, C1 T-ID 예시 수정, C10 튜플 명시, P4 VALUE_TYPES/STATUSES 추가, H8 `missing()` 호출 횟수 규칙, P3 수동 규칙 번호 제거, E1 재감사 통과.
+- 2026-10-29 19:06~10-30 09:20 구현(agy gemini-3.8-flash): 채택 20/38(core 10/10 통합 passed, edge 5/6, xcheck 1/3, pack 3/11, hard 미시작). `role_guard verify-run` 결과 xcheck·core·edge 위반 0·모델 미확인 0.
+- 미채택 X1·E2·P3·P5·P6은 agy가 산출물을 쓰고 `DONE`을 출력한 뒤 프로세스가 종료되지 않은 경우였다(30분 timeout 3건, 밤사이 약 12시간 멈춤 2건). 2026-10-30 09:20 실행을 중지하고 이 작업의 프로세스만 종료, 숨김 테스트 평문 사본 0건을 확인했다. 재개 절차는 [인계 기록](role2-handoff-20261030.md#4-외주-빌드-상태2026-10-30-0920-중지-시점)을 따른다.
 
 ## sdd 검증
 
