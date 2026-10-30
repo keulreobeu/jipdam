@@ -2,6 +2,45 @@
   "schema_version": 1,
   "features": [
     {
+      "id": "OBS-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/28_observability_spec.md",
+      "requirements": [
+        {
+          "id": "OBS-001-REQ-01",
+          "acs": [{"id": "OBS-001-AC-01", "tests": [
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "NormalizationTests", "method": "test_codex_cache_and_reasoning_are_subsets"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "StreamingTests", "method": "test_middle_turns_survive_bounded_stdout_and_equal_counts"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_replay_conflict_and_explicit_correction"}
+          ]}]
+        },
+        {
+          "id": "OBS-001-REQ-02",
+          "acs": [{"id": "OBS-001-AC-02", "tests": [
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_retry_usage_survives_validation_failure"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_idle_pause_resume_cancel_update_metrics_and_suite_denominators"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_idle_state_read_and_append_are_serialized_with_other_management"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_collector_database_failure_preserves_execution_and_marks_partial"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_shadow_keeps_approval_semantics_and_reports_after_restart"}
+          ]}]
+        },
+        {
+          "id": "OBS-001-REQ-03",
+          "acs": [{"id": "OBS-001-AC-03", "tests": [
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_original_item_split_into_five_tasks_counts_once"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_approval_and_every_independent_gate_are_required"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_zero_success_and_unattempted_blocked_denominators"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_cloud_usage_missing_never_produces_token_efficiency"}
+          ]}]
+        },
+        {
+          "id": "OBS-001-REQ-04",
+          "acs": [{"id": "OBS-001-AC-04", "tests": [
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_cli_and_parallel_agent_time_are_distinct"}
+          ], "manual": [{"command": "python -X utf8 scripts/verify_environment.py; wiki lifecycle and current-checkout applicability review", "evidence": "outputs/budongi_mvp_temp/docs/tasks/observability.md"}]}]
+        }
+      ]
+    },
+    {
       "id": "SDD-001",
       "spec": "docs/specs/sdd_workflow_spec.md",
       "requirements": [
@@ -2580,6 +2619,7 @@
     }
   ],
   "tasks": [
+    "outputs/budongi_mvp_temp/docs/tasks/observability.md",
     "outputs/budongi_mvp_temp/docs/tasks/credential-alias-only.md",
     "docs/tasks/environment-setup-20261012.md",
     "docs/tasks/sdd-adoption.md",
