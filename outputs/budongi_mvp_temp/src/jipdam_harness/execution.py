@@ -289,7 +289,7 @@ class CodexCLIProvider:
                 if self.model:
                     argv.extend(["--model", self.model])
                 argv.append("-")
-            prompt = redact(str(task.get("objective", "")) + "\n\n" + context)
+            prompt = codex_prompt(task, context)
             rc, stdout, stderr, stop = run_process(argv, cwd, prompt, settings.get("timeout_seconds", 600), should_stop,
                                                   on_stdout_line=collector.line, on_stream_error=collector.problem)
         except (OSError, ValueError, TypeError):
@@ -342,6 +342,18 @@ class CodexCLIProvider:
         if collector.failed and result.status == "success":
             result.status, result.error, result.summary = "error", "unknown", "Codex reported a failed turn."
         return result
+
+
+def codex_prompt(task, context):
+    """Opt-in deduplication only for the exact trusted pack_context prefix."""
+    mode = task.get("execution", {}).get("objective_mode", "repeat")
+    if mode not in ("repeat", "once"):
+        raise ValueError("invalid_objective_mode")
+    objective = str(task.get("objective", ""))
+    packed_prefix = "Task specification (trusted local operator input):\n\n" + objective + "\n\nAcceptance criteria:"
+    if mode == "once" and context.startswith(packed_prefix):
+        return redact(context)
+    return redact(objective + "\n\n" + context)
 
 
 class MockProvider:
