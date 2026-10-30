@@ -7,7 +7,10 @@ name = "jipdam"
 version = "0.1.0"
 description = "Evidence-grounded real-estate tool-calling MVP scaffold"
 requires-python = ">=3.11"
-dependencies = ["cryptography>=42", "openpyxl>=3.1", "keyring>=25; sys_platform == 'darwin'"]
+dependencies = ["cryptography>=42", "openpyxl>=3.1", "requests>=2.32"]
+
+[project.optional-dependencies]
+pipeline = ["duckdb>=1.4,<2", "pyarrow>=20,<30", "psutil>=7,<8", "pandas>=2.2,<3"]
 
 [project.scripts]
 jipdam = "budongi.cli:main"

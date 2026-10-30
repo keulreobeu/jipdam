@@ -16,3 +16,6 @@ outputs/team-share/
 .agents/skills/gstack-*/
 .claude/skills/gstack/
 .claude/skills/gstack-*/
+# Personal metadata contains real source examples; keep the deliverable local.
+/outputs/personal_metadata_20261022_01a162be/
+/outputs/metadata-integration-20261030-kan32/

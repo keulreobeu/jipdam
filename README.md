@@ -17,6 +17,10 @@ git clone https://github.com/keulreobeu/jipdam.git
 cd jipdam
 ```
 
+Windows에서는 저장소 루트 또는 `outputs/budongi_mvp_temp/`의 **`jipdam-server-v5.exe`**를 실행하면 터미널에 서버 출력과 시작 상태가 표시되고, 준비 후 브라우저가 열립니다. 기본 포트 8766이 사용 중이면 8767~8796에서 빈 포트를 찾아 실행합니다. `build_server_exe.ps1`로 다시 빌드할 수 있습니다. Python과 인터넷 연결이 필요하며 PyInstaller를 `.local_runtime/`에 설치합니다. 앱 코드와 로컬 데이터베이스는 기존 저장소 위치에서 사용합니다.
+
+API 키 보관함 서버는 **`jipdam-credentials.exe`**를 실행합니다. 8765가 사용 중이면 8766~8796에서 사용 가능한 포트를 찾아 브라우저를 엽니다. 재빌드는 `build_credentials_exe.ps1`로 합니다.
+
 선택한 AI 도구에서 **이 README가 있는 저장소 루트**를 작업 폴더로 연다. 애플리케이션은 `outputs/budongi_mvp_temp/`에 있다. 각자 AI 도구에 로그인하고 자신의 계정·실행 권한을 사용한다.
 
 | 작업 | 필요한 도구 |
@@ -95,6 +99,8 @@ python -X utf8 scripts/bootstrap.py --host claude
 
 이 명령은 고정된 gstack commit에서 Claude host용 native skill만 생성해 프로젝트 `.claude/skills/`에 등록한다. Codex용 설치는 `--host codex`를 사용한다. host를 바꾸면 bootstrap이 자기 installer marker가 있는 이전 host의 gstack 등록본만 정리한다. 다른 host의 user-owned 파일은 그대로 둔다. gstack은 git/원격 작업 권한을 부여하거나 Claude Code의 권한 승인을 바꾸지 않는다. 일반 코드 작업·검증은 공통 명령으로 수행한다.
 
+집담의 구현·수정·문서·설정·검증 요청은 Jira `KAN` 이슈로 자동 추적한다. Codex 사용자는 Atlassian Jira 앱을 연결하고, Claude Code는 저장소의 [`.mcp.json`](.mcp.json)에 등록된 Atlassian MCP 서버를 사용한다. Claude Code를 처음 열면 `/mcp`를 실행해 Atlassian에 OAuth 인증하고 연결을 승인한다. 연결 뒤 새 작업을 시작하면 에이전트가 이슈를 만들거나 기존 요청 이슈에 연결하고 `진행 중`으로 옮긴다. 검증까지 끝난 경우에만 닫는다. host label은 `agent-codex` 또는 `agent-claude`를 사용하며 담당자를 임의로 지정하지 않는다. 인증 토큰은 저장소에 저장하지 않는다. 자세한 규칙은 [Jira Task Lifecycle Spec](docs/specs/jira_task_lifecycle_spec.md)을 참고한다.
+
 ### Antigravity
 
 저장소 루트를 workspace로 열고 Agent에서 작업한다. 공식 문서의 [프로젝트 규칙](https://www.antigravity.google/docs/rules/)은 `AGENTS.md`를 지원하며, [프로젝트 스킬](https://www.antigravity.google/docs/skills/)은 `.agents/skills/`를 사용한다. 도구 버전에 따라 규칙 인식 여부를 확인하고, 아래 첫 프롬프트로 동일한 파일을 직접 읽게 할 수도 있다.
@@ -122,7 +128,7 @@ python -X utf8 scripts/bootstrap.py --host claude
 
 ## 4. 현재 host용 전체 gstack 설치
 
-팀 공통 개발에 필요한 Python 검증과 별도로, 전체 기획·리뷰·QA 스킬을 선택한 host에 등록하는 선택 설치다.
+팀 공통 개발에 필요한 Python 검증과 별도로, 전체 기획·리뷰·QA 스킬을 Codex에 등록하는 선택 설치다.
 
 ```sh
 python -X utf8 scripts/bootstrap.py --host codex
@@ -130,7 +136,7 @@ python -X utf8 scripts/bootstrap.py --host codex
 
 Windows에서는 `./scripts/setup-gstack.ps1 --host codex`, Linux/macOS에서는 `bash scripts/setup-gstack.sh --host codex`도 같은 설치를 실행한다. Claude Code 사용자는 host 값을 `claude`로 지정한다. 고정된 commit의 gstack, Bun 의존성, Chromium을 다운로드하며 개인의 전역 host 설정을 변경하지 않는다. 전체 bootstrap에서는 `--host`가 필수다.
 
-Codex 선택 시 gstack 56개와 프로젝트 전용 스킬이 Codex 탐색 경로에 등록된다. Claude Code 선택 시 gstack 56개가 `.claude/skills/`에 등록된다. 도구에서 목록이 갱신되지 않으면 프로젝트를 다시 연다. 단순 코드 수정 때 전체 설치를 반복할 필요는 없다.
+Codex 선택 시 gstack 56개와 `jipdam-workflow` 1개가 Codex 탐색 경로에 등록된다. Claude Code 선택 시 gstack 56개가 `.claude/skills/`에 등록된다. 도구에서 목록이 갱신되지 않으면 프로젝트를 다시 연다. 단순 코드 수정 때 전체 설치를 반복할 필요는 없다.
 
 ```sh
 python -X utf8 scripts/verify_environment.py --gstack --browser --host codex
@@ -178,9 +184,9 @@ GitHub CI는 Ubuntu/Windows × Python 3.11/3.12의 모델 없는 검증을 실�
 
 ### 대화형 전월세 MVP — 2026-10-14
 
-채팅 초안 확인·수정, 실제 DB 추천, 후보별 니즈, 100행 거래 상세와 Leaflet+OSM 내장 지도를 구현했다. 현재 실제 확정 연결은 0건이므로 data_not_ready로 표시한다. 검수 자료·실모델은 준비 조건이다. [실행·검수 패키지·성능 재현 안내](outputs/budongi_mvp_temp/docs/rental-review-package.md)를 따른다.
+채팅 초안 확인·수정, 실제 DB 추천, 후보별 니즈, 100행 거래 상세와 Leaflet+OSM 내장 지도를 구현했다. 2026-10-20 검수 serving `data/rental/serving/reviewed-20261020.sqlite3`에는 238,620건 중 203,159건(5,156개 단지)의 승인 관계가 반영됐다. 예외 35,461건은 미확정이며 연결 거래의 상태도 모두 `unknown`이라 실제 추천은 `data_not_ready`다. 보존한 이전 canonical의 0건 연결과 이 검수 serving을 구분한다. 검수 자료·실모델은 준비 조건이다. [실행·검수 패키지·성능 재현 안내](outputs/budongi_mvp_temp/docs/rental-review-package.md)를 따른다.
 
-2026-10-15 후속 준비: [1~5번 목적별 계획](outputs/budongi_mvp_temp/docs/plans/continuation-parts-1to5.md)과 [실제 검증](outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md)을 따릅니다. canonical v3 기본 경로·검수/로컬 모델 readiness CLI·Drive 패키지 다운로드·SOL/LUNA 난이도 선택을 연결했습니다. GMS는 최신 사용자 지시에 따라 누적을 차단 기준으로 쓰지 않고 실잔액 5,000을 보존합니다. 두 모델의 최신 설정 UI 호출·정산 검증도 완료했습니다. 실제 검수 자료/모델의 남은 게이트는 Task 기록을 따릅니다.
+2026-10-15 후속 준비: [1~5번 목적별 계획](outputs/budongi_mvp_temp/docs/plans/continuation-parts-1to5.md)과 [실제 검증](outputs/budongi_mvp_temp/docs/continuation-validation-20261014.md)을 따릅니다. canonical v3 기본 경로·검수/로컬 모델 readiness CLI·Drive 패키지 다운로드·SOL/LUNA 난이도 선택을 연결했습니다. GMS는 최신 사용자 지시에 따라 누적을 차단 기준으로 쓰지 않고 선택한 개인 키의 실잔액 1,000을 보존합니다(이전 5,000은 이력). 두 모델의 최신 설정 UI 호출·정산 검증도 완료했습니다. 실제 검수 자료/모델의 남은 게이트는 Task 기록을 따릅니다.
 
 ### CLI-First 개발 하네스
 
@@ -192,3 +198,10 @@ GitHub CI는 Ubuntu/Windows × Python 3.11/3.12의 모델 없는 검증을 실�
 
 현재 GMS 최소 보존은1,000이고 검증·승인 후 로컬 오토커밋이 활성화됐습니다.
 [최신 GMS·자동커밋 운영/호환성](outputs/budongi_mvp_temp/docs/harness/OPERATIONS_UPDATE_20261015.md)을 따릅니다.
+
+## 작업별 Git 자동 저장
+
+[Git 자동 저장 운영](docs/git-lifecycle.md)을 따른다. 작업 시작 시 전용 branch를 만들고,
+메인이 확정한 단계의 snapshot은 Git 전담 서브에이전트가 별도 작업 공간에서 commit/push한다.
+로컬 진입점은 `python -m harness git --help`다. 정책은 `tooling/git-lifecycle.json`이며
+현재 KAN-29 전달은 main 병합 없이 자동화 전용 branch를 남긴다.

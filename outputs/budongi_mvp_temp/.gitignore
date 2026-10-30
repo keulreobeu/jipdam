@@ -20,3 +20,5 @@ data/rental/
 data/collection/
 data/sales/
 data/statistics/
+data/pipeline/
+data/raw/legal_rag/

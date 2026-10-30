@@ -47,6 +47,23 @@ def digest_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def publish_snapshot_directory(temporary: Path, output: Path) -> None:
+    """Rename a completed directory, allowing brief Windows handle contention.
+
+    Windows rename does not replace an existing destination. Preserve that
+    exclusive publication behavior on every attempt; permanent failures remain
+    visible to the caller and the caller retains its existing cleanup policy.
+    """
+    for attempt in range(5):
+        try:
+            os.rename(temporary, output)
+            return
+        except PermissionError as exc:
+            if os.name != "nt" or getattr(exc, "winerror", None) not in (5, 32, 33) or attempt == 4:
+                raise
+            time.sleep(0.05 * (2 ** attempt))
+
+
 def write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")

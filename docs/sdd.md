@@ -16,6 +16,8 @@
 | 기존 계약 내 버그·리팩터링·설정 변경 | Task + 기존 계약 참조 + 관련 검증 |
 | 계약을 바꾸지 않는 README 설명·오탈자 | Task 면제, PR에 사유와 확인 결과 |
 
+실행하는 구현·수정·문서·설정·검증 작업은 Jira `KAN` 이슈로 추적한다. 시작 전에 사용자 지정 티켓을 연결하거나 진행 중인 티켓이 없으면 작업 이슈를 만든다. 단순 질문·설명·실행하지 않는 계획·읽기 전용 검토는 제외한다. 생성·연결·종료 규칙은 [Jira Task Lifecycle](specs/jira_task_lifecycle_spec.md)을 따른다.
+
 제품 요구·비용·데이터·보안·호환성의 주요 결정은 사용자가 확정한다. 담당자는 세부 구현을 판단하고 AC별 증거로 완료 처리한다. AI 계획·리뷰는 초안이다. 현재 요청에 이미 확정된 요구는 다시 승인받지 않고 요청 근거를 기록한다.
 
 ## 상태와 문서
@@ -63,4 +65,16 @@ CI는 PR base/head 또는 push before/after의 실제 파일 차이를 검사한
 
 ## 현재 적용 경계
 
+2026-10-22 이후 위키는 [WIKI-001](../outputs/budongi_mvp_temp/docs/specs/25_wiki_lifecycle_spec.md)과
+[운영](../outputs/budongi_mvp_temp/docs/wiki/AUTOMATION.md)을 따른다. 작업 검증 뒤 Jira 완료 전에
+문서화 판단(SKIP/LINK_EXISTING/CREATE/UPDATE 등), 사유, 문서 ID/링크, 검증·동기화 상태를
+Task/Jira에 기록한다. Spec/ADR/Task의 원본 책임을 유지하며 실제 문서 정합성 검토를 생략하지 않는다.
+
 운영 체계(SDD-001)와 required-fact coverage(EVAL-001)의 기존 등록을 유지하고, 2026-10-06 사용자 승인에 따라 [전월세 추천 RENT-001](../outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md)·[API 키 보관함 CRED-001](../outputs/budongi_mvp_temp/docs/specs/11_api_credential_vault_spec.md)과 관련 영구 Task를 등록한다. 현재 CRED-001 보관함 구현은 별도 Task에서 추적하며, 전월세 추천·실데이터 수집·단지 매칭·실제 Golden 구성·Router/RAG 확장은 이번 기능 범위에 포함하지 않는다. 문서 완료·합성 데모·실제 성능을 구분하고 데이터 수집 보류를 유지한다.
+
+## Git 단계 저장과 종료
+
+[Git 생명주기](git-lifecycle.md)·[GIT-AUTO-001](specs/git_lifecycle_spec.md)을 따른다.
+작업 시작에 branch를 생성하고 메인이 확정한 snapshot의 commit/push는 전담 서브에이전트가 수행한다.
+최종 검증과 필수 위키를 해결한 뒤 최신 PR CI·main 반영을 확인하며, Git 저장/병합/정리 상태를 분리한다.
+branch_only 요청은 branch를 남긴다. 메인 source/index 및 다른 작업의 미저장 내용은 자동 포함하지 않는다.

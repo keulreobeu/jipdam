@@ -74,6 +74,27 @@ class FileCanonicalTests(unittest.TestCase):
             snapshot_date="2026-10-12", observation_from="2025-10-12", record_url="https://example.invalid/fixture",
             previous=previous)
 
+    @unittest.skipUnless(os.name == "nt", "Windows lock contention")
+    def test_stage_and_canonical_publish_after_transient_windows_denial(self):
+        actual_rename = os.rename
+        attempted = set()
+
+        def rename(source, output):
+            name = Path(source).name
+            kind = next((prefix for prefix in (".file-stage-", ".canonical-build-") if name.startswith(prefix)), None)
+            if kind and kind not in attempted:
+                attempted.add(kind)
+                error = PermissionError(13, "synthetic access denial")
+                error.winerror = 5
+                raise error
+            actual_rename(source, output)
+
+        with patch("budongi.collection.os.rename", side_effect=rename), patch("budongi.collection.time.sleep"):
+            report = self.integrate(self.stage())
+        self.assertEqual(attempted, {".file-stage-", ".canonical-build-"})
+        self.assertEqual(report["counts"]["observations"], 3)
+        self.assertTrue((self.root / "canonical" / "canonical.sqlite3").is_file())
+
     def test_all_formats_keep_equal_rows_scope_exclusions_exact_won_and_lineage(self):
         with patch("budongi.collection._open_request", side_effect=AssertionError("network forbidden")), \
                 patch("budongi.credential_vault.CredentialVault", side_effect=AssertionError("vault forbidden")):

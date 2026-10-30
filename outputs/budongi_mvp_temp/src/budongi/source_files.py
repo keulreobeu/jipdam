@@ -14,7 +14,7 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-from .collection import CollectionError, digest_file, read_json, safe_file, utc_now, write_json
+from .collection import CollectionError, digest_file, publish_snapshot_directory, read_json, safe_file, utc_now, write_json
 from .rental_recommendation import SEOUL_DISTRICTS
 from .rental_storage import observation_id_for, _assert_no_credentials
 
@@ -342,7 +342,7 @@ def stage_file(*, registry_path: Path, source_id: str, input_path: Path, output:
                   "quality_status":"synthetic" if source.get("fictional") else "source_unverified"}
         write_json(temporary/"manifest.json",result)
         if output.exists(): raise CollectionError("file_stage_exists_use_new_directory")
-        os.rename(temporary,output)
+        publish_snapshot_directory(temporary, output)
         return result
     except (CollectionError, ValueError, UnicodeError, csv.Error, KeyError, TypeError) as exc:
         # A malformed source is still preserved evidence; never turn it into success0.
@@ -358,7 +358,7 @@ def stage_file(*, registry_path: Path, source_id: str, input_path: Path, output:
                        "error":str(exc) if isinstance(exc, CollectionError) else "file_parsing_failed"}
             write_json(temporary / "manifest.json", failure)
             if not output.exists():
-                os.rename(temporary, output)
+                publish_snapshot_directory(temporary, output)
         raise
     finally:
         if c is not None: c.close()

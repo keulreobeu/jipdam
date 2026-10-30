@@ -12,7 +12,7 @@ from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-from .collection import (CollectionError, SERVICES, collection_status, digest_file, load_plan,
+from .collection import (CollectionError, SERVICES, collection_status, digest_file, load_plan, publish_snapshot_directory,
                          load_query, queries, query_folder, read_json, safe_file, verify_query, write_json)
 from .rental_storage import connect_rental, import_rental_snapshot, observation_id_for
 
@@ -281,7 +281,7 @@ def build_databases(root: Path, output: Path, *, allow_partial: bool = False) ->
         write_json(temporary / "normalized-manifest.json", result)
         if output.exists():
             raise CollectionError("output_exists_use_new_directory")
-        os.rename(temporary, output)
+        publish_snapshot_directory(temporary, output)
         return result | {"output_directory": str(output)}
     finally:
         for connection in (rental, sale, staging):

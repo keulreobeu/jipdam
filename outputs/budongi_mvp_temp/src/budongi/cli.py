@@ -95,11 +95,17 @@ def _parser() -> argparse.ArgumentParser:
     add_collection_parser(sub)
     from .statistics_cli import add_statistics_parser
     add_statistics_parser(sub)
+    from .pipeline.cli import add_parser as add_pipeline_parser
+    add_pipeline_parser(sub)
     return parser
 
 
 def main() -> None:
     args = _parser().parse_args()
+    if args.command == "pipeline":
+        from .pipeline.cli import run_cli
+        run_cli(args)
+        return
     if args.command == "rental-readiness":
         from .rental_readiness import rental_readiness
         result = rental_readiness(canonical_db=args.canonical_db, database=args.database,

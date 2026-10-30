@@ -39,7 +39,7 @@
 
 - 수집/Drive 업로드 전 [COLLECT-001](../../docs/specs/data_collection_record_spec.md)과 [수집 현황·절차](../../docs/data-collection.md)의 필수 기록을 따른다. GitHub `[수집]` Issue에서 출처·종류·지역·기간/필터가 겹치는 완료·예약 범위를 확인하고 미수집/실패분만 예약한다. ZIP 업로드 전 같은 Issue에 범위별 결과·건수·방법/단위·검수/합성·수집 시각·manifest·ZIP 해시를 적고, 업로드 후 개별 Drive 링크를 추가한다. 기록 누락 상태에서는 수집/업로드를 진행하지 않는다. 합성 fixture는 실제 수집 범위로 세지 않으며 기존 수집·매칭 보류는 유지한다.
 
-- CURRENT에는 위 기능에 더해 RENT-001 대화형 조건 입력, loopback API, canonical에서 재생성하는 read-only 전월세 serving DB와 결과/니즈·전체 상세/지도 UI의 첫 구현이 포함된다. LLM은 확인 질문과 제한된 draft만 만들며 사용자가 수정·검색을 확정한다. 실제 추천은 확정 단지만 허용한다. 현재 canonical 전월세의 확정 연결은 0건이어서 실제 상태는 `data_not_ready`; 실제 미준비·합성 브라우저/지도·회귀를 검증했으며 실모델/실제 매칭·좌표·시설은 사용자 확인 준비 조건이다. 검색·순위의 LLM 위임, 후보 자동 확정, 거래 병합, 외부 수집·지오코딩은 금지한다. 기존 2023 Golden 완료를 최신 추천의 선행 조건으로 삼지 않는다. Router·RAG·Hybrid·LoRA는 선택형 후속 연구다.
+- CURRENT에는 위 기능에 더해 RENT-001 대화형 조건 입력, loopback API, canonical에서 재생성하는 read-only 전월세 serving DB와 결과/니즈·전체 상세/지도 UI의 첫 구현이 포함된다. LLM은 확인 질문과 제한된 draft만 만들며 사용자가 수정·검색을 확정한다. 실제 추천은 확정 단지만 허용한다. 2026-10-20 검수 serving은 승인 연결 203,159건/미확정35,461건이며 연결 거래 상태 unknown으로 실제 상태는 `data_not_ready`; 실제 미준비·합성 브라우저/지도·회귀를 검증했으며 실모델/실제 매칭·좌표·시설은 사용자 확인 준비 조건이다. 검색·순위의 LLM 위임, 후보 자동 확정, 거래 병합, 외부 수집·지오코딩은 금지한다. 기존 2023 Golden 완료를 최신 추천의 선행 조건으로 삼지 않는다. Router·RAG·Hybrid·LoRA는 선택형 후속 연구다.
 - LLM에 SQL·DB 직접 접근·원천 수정 권한을 주지 않는다. Tool 허용 목록, 인자 검증, 호출 5회, 결과 20행, 로컬 엔드포인트 및 타임아웃 제한을 유지한다.
 - `공급액(만원)`은 실거래가가 아니다. 근거 없는 가격·거리·시설·학군·전망을 생성하지 않는다. 원 단위 가격, ㎡ 면적, m 거리를 쓰고 출처 ID·기준일을 추적한다.
 - 신규 전월세 API 키는 CRED-001 보관함으로 암호화해 Windows 사용자 프로필에 관리한다. Windows Credential Manager를 사용할 수 없으면 평문 fallback 없이 fail-closed한다. 키 값은 브라우저 영속 저장소·LLM·로그·응답·Git에 남기지 않는다. 폴더 삭제는 확인 뒤 그 폴더의 키 전체를 연쇄 삭제하되, 키 저장·삭제 자체로 외부 API를 호출하지 않는다. 기존 역사 CLI 환경변수는 그대로 유지한다.
@@ -74,3 +74,38 @@ HEAD 기준 worktree에는 미커밋 변경을 자동 복사하지 않는다. �
 현재 최소 보존은 **1,000크레딧**이며 이전5,000 지시는 이력으로 보존한다.
 [TASK-HARNESS-OPS-001](docs/tasks/harness-operations.md): 기존 예산/원장을 유지한 GMS 우선 작업과 검증·승인 뒤 범위별 로컬 오토커밋을 허용한다.
 Codex native GMS의 도구/stream/full-payload count 미검증·입력 상한은 우회하지 않는다. 사용자 기존 index와 범위 밖 변경을 보호한다.
+
+
+## 2026-10-21 개인 할당 GMS 키와 자동 원장
+
+GMS 키는 개인별 할당이다. 각 Windows 사용자의 보관함 안에서 명시 선택한 키별 정책·사용·예약·잔액/만료·호출 내역을 관리한다. 두 모델만 같은 개인 키 안에서 원장을 공유한다. 같은 키의 다른 앱 차감은 팀 공용 사용으로 표현하지 않는다. 새 키는 명시 선택/한도 저장 후 사용하고 키 교체로 과거 원장을 지우거나 다른 키의 정책을 자동 상속하지 않는다. 최소 보존1,000과 기존 예산 runner 경계는 유지한다. 이전 귀속 미확인 원장/예약은 추정 배정·초기화하지 않는다. TASK-AUDIT-GMS-001/GMS-BUDGET-001-AC-06을 따른다.
+
+## 2026-10-22 Wiki 자동 관리
+
+팀원도 같은 Confluence에 작성한다. 본인 인증으로 접근하고 권한 부족 시 [권한 요청 안내](docs/wiki/TEAM_ACCESS.md)의
+대상 링크·필요한 보기/작성/편집 권한을 사용자에게 안내한다. DRAFT/SYNC_PENDING을 보존하고 우회하지 않는다.
+
+[사용자 정책](docs/wiki/LIFECYCLE_POLICY.md), [운영](docs/wiki/AUTOMATION.md), WIKI-001을 따른다.
+검증 완료 뒤 Jira 종료 전에 별도 요청 없이 python -m harness wiki의 maintenance/catalog/search/event를
+실행한다. 기존 문서 갱신을 우선하고 판단 결과·근거·링크·동기화 상태를 영구 Task/Jira에 남긴다.
+Confluence 대상은 docs/wiki/connection.json이며 공식 host connector로 pending/delivery를 처리하고
+실제 게시 read-back receipt를 기록한다. 실패·충돌·권한 부족은 검토/동기화 대기로 보존한다.
+수동 내용/지원 버전/문서 ID를 보존하고 ACTIVE만 검색한다. 고위험 게시·폐기/대량병합 승인을
+준수하며 영구삭제하지 않는다. 자세한 JSON 및 완료 게이트는 운영 안내를 따른다.
+
+## 2026-10-29 Git 자동 생명주기와 전담 서브에이전트
+
+[GIT-AUTO-001](../../docs/specs/git_lifecycle_spec.md)·[운영](../../docs/git-lifecycle.md)·[TASK-GIT-AUTO-001](../../docs/tasks/git-lifecycle.md)을 따른다.
+사용자는 작업 시작 branch 생성·단계별 commit/push·최종 검증 뒤 main 반영과 branch 정리를 승인했다.
+현재 요청이 branch만 남기도록 한 경우 completion_mode=branch_only를 우선한다. KAN-29 전달은 branch_only다.
+정책 ../../tooling/git-lifecycle.json은 활성화되어 있다. 새 구현/수정 작업은 Jira/Task/scope를 정한 뒤
+Git 전담 서브에이전트를 배정한다. 메인은 구현·snapshot 확정·검증 판단을 맡고 commit/push는 하지 않는다.
+Codex는 gstack_committer, 이미 실행 중인 세션에 역할이 없으면 같은 지침을 받은 worker를 사용한다.
+Claude도 native 하위 에이전트에 동일 책임을 넘긴다. 위임 도구가 없으면 직접 Git 쓰기로 대체하지 않는다.
+메인이 source를 편집하는 동안 서브에이전트는 고정 snapshot을 별도 publisher worktree에서만 저장한다.
+python -m harness git start/snapshot/checkpoint/status/verify/prepare-finish/receipt를 사용한다.
+공유 원격에는 exact scope와 이번 변경만 포함하고 기존 index·다른 작업·키·DB/raw/runtime을 보존한다.
+필수 문서와 최신 후보의 검증/CI를 확인한 뒤 승인 범위의 PR/merge를 처리한다. force/amend/reset,
+보호 규칙/hook 우회는 하지 않는다. 실제 read-back 전에 원격 저장·병합·정리 완료라 하지 않는다.
+이 규칙은 기존 로컬 autocommit/원격 Git 보류 문구보다 현재 승인 범위에서 우선한다.
+agent가 실행 중일 때만 단계 저장이 동작하며 상시 OS 감시 서비스나 역할 기반 보안 격리는 아니다.

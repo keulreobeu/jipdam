@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "enabled": true,
+  "committer_role": "gstack_committer",
+  "remote": "origin",
+  "base_branch": "main",
+  "branch_prefix": "codex/",
+  "snapshot_handoff_required": true,
+  "main_agent_may_commit": false,
+  "disable_legacy_auto_commit_for_main": true,
+  "default_completion_mode": "reviewed_merge",
+  "current_delivery": "branch_only",
+  "approval_ref": "2026-10-29 user: local activation; automation-only branch push; commits by subagent"
+}

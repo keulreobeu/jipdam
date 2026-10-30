@@ -1,2 +1,26 @@
 [agents]
 max_concurrent_threads_per_session = 2
+
+[agents.gstack_planner]
+description = "집담 설계와 수용 기준을 독립적으로 검토합니다."
+config_file = "../tooling/codex-agents/gstack_planner.toml"
+
+[agents.gstack_reviewer]
+description = "집담 변경을 읽기 전용으로 코드 리뷰합니다."
+config_file = "../tooling/codex-agents/gstack_reviewer.toml"
+
+[agents.gstack_investigator]
+description = "집담 오류의 원인을 조사하고 수정 방향을 보고합니다."
+config_file = "../tooling/codex-agents/gstack_investigator.toml"
+
+[agents.gstack_qa]
+description = "집담의 CLI/API 동작을 검증하고 증거를 보고합니다."
+config_file = "../tooling/codex-agents/gstack_qa.toml"
+
+[agents.gstack_docs]
+description = "집담 문서의 누락과 변경 불일치를 조사합니다."
+config_file = "../tooling/codex-agents/gstack_docs.toml"
+
+[agents.gstack_committer]
+description = "집담 작업의 고정 스냅샷을 전담하여 커밋·push하고 Git 완료 상태를 관리합니다."
+config_file = "../tooling/codex-agents/gstack_committer.toml"

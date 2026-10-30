@@ -1,10 +1,16 @@
 # 집담 (Jipdam) 애플리케이션
 
-승인된 목표는 **서울 아파트 전월세 단지 후보의 조건별 추천·비교 웹 데모**입니다. 채팅과 선택적 로컬 LLM 후속 질문, 실제 canonical DB의 read-only 추천 API, 니즈 비교·전체 거래 상세/지도 화면의 첫 구현을 제공합니다. 현재 canonical에는 전월세 관측 238,620건이 있지만 확정 단지 연결이 0건이므로 제품은 `data_not_ready`를 표시합니다. 보존된 역사 스냅샷·세 Data Tool·로컬 모델·합성 평가, 합성 전월세 CLI와 Windows 계정 기반 암호화 API 키 보관함은 기존 경로로 유지됩니다. 팀 저장소는 [keulreobeu/jipdam](https://github.com/keulreobeu/jipdam)이며 `budongi` Python 모듈·CLI 호환성을 유지합니다.
+승인된 목표는 **서울 아파트 전월세 단지 후보의 조건별 추천·비교 웹 데모**입니다. 채팅과 선택적 로컬 LLM 후속 질문, 실제 canonical DB의 read-only 추천 API, 니즈 비교·전체 거래 상세/지도 화면의 첫 구현을 제공합니다. 2026-10-20 검수 serving `data/rental/serving/reviewed-20261020.sqlite3`에는 238,620건 중 203,159건(5,156개 단지)의 승인 관계가 반영됐다. 예외 35,461건은 미확정이며 연결 거래의 상태도 모두 `unknown`이라 실제 추천은 `data_not_ready`다. 보존한 이전 canonical의 0건 연결과 이 검수 serving을 구분한다. 보존된 역사 스냅샷·세 Data Tool·로컬 모델·합성 평가, 합성 전월세 CLI와 Windows 계정 기반 암호화 API 키 보관함은 기존 경로로 유지됩니다. 팀 저장소는 [keulreobeu/jipdam](https://github.com/keulreobeu/jipdam)이며 `budongi` Python 모듈·CLI 호환성을 유지합니다.
 
 2026-10-13 추가 구현: 서울 세 API의 확정된 원본 수집과 오프라인 통합 DB, 공식 ID 관계·미확정 후보·반복/증분 적재 및 등록 파일 입력을 구현·검증했습니다. [실행 문서](docs/canonical-db.md)와 [실제 검증](docs/canonical-validation-20261013.md)을 따릅니다. 후속 대화형 전월세 MVP의 첫 웹/실 DB 경로는 [실행 안내](#대화형-db-전월세-mvp), 검증 범위·현재 데이터 미준비 상태는 [검증 기록](docs/rental-mvp-validation-20261013.md)을 참고하세요.
 
 사용자가 제공한 통계 엑셀 30개는 별도 `data/statistics/statistics.sqlite3`에 오프라인 보존·적재했습니다. `jipdam statistics import/status/audit`는 원본 셀 계보·기간·결측·재실행·심리 반올림 중복과 후속 메타데이터 근거를 관리합니다. [사용·조회·추가 자료 후보](docs/statistics-storage.md)와 [실제 수입 검증](docs/statistics-validation-20261013.md)을 따릅니다.
+
+## 오프라인 분석 파이프라인
+
+66개 메타데이터 항목을 보존하는 Catalog와 MOLIT XML·주택 통계 XLSX·공시가격 CSV·NEIS JSON의 오프라인 ETL을 추가했습니다. 별도 출력 공간의 typed Parquet·계보·격리 결과와 실행 측정을 제공합니다. 제품 폴더에서 선택 의존성 `python -m pip install -e '.[pipeline]'`을 설치한 뒤 `python -m budongi.cli pipeline --help`로 시작합니다.
+
+[CLI 사용 안내](docs/pipeline.md), [단계별 gstack 스킬·재개 절차](docs/plans/pipeline-m1.md), [실제 검증·남은 게이트](docs/tasks/pipeline-m1.md)를 따릅니다. 성능 목표 확정·최적화 검증 전 M1은 진행 중이며, Snowflake·dbt·Airflow는 후속 단계입니다.
 
 ## 개발 문서와 작업 순서
 
@@ -50,7 +56,13 @@ python -X utf8 -m budongi.cli rental-readiness
 python -X utf8 -m budongi.cli rental-mvp --no-browser
 ```
 
-브라우저에서 출력된 `http://127.0.0.1:8766/`을 엽니다. 로컬 OpenAI 호환 모델을 연결할 때만 `JIPDAM_RENTAL_MODEL`과 `OLLAMA_ENDPOINT`를 설정합니다. 모델이 없으면 질문 안내와 직접 조건 입력을 사용할 수 있습니다. 대화 draft는 폼에 반영되며, 사용자가 확인·수정한 뒤 검색 버튼을 눌러야 DB를 조회합니다. 현재 실제 단지 연결은 0건이므로 `data_not_ready`가 정상 상태입니다. 확정 연결·검수 좌표·시설 데이터를 자동으로 만들지 않습니다. 실제 사용 범위와 제약은 [검증 기록](docs/rental-mvp-validation-20261013.md)을 따릅니다.
+위 기본 명령은 기존 `data/rental/serving/canonical.sqlite3` 경로를 사용합니다. 2026-10-20 승인 관계를 검증한 serving은 별도 파일이므로 기존 DB를 재생성하지 않고 아래처럼 명시합니다. 현재 원본 canonical 검수 폴더의 접근 거부는 별도 미해결 상태이며, 승인 관계가 있어도 거래 상태가 unknown인 추천은 계속 차단됩니다.
+
+```powershell
+python -X utf8 -m budongi.cli rental-mvp --database data/rental/serving/reviewed-20261020.sqlite3 --no-browser
+```
+
+브라우저에서 출력된 `http://127.0.0.1:8766/`을 엽니다. 로컬 OpenAI 호환 모델을 연결할 때만 `JIPDAM_RENTAL_MODEL`과 `OLLAMA_ENDPOINT`를 설정합니다. 모델이 없으면 질문 안내와 직접 조건 입력을 사용할 수 있습니다. 대화 draft는 폼에 반영되며, 사용자가 확인·수정한 뒤 검색 버튼을 눌러야 DB를 조회합니다. 2026-10-20 검수 serving `data/rental/serving/reviewed-20261020.sqlite3`에는 238,620건 중 203,159건(5,156개 단지)의 승인 관계가 반영됐다. 예외 35,461건은 미확정이며 연결 거래의 상태도 모두 `unknown`이라 실제 추천은 `data_not_ready`다. 보존한 이전 canonical의 0건 연결과 이 검수 serving을 구분한다. 확정 연결·검수 좌표·시설 데이터를 자동으로 만들지 않습니다. 실제 사용 범위와 제약은 [검증 기록](docs/rental-mvp-validation-20261013.md)을 따릅니다.
 
 ### Docker Compose
 
@@ -102,9 +114,9 @@ python -X utf8 -m budongi.cli recommend --rental-db data/rental/synthetic-demo/s
 
 `jipdam credentials`로 [로컬 보관함](http://127.0.0.1:8765/)을 엽니다. 등록한 GMS 키를 직접 선택하고 **잔여 크레딧 조회**를 누르면 공식 key-info의 전체/사용/잔여 크레딧과 KST 만료 시각을 표시합니다. 키 교체는 저장한 키의 **수정 → 새 API 키 → 변경 저장**을 사용합니다.
 
-**실행 예산 기준**은 현재 사용자 지시에 따라 `reserve_only`입니다. 실잔액에서 진행 중 예약과 이번 최대 비용을 제외한 뒤 **5,000크레딧 이상 보존**하는지만 비용 기준으로 관리합니다. 누적/호출 크레딧·누적 토큰 한도는 실행을 차단하지 않고 사용 이력은 기록으로 유지합니다. 500크레딧/10,000토큰은 초기 운영 이력입니다. 입력/출력의 기술적 상한·키 만료·유료 입력 카운트·최대 예약·정산은 유지합니다. 이전 `cumulative` 모드는 호환용입니다.
+**실행 예산 기준**은 현재 사용자 지시에 따라 `reserve_only`입니다. 실잔액에서 진행 중 예약과 이번 최대 비용을 제외한 뒤 **1,000크레딧 이상 보존**하는지만 비용 기준으로 관리합니다. 누적/호출 크레딧·누적 토큰 한도는 실행을 차단하지 않고 사용 이력은 기록으로 유지합니다. 500크레딧/10,000토큰은 초기 운영 이력입니다. 입력/출력의 기술적 상한·키 만료·유료 입력 카운트·최대 예약·정산은 유지합니다. 이전 `cumulative` 모드는 호환용입니다.
 
-모든 생성 전에 공식 잔액/만료와 전체 입력 토큰을 확인합니다. GMS의 입력 카운트 프록시에도 실제 관측상 요금이 붙으므로 조회 비용부터 예약합니다. 모델별 견적은 조회 비용 + 입력×입력 요율 + 예상 출력×출력 요율이며 최대 생성 예약은 정수 크레딧까지 올려 계정 반올림을 포함합니다. SOL 요율은 0.02/0.1, LUNA는 0.001/0.005크레딧/토큰입니다. 120초 동안 model/input을 동결하고 카운트를 재사용합니다. 실제 usage와 계정 차감을 대사하며, 팀의 다른 차감이 섞일 때는 보수적으로 계산합니다. 사용량 없는 실패는 최대 비용/토큰을 보류하고 재시도하지 않습니다. 조회 요금의 공식 상한은 제공되지 않았으므로 관측 상한을 넘으면 다음 실행을 중지합니다.
+모든 생성 전에 공식 잔액/만료와 전체 입력 토큰을 확인합니다. GMS의 입력 카운트 프록시에도 실제 관측상 요금이 붙으므로 조회 비용부터 예약합니다. 모델별 견적은 조회 비용 + 입력×입력 요율 + 예상 출력×출력 요율이며 최대 생성 예약은 정수 크레딧까지 올려 계정 반올림을 포함합니다. SOL 요율은 0.02/0.1, LUNA는 0.001/0.005크레딧/토큰입니다. 120초 동안 model/input을 동결하고 카운트를 재사용합니다. 실제 usage와 개인 키 계정 차감을 대사하며, 같은 키의 다른 앱 차감이 섞일 때는 보수적으로 계산합니다. 사용량 없는 실패는 최대 비용/토큰을 보류하고 재시도하지 않습니다. 조회 요금의 공식 상한은 제공되지 않았으므로 관측 상한을 넘으면 다음 실행을 중지합니다.
 
 웹의 **명확한 코드 작업 · 사전 견적**에 Task ID, 목표/AC, 필요한 코드 부분을 입력하면 견적을 볼 수 있습니다. 견적 조회에도 크레딧이 사용될 수 있으며 별도 실행 버튼만 모델 생성합니다. 코드 초안은 자동 적용하지 않습니다.
 
@@ -131,9 +143,19 @@ python -X utf8 -m budongi.cli gms-work --request request.json --execute
 
 첫 명령은 사전 견적만, 둘째는 저장된 정책 안에서 1회 생성합니다. 가능한 한 둘째 명령 한 번으로 견적/실행을 수행해 불필요한 카운트 조회를 줄이세요. 필요한 코드 부분만 선택하며 큰 문맥은 입력 상한에서 차단합니다. 실제 데이터/DB/raw·키/.env·다른 자격증명·로그/런타임을 보내지 않습니다. 명확한 코드/테스트/기계적 문서 초안은 이 runner를 우선 사용하고 담당자가 검토·적용·테스트합니다. 현재 Codex 채팅 모델 자체를 GMS로 전환한 것은 아닙니다. [계약](docs/specs/18_gms_budget_spec.md)·[Plan](docs/plans/gms-budget-work.md)·[검증 Task](docs/tasks/gms-budget-work.md).
 
+### 개인별 GMS 사용량과 자동 내역
+
+GMS 키는 팀 공용이 아닌 개인 할당 키입니다. 각자 Windows 계정의 보관함에 본인 키를 등록하고 GMS 화면에서 직접 선택합니다. 선택만으로 원격 호출은 하지 않으며, 새 키는 비활성/0예산이므로 한도를 저장한 후 사용합니다. 최소 보존은 현재 1,000크레딧입니다. 같은 키를 중복 등록하면 원장을 공유하고 키 교체는 새 비활성 정책으로 시작합니다. 관리 이름은 표시용이며 키 소유자를 자동 판별하지 않습니다.
+
+카운트·생성·연결 시험은 매 호출 전 예약하고 종료 후 자동 기록합니다. 선택한 키의 화면에서 Task·시각·모델·정산 결과·실사용 토큰·요율 비용·계정 관측 차감·보류를 페이지별로 확인합니다. 잔액 조회/실행에서 확인한 잔액·만료도 해당 키에 저장합니다. CLI와 하네스도 같은 runner를 사용하므로 별도 수기 기록은 필요 없습니다. 다른 앱의 동일 키 사용은 계정 관측 차이에 포함될 수 있으며 로컬 호출 내역으로 추정하지 않습니다. 팀원 전체 키를 수집/공유하지 않습니다.
+
+키 식별이 없던 이전 원장은 귀속 미확인 이력으로 보존하며, 미확인 예약이 있으면 검수 전 유료 요청을 보류합니다. 키 원문·프롬프트·모델 응답 본문은 원장에 남기지 않습니다. 과거 문서의 만료일은 당시 키의 관측값이며 현재 키의 상태는 명시 잔액 조회/실행 시 확인합니다. [구현·검증](docs/audit-personal-gms-validation-20261021.md).
+
 ### API 키 보관함 (Windows)
 
 패키지 설치 후 다음 명령으로 로컬 설정 화면을 엽니다. 기본 주소는 `http://127.0.0.1:8765/`이며, 종료할 때는 실행한 터미널에서 `Ctrl+C`를 누릅니다.
+
+Windows에서는 저장소 루트의 **`jipdam-credentials.exe`**를 실행해도 됩니다. 터미널에서 시작 로그를 볼 수 있고 브라우저가 열립니다. 빌드는 루트의 `build_credentials_exe.ps1`로 합니다. EXE도 현재 사용자 프로필의 Windows 자격 증명 관리자와 `%LOCALAPPDATA%\Jipdam\credentials.sqlite3`를 그대로 사용합니다.
 
 ```powershell
 jipdam credentials
@@ -333,7 +355,7 @@ python -m budongi.cli collection pack --directory data/collection/my-batch --db-
 
 ### 대화형 전월세 MVP — 2026-10-14
 
-채팅 초안 확인·수정, 실제 DB 추천, 후보별 니즈, 100행 거래 상세와 Leaflet+OSM 내장 지도를 구현했다. 현재 실제 확정 연결은 0건이므로 data_not_ready로 표시한다. 검수 자료·실모델은 준비 조건이다. [실행·검수 패키지·성능 재현 안내](docs/rental-review-package.md)를 따른다.
+채팅 초안 확인·수정, 실제 DB 추천, 후보별 니즈, 100행 거래 상세와 Leaflet+OSM 내장 지도를 구현했다. 2026-10-20 검수 serving `data/rental/serving/reviewed-20261020.sqlite3`에는 238,620건 중 203,159건(5,156개 단지)의 승인 관계가 반영됐다. 예외 35,461건은 미확정이며 연결 거래의 상태도 모두 `unknown`이라 실제 추천은 `data_not_ready`다. 보존한 이전 canonical의 0건 연결과 이 검수 serving을 구분한다. 검수 자료·실모델은 준비 조건이다. [실행·검수 패키지·성능 재현 안내](docs/rental-review-package.md)를 따른다.
 
 
 ## 개발 에이전트 하네스

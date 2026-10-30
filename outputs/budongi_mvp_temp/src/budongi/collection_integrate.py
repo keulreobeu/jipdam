@@ -15,7 +15,7 @@ import tempfile
 from datetime import date
 from pathlib import Path
 
-from .collection import (CollectionError, SERVICES, digest_file, load_query, utc_now,
+from .collection import (CollectionError, SERVICES, digest_file, load_query, publish_snapshot_directory, utc_now,
                          query_folder, read_json, safe_file, verify_query, write_json)
 from .collection_db import normalize_row, validate_normalized_inputs
 from .rental_recommendation import SEOUL_DISTRICTS
@@ -221,6 +221,11 @@ def _raw_input(c, root, plan, status, batch):
                 legacy = observation_id_for(**provenance)
                 _put(c, "raw_items", (raw_item, legacy, file_id, "items", index, _json(raw)))
                 row = normalize_row(raw, provenance, rental=q["service"] == "rental")
+                # A detailed-source aptSeq identifies a source complex independently
+                # of whether this transaction belongs to the canonical observation
+                # window. Preserve that official entity from every retained row.
+                if q["service"] == "trade-detail":
+                    _official_complex(c, batch, raw_item, row, raw)
                 valid = plan["observation_from"] <= row["contract_date"] <= plan["snapshot_date"]
                 _put(c, "staging_items", (batch, raw_item, "valid" if valid else "outside_period",
                      None if valid else "contract_date_outside_observation_period"))
@@ -361,7 +366,7 @@ def integrate_collection(root: Path, db_directory: Path, output: Path, *, previo
         write_json(temporary / "quality-report.json", report)
         if output.exists():
             raise CollectionError("output_exists_use_new_directory")
-        os.rename(temporary, output)
+        publish_snapshot_directory(temporary, output)
         return report | {"output_directory": str(output)}
     finally:
         if c is not None:
@@ -519,7 +524,7 @@ def integrate_file(directory: Path, registry_path: Path, output: Path, *, batch_
         write_json(temporary / "quality-report.json", report)
         if output.exists():
             raise CollectionError("output_exists_use_new_directory")
-        os.rename(temporary, output)
+        publish_snapshot_directory(temporary, output)
         return report | {"output_directory": str(output)}
     finally:
         if staged is not None:

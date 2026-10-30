@@ -31,6 +31,10 @@ Bash에서는 `source scripts/enter-gstack.sh`를 사용한다. 현재 작업 ho
 
 gstack이 제안하는 GitHub issue 작성, push/PR/merge/배포, 외부 CLI 리뷰, 자동화·원격 동기화는 현재 요청이 해당 동작을 포함할 때만 실행한다. 원격·인증·실데이터를 있는 것으로 가정하지 않는다. 브라우저 QA를 위해 실제 데이터 수집 보류를 해제하지 않는다.
 
+## Jira 작업 추적
+
+Codex와 Claude Code의 집담 저장소 구현·수정·문서·설정·검증 작업은 시작 전에 Jira `KAN` 이슈를 연결하거나 생성하고 key를 사용자에게 알린다. 시작할 때 이슈를 진행 중으로 옮기고 `agent-codex` 또는 `agent-claude` label을 붙인다. 단순 질문·설명·실행하지 않는 계획·읽기 전용 검토에는 만들지 않는다. 배정자를 추정하지 않는다. 이슈 생성이 불가능하면 변경 전에 상태를 알리고 무티켓 진행 여부를 묻는다. 요청된 작업과 관련 검증이 완료됐을 때만 이슈를 완료 처리하며 부분 완료·차단·검증 실패는 열어 둔다. 이슈 종료는 push/merge/deploy 승인이 아니다. 상세 규칙은 [Jira Task Lifecycle Spec](docs/specs/jira_task_lifecycle_spec.md) 및 `.agents/skills/jipdam-workflow/SKILL.md`를 따른다. Claude Code는 `.mcp.json`의 공식 Atlassian MCP에 첫 세션에서 `/mcp` OAuth 인증이 필요하다.
+
 ## GMS 코드 작업 — 2026-10-14 승인
 
 사용자는 등록한 GMS 키를 현재 구축 및 이후의 명확한 코드 작성 작업에 사용하도록 승인했고 최소 **5,000크레딧 보존**을 지정했다. [GMS-BUDGET-001](outputs/budongi_mvp_temp/docs/specs/18_gms_budget_spec.md)·[Plan](outputs/budongi_mvp_temp/docs/plans/gms-budget-work.md)·[Task](outputs/budongi_mvp_temp/docs/tasks/gms-budget-work.md)을 따른다. 보관함에 명시적으로 선택·저장한 정책을 사용하며 별칭/폴더에서 키를 추측하지 않는다.
@@ -89,3 +93,45 @@ GMS는 기존 선택 보관함/예산 runner만 사용하며 초안은 수동 �
 기존 선택 키/공통 원장/사전 count/최대 예약/만료·기술 상한을 유지하며 GMS 코드·테스트·문서 초안을 우선 사용한다.
 Codex native GMS는 전체 Responses·도구·스트림·예산 호환이 검증됐을 때만 사용한다. 키를 CLI에 직접 넣어 예산을 우회하지 않는다.
 오토커밋은 검증·필요 승인 후 허용 범위만 codex/ 브랜치에 기록하고 push/merge/amend/reset은 하지 않는다.
+
+
+## 2026-10-21 개인 할당 GMS 키와 자동 원장
+
+GMS 키는 개인별 할당이다. 각 Windows 사용자의 보관함 안에서 명시 선택한 키별 정책·사용·예약·잔액/만료·호출 내역을 관리한다. 두 모델만 같은 개인 키 안에서 원장을 공유한다. 같은 키의 다른 앱 차감은 팀 공용 사용으로 표현하지 않는다. 새 키는 명시 선택/한도 저장 후 사용하고 키 교체로 과거 원장을 지우거나 다른 키의 정책을 자동 상속하지 않는다. 최소 보존1,000과 기존 예산 runner 경계는 유지한다. 이전 귀속 미확인 원장/예약은 추정 배정·초기화하지 않는다. TASK-AUDIT-GMS-001/GMS-BUDGET-001-AC-06을 따른다.
+
+## 2026-10-22 위키 자동 생명주기 관리
+
+팀원도 같은 지정 Confluence에 작성한다. 본인 Atlassian 인증을 사용하고 권한이 없으면
+[팀원 권한 요청 안내](outputs/budongi_mvp_temp/docs/wiki/TEAM_ACCESS.md)에 따라 대상 링크와
+실패한 동작을 표시하고 공간 관리자에게 보기·페이지 작성·편집 권한을 요청하도록 안내한다.
+다른 사람의 인증을 공유하지 않고 로컬 DRAFT/SYNC_PENDING과 원래 문서 ID를 보존한다.
+
+사용자 승인 [정책 v1.0](outputs/budongi_mvp_temp/docs/wiki/LIFECYCLE_POLICY.md)과
+[운영](outputs/budongi_mvp_temp/docs/wiki/AUTOMATION.md), WIKI-001/TASK-WIKI-001을 따른다.
+Codex·Claude는 구현/수정 검증 뒤 Jira 완료 전에 별도 요청 없이 wiki maintenance/catalog/search/event를
+실행하고 판단·사유·문서 ID/링크·검증·동기화 상태를 Task/Jira에 기록한다. 불필요하면 SKIP,
+기존 문서로 충분하면 LINK_EXISTING, 신규보다 UPDATE를 우선한다. 의미/근거/권한 검토와
+source hash·문서 revision을 확인한다. 추정·미검증 해결책은 ACTIVE로 게시하지 않는다.
+공식 Atlassian 연결로 [지정 Confluence](https://kwulreobeu.atlassian.net/wiki/spaces/~7120201d82685826914674999dcbf004921921/pages/360449)의
+outbox를 처리하고 실제 read-back URL/버전/hash receipt를 남긴다. 원격 수동 변경은 보존하며
+실패는 SYNC_PENDING이다. 고위험 문서·폐기/대량 병합의 소유자 승인, ACTIVE 검색,
+지원 버전 보존·재검토·영구삭제 금지·민감정보 즉시 격리를 준수한다. 필수 문서 미완료는
+완료를 차단한다. PR merge/배포/의존성/장애 후에도 관련 문서를 재검증한다. 키·DB·runtime은
+문서화하지 않는다. worker/agent 미실행 중 원격 이벤트가 감지된 것처럼 보고하지 않는다.
+
+## 2026-10-29 Git 자동 생명주기와 전담 서브에이전트
+
+[GIT-AUTO-001](docs/specs/git_lifecycle_spec.md)·[운영](docs/git-lifecycle.md)·[TASK-GIT-AUTO-001](docs/tasks/git-lifecycle.md)을 따른다.
+사용자는 작업 시작 branch 생성·단계별 commit/push·최종 검증 뒤 main 반영과 branch 정리를 승인했다.
+현재 요청이 branch만 남기도록 한 경우 completion_mode=branch_only를 우선한다. KAN-29 전달은 branch_only다.
+정책 tooling/git-lifecycle.json은 활성화되어 있다. 새 구현/수정 작업은 Jira/Task/scope를 정한 뒤
+Git 전담 서브에이전트를 배정한다. 메인은 구현·snapshot 확정·검증 판단을 맡고 commit/push는 하지 않는다.
+Codex는 gstack_committer, 이미 실행 중인 세션에 역할이 없으면 같은 지침을 받은 worker를 사용한다.
+Claude도 native 하위 에이전트에 동일 책임을 넘긴다. 위임 도구가 없으면 직접 Git 쓰기로 대체하지 않는다.
+메인이 source를 편집하는 동안 서브에이전트는 고정 snapshot을 별도 publisher worktree에서만 저장한다.
+python -m harness git start/snapshot/checkpoint/status/verify/prepare-finish/receipt를 사용한다.
+공유 원격에는 exact scope와 이번 변경만 포함하고 기존 index·다른 작업·키·DB/raw/runtime을 보존한다.
+필수 문서와 최신 후보의 검증/CI를 확인한 뒤 승인 범위의 PR/merge를 처리한다. force/amend/reset,
+보호 규칙/hook 우회는 하지 않는다. 실제 read-back 전에 원격 저장·병합·정리 완료라 하지 않는다.
+이 규칙은 기존 로컬 autocommit/원격 Git 보류 문구보다 현재 승인 범위에서 우선한다.
+agent가 실행 중일 때만 단계 저장이 동작하며 상시 OS 감시 서비스나 역할 기반 보안 격리는 아니다.
