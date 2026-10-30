@@ -10,9 +10,10 @@ from typing import Callable, Iterable
 from budongi.team_collection import contract as C
 
 
-def _result(errors: list, members: int, lines: int, records: object) -> dict:
+def _result(errors: list, members: int, jsonl_lines: int, records: object) -> dict:
     return {"ok": not errors, "errors": errors,
-            "counts": {"members": members, "jsonl_lines": lines}, "records": records}
+            "counts": {"members": members, "jsonl_lines": jsonl_lines},
+            "records": records}
 
 
 def _unsafe(name: str) -> bool:
@@ -24,13 +25,20 @@ def _unsafe(name: str) -> bool:
     return any(p in ("", ".", "..") for p in parts)
 
 
-def _is_int(v: object) -> bool:
-    return isinstance(v, int) and not isinstance(v, bool)
+def _is_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _valid_entry(entry: object) -> bool:
+    return (isinstance(entry, dict)
+            and isinstance(entry.get("path"), str) and entry["path"] != ""
+            and _is_int(entry.get("bytes")) and entry["bytes"] >= 0
+            and isinstance(entry.get("sha256"), str))
 
 
 def check_zip(path: Path, *, workdir: Path,
               record_checker: Callable[[Iterable[str], dict, dict], dict]) -> dict:
-    """Check the package ZIP at path, extracting into the empty workdir, and report all problems."""
+    """Check the package ZIP at path, extracting it into the empty workdir, and return the result."""
     workdir = Path(workdir)
     if workdir.exists():
         if not workdir.is_dir():
@@ -40,7 +48,7 @@ def check_zip(path: Path, *, workdir: Path,
     else:
         workdir.mkdir(parents=True)
 
-    errors: list[str] = []
+    errors: list = []
     path = Path(path)
     if not path.is_file():
         return _result(["bad_zip"], 0, 0, None)
@@ -50,119 +58,139 @@ def check_zip(path: Path, *, workdir: Path,
         return _result(["bad_zip"], 0, 0, None)
     with zf:
         infos = zf.infolist()
-        names = [i.filename for i in infos]
-        members = sum(1 for n in names if not n.endswith("/"))
+        members = sum(1 for i in infos if not i.filename.endswith("/"))
 
-        seen: dict[str, int] = {}
-        for n in names:
-            if _unsafe(n):
-                errors.append("unsafe_member_name:" + n)
-            seen[n] = seen.get(n, 0) + 1
-            if seen[n] == 2:
-                errors.append("duplicate_member:" + n)
+        def stop(code: str) -> dict:
+            errors.append(code)
+            return _result(errors, members, 0, None)
+
+        seen: set = set()
+        dups: set = set()
+        for info in infos:
+            name = info.filename
+            if _unsafe(name):
+                errors.append("unsafe_member_name:" + name)
+            if name in seen and name not in dups:
+                dups.add(name)
+                errors.append("duplicate_member:" + name)
+            seen.add(name)
         if errors:
             return _result(errors, members, 0, None)
 
         try:
             bad = zf.testzip()
-        except Exception:
-            bad = "?"
+        except (zipfile.BadZipFile, RuntimeError, NotImplementedError, OSError, EOFError):
+            return stop("bad_zip")
         if bad is not None:
-            return _result(["crc_mismatch:" + str(bad)], members, 0, None)
+            return stop("crc_mismatch:" + bad)
 
-        mans = [n for n in names if n == "manifest.json" or n.endswith("/manifest.json")]
-        if len(mans) != 1:
-            return _result(["manifest_count"], members, 0, None)
-        mname = mans[0]
-        parts = mname.split("/")
+        manifest_infos = [i for i in infos
+                          if i.filename == "manifest.json" or i.filename.endswith("/manifest.json")]
+        if len(manifest_infos) != 1:
+            return stop("manifest_count")
+        manifest_name = manifest_infos[0].filename
+        parts = manifest_name.split("/")
         if len(parts) != 3:
-            return _result(["manifest_location"], members, 0, None)
+            return stop("manifest_location")
         try:
-            manifest = json.loads(zf.read(mname).decode("utf-8"))
-        except (UnicodeDecodeError, ValueError):
-            manifest = None
+            manifest = json.loads(zf.read(manifest_infos[0]).decode("utf-8"))
+        except (UnicodeDecodeError, ValueError, RecursionError):
+            return stop("manifest_invalid")
         if not isinstance(manifest, dict) or not isinstance(manifest.get("files"), list):
-            return _result(["manifest_invalid"], members, 0, None)
-        s, b = parts[0], parts[1]
-        if manifest.get("source_id") != s or manifest.get("batch_id") != b:
-            return _result(["manifest_id_mismatch"], members, 0, None)
-        root = s + "/" + b + "/"
+            return stop("manifest_invalid")
+        if manifest.get("source_id") != parts[0] or manifest.get("batch_id") != parts[1]:
+            return stop("manifest_id_mismatch")
+        root = parts[0] + "/" + parts[1] + "/"
 
-        for n in names:
-            target = workdir / n
-            if n.endswith("/"):
-                target.mkdir(parents=True, exist_ok=True)
-            else:
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(zf.read(n))
-
-        file_names = {n for n in names if not n.endswith("/")}
-        valid: list[dict] = []
-        for idx, e in enumerate(manifest["files"]):
-            if not (isinstance(e, dict) and isinstance(e.get("path"), str) and e["path"]
-                    and _is_int(e.get("bytes")) and e["bytes"] >= 0
-                    and isinstance(e.get("sha256"), str)):
-                errors.append("invalid_file_entry:%d" % idx)
+        # Step 5: extraction
+        data_by_name: dict = {}
+        for info in infos:
+            name = info.filename
+            target = workdir / name
+            try:
+                if name.endswith("/"):
+                    target.mkdir(parents=True, exist_ok=True)
+                else:
+                    data = zf.read(info)
+                    data_by_name[name] = data
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(data)
+            except OSError:
                 continue
-            valid.append(e)
-            p = e["path"]
-            full = root + p
-            if full not in file_names:
-                errors.append("missing_file:" + p)
-                continue
-            data = zf.read(full)
-            if len(data) != e["bytes"]:
-                errors.append("bytes_mismatch:" + p)
-            elif hashlib.sha256(data).hexdigest() != e["sha256"]:
-                errors.append("sha256_mismatch:" + p)
 
-        listed = {root + e["path"] for e in valid}
-        for n in names:
-            if n.endswith("/") or n == mname:
-                continue
-            if n not in listed:
-                errors.append("unlisted_file:" + n)
+    # Step 6
+    files = manifest["files"]
+    valid: list = []
+    for index, entry in enumerate(files):
+        if not _valid_entry(entry):
+            errors.append("invalid_file_entry:%d" % index)
+            continue
+        valid.append(entry)
+        rel = entry["path"]
+        data = data_by_name.get(root + rel)
+        if data is None:
+            errors.append("missing_file:" + rel)
+        elif len(data) != entry["bytes"]:
+            errors.append("bytes_mismatch:" + rel)
+        elif hashlib.sha256(data).hexdigest() != entry["sha256"]:
+            errors.append("sha256_mismatch:" + rel)
 
-        files_by_path = {e["path"]: e for e in valid}
+    # Step 7
+    listed = {root + e["path"] for e in valid}
+    for info in infos:
+        name = info.filename
+        if name.endswith("/") or name == manifest_name:
+            continue
+        if name not in listed:
+            errors.append("unlisted_file:" + name)
 
-        norm = [e for e in valid if e["path"].startswith("normalized/")]
-        withheld = manifest.get("normalized_withheld") is True
-        lines: list[str] | None = None
-        if withheld:
-            if norm:
-                errors.append("normalized_not_withheld")
-        elif len(norm) != 1:
-            errors.append("normalized_count")
-        elif norm[0].get("format") != "jsonl":
+    files_by_path = {e["path"]: e for e in valid}
+
+    # Step 8
+    normalized = [e for e in valid if e["path"].startswith("normalized/")]
+    withheld = manifest.get("normalized_withheld") is True
+    lines: list | None = None
+    if withheld:
+        if normalized:
+            errors.append("normalized_not_withheld")
+    elif len(normalized) != 1:
+        errors.append("normalized_count")
+    else:
+        entry = normalized[0]
+        if entry.get("format") != "jsonl":
             errors.append("normalized_format")
         else:
-            ent = norm[0]
-            full = root + ent["path"]
-            if full in file_names:
+            data = data_by_name.get(root + entry["path"])
+            if data is not None:
                 try:
-                    text = zf.read(full).decode("utf-8")
+                    text = data.decode("utf-8")
                 except UnicodeDecodeError:
                     errors.append("jsonl_decode_error")
                 else:
                     lines = text.split("\n")
-                    if text.endswith("\n") or text == "":
+                    if text.endswith("\n"):
                         lines = lines[:-1]
-                    rows = ent.get("rows")
+                    if text == "":
+                        lines = []
+                    rows = entry.get("rows")
                     if not _is_int(rows) or rows != len(lines):
                         errors.append("normalized_rows_mismatch")
+    jsonl_lines = len(lines) if lines is not None else 0
 
+    # Step 9
     counts = manifest.get("counts")
-    keys = ("raw", "accepted", "excluded", "rejected")
-    if not (isinstance(counts, dict) and all(_is_int(counts.get(k)) and counts[k] >= 0
-                                             for k in keys)):
+    keys = ("raw_rows", "accepted", "excluded", "rejected")
+    if not isinstance(counts, dict) or not all(
+            _is_int(counts.get(k)) and counts[k] >= 0 for k in keys):
         errors.append("invalid_counts")
     else:
         if lines is not None and counts["accepted"] + counts["rejected"] != len(lines):
             errors.append("jsonl_count_mismatch")
-        if counts["raw"] != counts["accepted"] + counts["excluded"] + counts["rejected"]:
+        if counts["raw_rows"] != counts["accepted"] + counts["excluded"] + counts["rejected"]:
             errors.append("raw_count_mismatch")
 
+    # Step 10
     records = record_checker(list(lines) if lines is not None else [], manifest, files_by_path)
     if isinstance(records, dict) and records.get("ok") is False:
         errors.append("records_invalid")
-    return _result(errors, members, len(lines) if lines is not None else 0, records)
+    return _result(errors, members, jsonl_lines, records)

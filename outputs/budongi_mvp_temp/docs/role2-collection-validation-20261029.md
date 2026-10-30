@@ -66,6 +66,15 @@
 - 2026-10-30 14:40~14:55 외주 빌드 종료: X1·X3·E2가 claude:sonnet 1차 수락으로 **6계획 44/44 유닛 전부 수락·제품 통합**, 스위트 **401 tests OK**. 실제 계약자 계열 집계(attempt 기록 기준): gemini 35·sonnet 9, 리드 계열(Opus) 위반 0, 모델 미확인 0. 계획별: core 10 gemini / edge 5 gemini+1 sonnet / adapt 6 gemini / pack 6 gemini+5 sonnet / xcheck 1 gemini+2 sonnet / hard 7 gemini+1 sonnet. R2 중첩 waiver가 적용된 실행은 실행 로그에 사유 JSON으로 기록됨.
 - 2026-10-30 14:30 wiring(조립 모듈) 스모크: T001 실헤더 변형 선택·주소 접두사 scope·매핑 적용 0오류·facility 정규화·4326 근거 좌표 표준화(lat/lon 채움, review pending)까지 통과. 이 과정에서 심판이 고른 `facility_type_code=rail_station`이 계약 §5의 명시 어휘와 달라 **계약 우선 원칙으로 `transit.subway_station`으로 결정적 교정**(T001·T002, 투표는 계약을 뒤집지 못함). 식별자 네임스페이스는 T005~T007 교차 참조 일관성 확인 후 심판 선택 유지. r2-pack·r2-hard·r2-adapt에서 `requests` 단어 매칭을 import/호출 형태 매칭 2건으로 교체(라이브러리 import 차단은 imports 게이트가 별도 수행, urllib·socket·subprocess 단어 차단 유지). 게이트 변경으로 r2-pack은 수락분 포함 전체 재검증 실행. 수정이 불필요한 r2-edge·r2-xcheck는 원본 패턴으로 원복해 기존 수락 6유닛(E1·E3·E4·E5·E11·X2)의 상태를 보존(r2-core와 패턴 일치 확인).
 
+## 파일럿 패키징 (2026-10-30 14:10~14:50)
+
+- cli에 `stage`·`package` 명령을 와이어링(동결 매핑+staging_config+실유닛 조립). T001 스테이징: raw 1,099 → accepted 336(서울)·excluded 757(비서울)·rejected 6. 거부 6건은 전부 서울 역사로, 원본의 **달력상 불가능한 1900년대 기준일자**(형식은 Y-M-D이나 실존하지 않는 날짜) 때문 — 계약상 invalid_date 거부가 맞고 원문은 `base_date_raw`로 보존(T-I 이슈로 Issue 본문에 기재 예정). T002: 13/13 accepted(언주~중앙보훈병원 13개 역 일치).
+- 보강 2건: ① 보관함 조회는 명시 credential ID만 사용(expected_provider 메타 대조 제거 — CRED-001의 명시 바인딩 원칙), ② manifest files[] 항목에 팀 참조 패키지 형상대로 format/rows(raw는 encoding·section 포함) 추가.
+- **리드 스펙 버그 수정**: H5 selfcheck가 counts 키를 `raw`로 기대했으나 팀 계약·참조 패키지는 `raw_rows` — H5 스펙·공개/숨김 테스트 수정 → Sonnet 재감사 pass → claude:sonnet 재실행 1차 수락 → 재통합(스위트 401 OK 유지).
+- **T001 패키지**: `KRIC_도시철도역사_전국_20260630_20261029_kric-urban-rail-station-std-20261029-v1.zip` 356,015B, SHA `abb65bd2…832cc8`. 게이트: 빌더 대사·record_check·비밀 스윕(보관함 키 3종 실조회 대조) 통과, **이중 빌드 SHA 동일**(게이트 11), selfcheck ok·errors 0, **고정 blob importer oracle ok**(accepted 336·rejected 6·integrity ok), X2 독립 recount 342 일치·full dup 0. **검사기 4종 완전 일치.**
+- **T002 패키지**: `서울교통공사_9호선역좌표_서울_20260131_20261029_….zip` 10,869B, SHA `6247004a…c448a2`. selfcheck ok, importer oracle accepted 13·rejected 0·integrity ok.
+- **파일럿 go/no-go: GO.** 나머지 배치 패키징으로 진행(Drive 업로드는 배치 목록 사용자 승인 후).
+
 ## sdd 검증
 
 not_run. `scripts/check_sdd.py --base origin/main`과 `scripts/verify_environment.py` 결과를 기록한다.

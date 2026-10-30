@@ -107,6 +107,85 @@ def cmd_ingest(args) -> dict:
             "sha256": page["sha256"]}
 
 
+def cmd_stage(args) -> dict:
+    from . import wiring
+    from .core.envelope import BatchContext
+    from .stage import stage_batch
+    folder = Path(args.batch_dir)
+    plan = load_plan(folder)
+    config = wiring.load_staging_config(plan["t_id"])
+    if config.get("raw_only"):
+        raise ContractError("raw_only_source")
+    doc = wiring.load_mapping_doc(plan["t_id"])
+    files = wiring.xlsx_files(folder, plan, config)
+    header, _ = files[0].read()
+    variant, mapping = wiring.pick_variant(doc, header)
+    ctx = BatchContext(source_id=plan["source_id"], batch_id=plan["batch_id"],
+                       mapping_version=mapping["mapping_version"],
+                       record_type=plan["record_type"], staged_at_utc=utc_z())
+    summary = stage_batch(folder, ctx=ctx, record_type=plan["record_type"], mapping_doc=mapping,
+                          files=files, units=wiring.stage_units(wiring.make_normalizer(config)),
+                          scope=wiring.make_scope(config), code_signature=wiring.code_signature())
+    return {"status": "staged", "variant": variant, "batch_id": summary["batch_id"],
+            "resumed": summary["resumed"], "jsonl_lines": summary["jsonl_lines"],
+            "sections": summary["sections"]}
+
+
+def cmd_package(args) -> dict:
+    import json as json_module
+    from . import wiring
+    from .credentials import opened
+    from .package_build import build_package
+    folder = Path(args.batch_dir)
+    plan = load_plan(folder)
+    registry = load_registry(args.registry)
+    source = check_fetch_gate(registry, plan)
+    staging = read_json(folder / "staging.json")
+    doc = wiring.load_mapping_doc(plan["t_id"])
+    variants = doc.get("variants")
+    mapping = doc["mapping"] if not variants else next(iter(variants.values()))
+    config = wiring.load_staging_config(plan["t_id"])
+    dataset = wiring.dataset_meta(plan, registry_source=source,
+                                  mapping_version=mapping["mapping_version"],
+                                  collected=args.collected, period=args.period,
+                                  region=args.region, kind=args.kind,
+                                  provider_slug=args.provider)
+    schema_inputs = {
+        "source_id": plan["source_id"], "record_type": plan["record_type"],
+        "mapping_version": mapping["mapping_version"],
+        "columns": [{"name": f["target"], "type": f["type"]} for f in mapping["fields"]],
+        "source_file": dataset["zip_name"],
+        "field_map": {f["target"]: f.get("source") for f in mapping["fields"]},
+        "unmapped": mapping["unmapped"],
+        "extra": {"coordinates": (config.get("coords") or {}).get("evidence"),
+                  "missing_markers": "C3 SEMANTIC_TOKENS + placeholder phones",
+                  "identifier": "; ".join(f"{f['target']}={f['const']}" for f in mapping["fields"]
+                                          if f.get("const") is not None) or None}}
+    extra_files = {
+        "code/mapping.json": json_module.dumps(mapping, ensure_ascii=False, indent=2).encode("utf-8"),
+        "code/staging.json": json_module.dumps(config, ensure_ascii=False, indent=2).encode("utf-8"),
+        "code/REFERENCE.json": json_module.dumps(
+            {"package": "budongi.team_collection", "code_signature": wiring.code_signature(),
+             "mapping_t_id": plan["t_id"]}, ensure_ascii=False, indent=2).encode("utf-8")}
+    readme = wiring.readme_text(plan, registry_source=source, staging=staging,
+                                mapping_version=mapping["mapping_version"])
+    stamp = tuple(int(part) for part in (staging["staged_at_utc"][0:4], staging["staged_at_utc"][5:7],
+                                         staging["staged_at_utc"][8:10], staging["staged_at_utc"][11:13],
+                                         staging["staged_at_utc"][14:16], staging["staged_at_utc"][17:19]))
+    # CRED-001: the user bound each service to an explicit credential ID in the registry;
+    # the stored provider metadata is not used for matching (no guessing from metadata).
+    with opened(registry["credentials"]) as handles:
+        keys = [handle.reveal() for handle in handles.values()]
+        report = build_package(folder, Path(args.out), plan=plan, staging=staging,
+                               schema_inputs=schema_inputs, dataset=dataset,
+                               units=wiring.package_units(), keys=keys, readme=readme,
+                               extra_files=extra_files, stamp=stamp)
+    return {"status": "packaged", "zip": report["zip"], "sha256": report["sha256"],
+            "bytes": report["bytes"], "counts": report["counts"],
+            "normalized_withheld": report["normalized_withheld"],
+            "parts": bool(report["parts"])}
+
+
 def batch_status(folder: Path) -> dict:
     plan = load_plan(folder)
     rows = []
@@ -148,9 +227,20 @@ def main(argv=None) -> int:
     p.add_argument("--provided-at")
     p = sub.add_parser("status")
     p.add_argument("--batch-dir", required=True)
+    p = sub.add_parser("stage")
+    p.add_argument("--batch-dir", required=True)
+    p = sub.add_parser("package")
+    p.add_argument("--batch-dir", required=True)
+    p.add_argument("--out", required=True)
+    p.add_argument("--provider", required=True, help="zip name part, no underscores (e.g. KRIC)")
+    p.add_argument("--kind", required=True)
+    p.add_argument("--region", required=True)
+    p.add_argument("--period", required=True)
+    p.add_argument("--collected", required=True, help="YYYYMMDD")
     args = parser.parse_args(argv)
     handlers = {"plan": cmd_plan, "fetch-files": cmd_fetch_files, "ingest-provided": cmd_ingest,
-                "status": lambda a: batch_status(Path(a.batch_dir))}
+                "status": lambda a: batch_status(Path(a.batch_dir)),
+                "stage": cmd_stage, "package": cmd_package}
     try:
         result = handlers[args.command](args)
     except ContractError as exc:

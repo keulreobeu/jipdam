@@ -94,9 +94,10 @@ class PackageBuildTests(unittest.TestCase):
                 self.assertIn(root_prefix + expected, names, expected)
             manifest = json.loads(Path(root / "out/tree/kric_station/kric-station-20261030-v1/"
                                        "manifest.json").read_text("utf-8"))
-            listed = {f["path"] for f in manifest["files"]}
+            listed = {f["path"]: f for f in manifest["files"]}
             self.assertNotIn("manifest.json", listed)
-            self.assertIn("normalized/facility.jsonl", listed)
+            normalized = listed["normalized/facility.jsonl"]
+            self.assertEqual((normalized["format"], normalized["rows"]), ("jsonl", 2))
             self.assertFalse(manifest["normalized_withheld"])
 
     def test_restricted_license_withholds_normalized(self):
@@ -145,8 +146,10 @@ class PackageBuildTests(unittest.TestCase):
             batch, plan, _ = make_batch(Path(tmp))
             copies, requests = collect_raw(batch, plan)
             self.assertEqual([r["request_id"] for r in requests], ["r1", "r2"])
-            self.assertEqual([rel for _, rel in copies],
+            self.assertEqual([rel for _, rel, _extra in copies],
                              ["collection/requests/r1.json", "raw/r1/p000001_a000001.csv"])
+            self.assertEqual(copies[1][2],
+                             {"format": "csv", "section": "s1", "rows": 1, "encoding": None})
 
 
 if __name__ == "__main__":

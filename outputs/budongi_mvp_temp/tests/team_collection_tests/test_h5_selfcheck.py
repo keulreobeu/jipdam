@@ -27,7 +27,7 @@ def manifest(**over):
     m = {"source_id": "s1", "batch_id": "b-20261029-v1",
          "files": [entry("raw/a.csv", CSV, "csv"),
                    entry("normalized/facility.jsonl", JSONL, "jsonl", 2)],
-         "counts": {"raw": 3, "accepted": 2, "excluded": 1, "rejected": 0}}
+         "counts": {"raw_rows": 3, "accepted": 2, "excluded": 1, "rejected": 0}}
     m.update(over)
     return m
 
@@ -111,3 +111,4 @@ class SelfCheckVisibleTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

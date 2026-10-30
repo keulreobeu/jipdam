@@ -122,12 +122,80 @@ def make_normalizer(config: dict):
     raise ContractError("unsupported_record_type_wiring")
 
 
-def stage_units() -> StageUnits:
+def stage_units(normalize) -> StageUnits:
     from .core import envelope as C5
     from .core import mapping as H1
     return StageUnits(compile_mapping=H1.compile_mapping, apply_mapping=H1.apply_mapping,
                       header_coverage=H1.header_coverage, make_envelope=C5.make_envelope,
-                      finalize=C5.finalize, normalize=None)  # normalize is bound per batch
+                      finalize=C5.finalize, normalize=normalize)
+
+
+def code_signature() -> str:
+    """Hash of the staging-relevant sources: a change forces a new batch (plan §5)."""
+    import hashlib
+    from . import stage as stage_module
+    from .core import envelope, mapping
+    from .normalize import facility, regional_statistic, spatial_layer, time_observation, transit
+    digest = hashlib.sha256()
+    for module in (mapping, envelope, facility, transit, time_observation, spatial_layer,
+                   regional_statistic, stage_module):
+        digest.update(Path(module.__file__).read_bytes())
+    return digest.hexdigest()
+
+
+def package_units():
+    from .package import manifest_doc, record_check, schema_doc, validation_doc, zipper
+    from .package_build import PackageUnits
+    return PackageUnits(build_schema=schema_doc.build_schema,
+                        build_manifest=manifest_doc.build_manifest,
+                        secret_shapes=manifest_doc.secret_shapes,
+                        reconcile=validation_doc.reconcile,
+                        build_validation=validation_doc.build_validation,
+                        check_records=record_check.check_records,
+                        write_zip=zipper.write_zip, split_parts=zipper.split_parts)
+
+
+def dataset_meta(plan: dict, *, registry_source: dict, mapping_version: str,
+                 collected: str, period: str, region: str, kind: str, provider_slug: str) -> dict:
+    """The P2 dataset dict plus the deterministic zip name (C1 naming rules)."""
+    from .core import ids
+    zip_name = ids.zip_name(provider=provider_slug, kind=kind, region=region, period=period,
+                            collected=collected, batch_id=plan["batch_id"])
+    return {"name": registry_source["title"], "provider": registry_source["provider"],
+            "source": registry_source["documentation_url"],
+            "mapping_version": mapping_version,
+            "collection_method": "keyless HTTPS GET via budongi.team_collection cli fetch-files "
+                                 "(journalled, sha256 per payload)",
+            "scope": (load_staging_config(plan["t_id"]).get("scope") or {}).get("evidence", ""),
+            "request": "; ".join(r["request_id"] for r in plan["requests"]),
+            "expected_rows": next((r.get("expected_rows") for r in plan["requests"]), None),
+            "zip_name": zip_name}
+
+
+def readme_text(plan: dict, *, registry_source: dict, staging: dict, mapping_version: str) -> str:
+    """Korean offline reproduction note packaged as README.md."""
+    sections = staging.get("sections", [])
+    lines = [f"# {registry_source['title']} — team_collection_v1 패키지", "",
+             f"- source_id: {plan['source_id']} / batch_id: {plan['batch_id']}",
+             f"- 수집 Issue: {plan['record_url']}",
+             f"- 제공처 문서: {registry_source['documentation_url']}",
+             f"- mapping_version: {mapping_version} (code/mapping.json)",
+             f"- staged_at_utc: {staging.get('staged_at_utc')}", "",
+             "## 재현 (오프라인)", "",
+             "1. `collection/plan.json`의 요청과 `collection/requests/*.json` 저널로 raw 파일의",
+             "   sha256·수집 시각을 대조한다 (재다운로드 없이 검증 가능).",
+             "2. `code/mapping.json`을 budongi.team_collection.core.mapping.compile_mapping에",
+             "   넣고 raw를 같은 reader 설정(code/staging.json)으로 읽으면",
+             "   `normalized/*.jsonl`이 바이트 단위로 재생성된다.",
+             "3. `validation.json`의 섹션 합계와 manifest counts가 일치해야 한다.", "",
+             "## 건수", ""]
+    for section in sections:
+        lines.append(f"- {section['section']}: raw {section['raw']} = accepted "
+                     f"{section['accepted']} + excluded {section['excluded']} + rejected "
+                     f"{section['rejected']}")
+    lines += ["", f"- 정규화 JSONL 줄 수: {staging.get('jsonl_lines')}",
+              "", "담당: " + C.OWNER]
+    return "\n".join(lines) + "\n"
 
 
 def batch_context(plan: dict, *, staged_at_utc: str):

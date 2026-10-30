@@ -38,18 +38,19 @@ def _dump_json(doc: dict) -> bytes:
     return (json.dumps(doc, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
 
 
-def _copy(source: Path, tree: Path, rel: str, files: dict) -> None:
+def _copy(source: Path, tree: Path, rel: str, files: dict, **extra) -> None:
     target = safe_file(tree, rel)
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(source, target)
-    files[rel] = {"path": rel, "bytes": target.stat().st_size, "sha256": digest_file(target)}
+    files[rel] = {"path": rel, "bytes": target.stat().st_size, "sha256": digest_file(target),
+                  **extra}
 
 
-def _write(payload: bytes, tree: Path, rel: str, files: dict) -> None:
+def _write(payload: bytes, tree: Path, rel: str, files: dict, **extra) -> None:
     target = safe_file(tree, rel)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(payload)
-    files[rel] = {"path": rel, "bytes": len(payload), "sha256": digest_file(target)}
+    files[rel] = {"path": rel, "bytes": len(payload), "sha256": digest_file(target), **extra}
 
 
 def collect_raw(batch_dir: Path, plan: dict) -> tuple[list, list]:
@@ -64,10 +65,13 @@ def collect_raw(batch_dir: Path, plan: dict) -> tuple[list, list]:
                              "expected_rows": item.get("expected_rows"), "error": None})
             continue
         journal = read_json(journal_path)
-        copies.append((journal_path, f"collection/requests/{rid}.json"))
+        copies.append((journal_path, f"collection/requests/{rid}.json", {}))
         rows = 0
         for page in journal["pages"]:
-            copies.append((journal_path.parent / page["file"], f"raw/{rid}/{page['file']}"))
+            suffix = page["file"].rsplit(".", 1)[-1].lower() if "." in page["file"] else "bin"
+            copies.append((journal_path.parent / page["file"], f"raw/{rid}/{page['file']}",
+                           {"format": suffix, "section": item.get("section", ""),
+                            "rows": page.get("rows"), "encoding": None}))
             rows += page.get("rows") or 0
         requests.append({"request_id": rid, "collection_status": journal["status"],
                          "section": item.get("section", ""), "pages": len(journal["pages"]),
@@ -94,18 +98,19 @@ def build_package(batch_dir: Path, out_dir: Path, *, plan: dict, staging: dict,
     files: dict[str, dict] = {}
 
     copies, requests = collect_raw(batch_dir, plan)
-    for source, rel in copies:
-        _copy(source, tree, rel, files)
+    for source, rel, extra in copies:
+        _copy(source, tree, rel, files, **extra)
     _copy(batch_dir / "plan.json", tree, "collection/plan.json", files)
     jsonl_path = batch_dir / "normalized" / f"{record_type}.jsonl"
     jsonl_lines: list[str] = []
     if record_type != C.RAW_ONLY:
         jsonl_lines = jsonl_path.read_text(encoding="utf-8").splitlines()
         if not withheld:
-            _copy(jsonl_path, tree, f"normalized/{record_type}.jsonl", files)
+            _copy(jsonl_path, tree, f"normalized/{record_type}.jsonl", files,
+                  format="jsonl", rows=len(jsonl_lines))
         excluded = batch_dir / "validation" / "excluded.csv.gz"
         if excluded.is_file():
-            _copy(excluded, tree, "validation/excluded.csv.gz", files)
+            _copy(excluded, tree, "validation/excluded.csv.gz", files, format="csv.gz")
     _write(readme.encode("utf-8"), tree, "README.md", files)
     for rel, payload in sorted((extra_files or {}).items()):
         _write(payload, tree, rel, files)
