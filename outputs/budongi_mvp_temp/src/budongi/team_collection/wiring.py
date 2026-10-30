@@ -12,6 +12,7 @@ from pathlib import Path
 
 from . import contract as C
 from ._reuse import read_json
+from .base import Outcome
 from .stage import StageFile, StageUnits
 
 ContractError = C.ContractError
@@ -79,7 +80,7 @@ def _standardized(fields: dict, coords: dict) -> dict:
     return out
 
 
-def make_normalizer(config: dict):
+def make_normalizer(config: dict, spatial_meta: dict | None = None):
     """(fields, envelope) -> Outcome(s), wired to the frozen record_type."""
     settings = config.get("normalize") or {}
     record_type = settings.get("record_type")
@@ -104,20 +105,63 @@ def make_normalizer(config: dict):
         return normalize
     if record_type == "transit_stop_link":
         def normalize(fields, envelope):
+            prepared = dict(fields)
+            prepared.setdefault("route_id", fields.get("source_route_id"))
+            prepared.setdefault("stop_id", fields.get("source_stop_id"))
             return transit.normalize_stop_link(
-                fields, envelope=envelope,
+                prepared, envelope=envelope,
                 route_namespace=fields.get("route_namespace") or "unknown",
                 stop_namespace=fields.get("stop_namespace") or "unknown")
         return normalize
-    if record_type == "spatial_layer":
+    if record_type == "time_observation":
+        from .core import envelope as C5
+        from .core import timefmt as C2
+        from .normalize import time_observation as C8
+        metric_ns = settings.get("metric_namespace", "metric")
+        subject_ns = settings.get("subject_namespace", "unknown")
+        table = settings.get("metric_table") or {}
+        dt_fmt = settings.get("observed_at_fmt", "%Y-%m-%d %H:%M")
+        missing_prefix = settings.get("missing_value_prefix")
+
         def normalize(fields, envelope):
+            code = (fields.get("metric_raw") or "").strip()
+            item = table.get(code)
+            metric_code = f"{metric_ns}:{item['name']}" if item else f"{metric_ns}:{code}"
+            unit_code = item["unit"] if item else "unknown"
+            try:
+                observed = C2.kst_to_utc_z(fields.get("observed_at_raw") or "", fmt=dt_fmt)
+            except ContractError:
+                record = C5.finalize({**envelope, **fields}, "rejected",
+                                     "invalid_date:observed_at_raw")
+                return Outcome(record, "rejected", "invalid_date:observed_at_raw")
+            value = fields.get("value_raw")
+            if (missing_prefix and isinstance(value, str)
+                    and value.strip().startswith(missing_prefix)):
+                fields = {**fields, "value_raw": None}
+            return C8.normalize_observations(
+                fields, envelope=envelope,
+                metrics=[{"metric_code": metric_code, "source_field": "value_raw",
+                          "unit_code": unit_code}],
+                subject_namespace=subject_ns, subject_field="source_subject_id",
+                observed_at_utc=observed)
+        return normalize
+    if record_type == "spatial_layer":
+        meta_table = spatial_meta or {}
+        event_date_field = settings.get("event_date_field")
+
+        def normalize(fields, envelope):
+            meta = meta_table.get(envelope.get("source_file_ref")) or {}
+            feature_id = envelope.get("source_feature_id")
+            geometry_ref = (f"{meta['shp_ref']}#record={feature_id}"
+                            if meta.get("shp_ref") else None)
             return spatial_layer.normalize_feature(
-                _standardized(fields, coords), envelope=envelope,
-                layer_id=envelope.get("_layer_id") or settings.get("layer_id", "layer"),
+                fields, envelope=envelope,
+                layer_id=meta.get("layer_id") or settings.get("layer_id", "layer"),
                 representation=settings.get("representation", "vector"),
-                geometry_ref=envelope.get("_geometry_ref") or "",
-                source_crs=envelope.get("_source_crs") or "unknown",
-                bbox=envelope.get("_bbox"))
+                geometry_ref=geometry_ref,
+                source_crs=meta.get("crs") or "unknown",
+                bbox=(meta.get("bbox") or {}).get(feature_id),
+                event_date=fields.get(event_date_field) if event_date_field else None)
         return normalize
     raise ContractError("unsupported_record_type_wiring")
 
@@ -133,12 +177,13 @@ def stage_units(normalize) -> StageUnits:
 def code_signature() -> str:
     """Hash of the staging-relevant sources: a change forces a new batch (plan §5)."""
     import hashlib
+    import sys
     from . import stage as stage_module
     from .core import envelope, mapping
     from .normalize import facility, regional_statistic, spatial_layer, time_observation, transit
     digest = hashlib.sha256()
     for module in (mapping, envelope, facility, transit, time_observation, spatial_layer,
-                   regional_statistic, stage_module):
+                   regional_statistic, stage_module, sys.modules[__name__]):
         digest.update(Path(module.__file__).read_bytes())
     return digest.hexdigest()
 
@@ -243,6 +288,136 @@ def xlsx_files(batch_dir: Path, plan: dict, config: dict) -> list[StageFile]:
     if not files:
         raise ContractError("no_staged_files")
     return files
+
+
+def shp_files(batch_dir: Path, plan: dict, config: dict, doc: dict,
+              workdir: Path) -> tuple[list[StageFile], dict]:
+    """StageFiles plus per-file spatial metadata for shp_zip batches (variant per file)."""
+    import re
+    from .core import coords as C4
+    from .readers import dbf as E4
+    from .readers import shp as H4
+    from .readers import zipguard as E3
+    reader = config["reader"]
+    section_tpl = reader.get("section", "layer")
+    files, meta = [], {}
+    for item in plan["requests"]:
+        journal_path = Path(batch_dir) / "raw" / item["request_id"] / "journal.json"
+        if not journal_path.is_file():
+            continue
+        journal = read_json(journal_path)
+        for page in journal["pages"]:
+            zip_path = journal_path.parent / page["file"]
+            original = page.get("original_name") or page["file"]
+            file_ref = f"raw/{item['request_id']}/{page['file']}"
+            members = {m["name"]: m for m in E3.list_members(zip_path)}
+            by_ext = {}
+            for name in members:
+                ext = name.rsplit(".", 1)[-1].lower()
+                if ext in ("shp", "shx", "dbf", "prj", "cpg"):
+                    if ext in by_ext:
+                        raise ContractError(f"shp_zip_duplicate_member:{ext}")
+                    by_ext[ext] = name
+            for required in ("shp", "shx", "dbf"):
+                if required not in by_ext:
+                    raise ContractError(f"shp_zip_member_missing:{required}")
+            work = Path(workdir) / item["request_id"] / Path(page["file"]).stem
+            work.mkdir(parents=True, exist_ok=True)
+            extracted = {ext: E3.extract_member(zip_path, name, work, max_bytes=1 << 29)
+                         for ext, name in by_ext.items()}
+            crs = "unknown"
+            if "prj" in extracted:
+                crs = C4.epsg_from_prj(extracted["prj"].read_text(encoding="ascii",
+                                                                  errors="replace")) or "unknown"
+            encoding = "cp949"
+            if "cpg" in extracted:
+                declared = extracted["cpg"].read_text(encoding="ascii", errors="replace").strip()
+                encoding = {"utf-8": "utf-8", "utf8": "utf-8", "949": "cp949", "cp949": "cp949",
+                            "euc-kr": "cp949", "uhc": "cp949"}.get(declared.lower(), "cp949")
+            dbf_bytes = extracted["dbf"].read_bytes()
+            header_doc = E4.dbf_header(dbf_bytes, encoding=encoding)
+            field_names = tuple(f["name"] for f in header_doc["fields"])
+            bbox = {}
+            shp_bytes, shx_bytes = extracted["shp"].read_bytes(), extracted["shx"].read_bytes()
+            for record in H4.iter_shp_records(shp_bytes, shx_bytes):
+                bbox[str(record["number"])] = record["bbox"]
+            if header_doc["record_count"] != len(bbox):
+                raise ContractError("shp_dbf_record_mismatch")
+            year = (re.search(r"(20\d\d)", original) or [None, "all"])[1]
+            section = section_tpl.format(year=year) if "{year}" in section_tpl else section_tpl
+            layer_tpl = (config.get("normalize") or {}).get("layer_id", "layer")
+            layer_id = layer_tpl.format(year=year) if "{year}" in layer_tpl else layer_tpl
+            _, variant_mapping = pick_variant(doc, field_names)
+
+            strict = True
+            try:
+                for _ in E4.iter_dbf(dbf_bytes, encoding=encoding):
+                    pass
+            except ContractError as exc:
+                if str(exc) != "decode_error":
+                    raise
+                strict = False   # known source defect: a few cells are not decodable
+
+            def read(data=dbf_bytes, enc=encoding, names=field_names, sec=section,
+                     use_strict=strict):
+                def rows():
+                    if use_strict:
+                        for number, deleted, values in E4.iter_dbf(data, encoding=enc):
+                            if deleted:
+                                raise ContractError("dbf_deleted_record")
+                            yield _raw_row(sec, number, tuple(values.get(n) for n in names))
+                    else:
+                        yield from _tolerant_dbf_rows(data, enc, sec)
+                return names, rows()
+
+            files.append(StageFile(file_ref=file_ref, sha256=page["sha256"], section=section,
+                                   read=read, position_kind="feature",
+                                   mapping_doc=variant_mapping))
+            meta[file_ref] = {"shp_ref": f"{file_ref}#{by_ext['shp']}", "crs": crs,
+                              "bbox": bbox, "layer_id": layer_id}
+    if not files:
+        raise ContractError("no_staged_files")
+    return files, meta
+
+
+def _raw_row(section: str, position: int, values: tuple):
+    from .base import RawRow
+    return RawRow(section, position, values)
+
+
+def _tolerant_dbf_rows(data: bytes, encoding: str, section: str):
+    """Fallback for a dBASE file whose odd cells are not decodable (observed: 2022 flood
+    F_ZONE_NM, 36/19,881 records). Rows with a corrupt cell become ragged -> rejected with
+    replacement characters; the true bytes stay in the packaged raw ZIP."""
+    import struct
+    from .base import RawRow
+    records, header_len, record_len = struct.unpack("<IHH", data[4:12])
+    fields, offset = [], 32
+    while offset + 32 <= header_len - 1 and data[offset] != 0x0D:
+        raw = data[offset:offset + 32]
+        fields.append((raw[:11].split(b"\x00")[0].decode(encoding, "replace"), raw[16]))
+        offset += 32
+    position = header_len
+    for number in range(1, records + 1):
+        record = data[position:position + record_len]
+        position += record_len
+        if record[:1] == b"*":
+            raise ContractError("dbf_deleted_record")
+        cell_offset, values, corrupt = 1, [], False
+        for _name, length in fields:
+            chunk = record[cell_offset:cell_offset + length]
+            cell_offset += length
+            try:
+                text = chunk.decode(encoding)
+            except UnicodeDecodeError:
+                text = chunk.decode(encoding, "replace")
+                corrupt = True
+            text = text.strip()
+            values.append(text if text else None)
+        if corrupt:
+            yield RawRow(section, number, tuple(values), status="ragged", reason="ragged_row")
+        else:
+            yield RawRow(section, number, tuple(values))
 
 
 def _sniff_encoding(path: Path) -> str:

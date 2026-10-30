@@ -90,96 +90,6 @@
       ],
       "unmapped": []
     },
-    "schema_2023": {
-      "mapping_version": "flood-trace-2023-v1",
-      "record_type": "spatial_layer",
-      "fields": [
-        {
-          "target": "flood_area",
-          "source": "F_AREA",
-          "type": "decimal",
-          "required": false
-        },
-        {
-          "target": "adm_cd",
-          "source": "ADM_CD",
-          "type": "code"
-        },
-        {
-          "target": "flood_zone_name_raw",
-          "source": "F_ZONE_NM",
-          "type": "text",
-          "required": false
-        },
-        {
-          "target": "flood_type_raw",
-          "source": "TYPE",
-          "type": "code"
-        },
-        {
-          "target": "disaster_name_raw",
-          "source": "F_DISA_NM",
-          "type": "text",
-          "required": false
-        },
-        {
-          "target": "avg_depth_raw",
-          "source": "F_AVR_HGT",
-          "type": "decimal"
-        },
-        {
-          "target": "flood_start_date",
-          "source": "F_SAT_YMD",
-          "type": "date",
-          "required": false
-        },
-        {
-          "target": "flood_end_date",
-          "source": "F_END_YMD",
-          "type": "date",
-          "required": false
-        },
-        {
-          "target": "flood_start_time_raw",
-          "source": "F_SAT_TM",
-          "type": "text",
-          "required": false
-        },
-        {
-          "target": "flood_end_time_raw",
-          "source": "F_END_TM",
-          "type": "text",
-          "required": false
-        },
-        {
-          "target": "flood_reason_detail_raw",
-          "source": "F_RSN_DTL",
-          "type": "text",
-          "required": false
-        },
-        {
-          "target": "investigation_year_raw",
-          "source": "INV_YR",
-          "type": "text",
-          "required": false
-        },
-        {
-          "target": "flood_year_raw",
-          "source": "F_YR",
-          "type": "text",
-          "required": false
-        },
-        {
-          "target": "flood_depth",
-          "source": "F_SHIM",
-          "type": "decimal",
-          "required": false
-        }
-      ],
-      "unmapped": [
-        "GU_NAM"
-      ]
-    },
     "schema_2024": {
       "mapping_version": "flood-trace-2024-v1",
       "record_type": "spatial_layer",
@@ -275,11 +185,14 @@
           "source": "F_SHIM",
           "type": "decimal",
           "required": false
+        },
+        {
+          "target": "region_name_raw",
+          "source": "GU_NAM",
+          "type": "text"
         }
       ],
-      "unmapped": [
-        "GU_NAM"
-      ]
+      "unmapped": []
     },
     "schema_2025": {
       "mapping_version": "flood-trace-2025-v1",
@@ -349,8 +262,8 @@
       ],
       "unmapped": []
     },
-    "schema_2022": {
-      "mapping_version": "flood-trace-2022-v1",
+    "schema_2023": {
+      "mapping_version": "flood-trace-2023-v1",
       "record_type": "spatial_layer",
       "fields": [
         {
@@ -440,11 +353,109 @@
           "type": "code"
         }
       ],
+      "unmapped": []
+    },
+    "schema_2022": {
+      "mapping_version": "flood-trace-2022-v1",
+      "record_type": "spatial_layer",
+      "fields": [
+        {
+          "target": "objectid_raw",
+          "source": "OBJECTID",
+          "type": "code"
+        },
+        {
+          "target": "disaster_name_raw",
+          "source": "F_DISA_NM",
+          "type": "text",
+          "required": false
+        },
+        {
+          "target": "avg_depth_raw",
+          "source": "F_AVR_HGT",
+          "type": "decimal"
+        },
+        {
+          "target": "flood_area",
+          "source": "F_AREA",
+          "type": "decimal",
+          "required": false
+        },
+        {
+          "target": "adm_cd",
+          "source": "ADM_CD",
+          "type": "code"
+        },
+        {
+          "target": "flood_start_raw",
+          "source": "F_SAT_YMD",
+          "type": "text",
+          "required": false
+        },
+        {
+          "target": "flood_end_raw",
+          "source": "F_END_YMD",
+          "type": "text",
+          "required": false
+        },
+        {
+          "target": "flood_start_time_raw",
+          "source": "F_SAT_TM",
+          "type": "text",
+          "required": false
+        },
+        {
+          "target": "flood_end_time_raw",
+          "source": "F_END_TM",
+          "type": "text",
+          "required": false
+        },
+        {
+          "target": "flood_reason_detail_raw",
+          "source": "F_RSN_DTL",
+          "type": "text",
+          "required": false
+        },
+        {
+          "target": "flood_zone_name_raw",
+          "source": "F_ZONE_NM",
+          "type": "text",
+          "required": false
+        },
+        {
+          "target": "investigation_year_raw",
+          "source": "INV_YR",
+          "type": "text",
+          "required": false
+        },
+        {
+          "target": "flood_year_raw",
+          "source": "F_YR",
+          "type": "text",
+          "required": false
+        },
+        {
+          "target": "region_name_raw",
+          "source": "GU_NAM",
+          "type": "text"
+        },
+        {
+          "target": "flood_depth",
+          "source": "F_SHIM",
+          "type": "decimal",
+          "required": false
+        },
+        {
+          "target": "flood_type_raw",
+          "source": "TYPE",
+          "type": "code"
+        }
+      ],
       "unmapped": [
-        "OBJECTID",
         "layer",
         "path"
       ]
     }
-  }
+  },
+  "mapping_version": "flood-trace-v1"
 }

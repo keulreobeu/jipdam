@@ -89,7 +89,8 @@ def build_package(batch_dir: Path, out_dir: Path, *, plan: dict, staging: dict,
     batch_dir, out_dir = Path(batch_dir), Path(out_dir)
     source_id, batch_id = plan["source_id"], plan["batch_id"]
     record_type, license_doc = plan["record_type"], plan.get("license") or {}
-    withheld = (license_doc.get("class") in C.RESTRICTED_LICENSES)
+    withheld = (license_doc.get("class") in C.RESTRICTED_LICENSES
+                or record_type == C.RAW_ONLY)  # raw-only batches share no normalized JSONL
     arc_root = f"{source_id}/{batch_id}"
     tree = out_dir / "tree" / source_id / batch_id
     if tree.exists():

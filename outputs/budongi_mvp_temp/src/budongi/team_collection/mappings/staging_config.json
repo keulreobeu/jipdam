@@ -53,7 +53,17 @@
       "coords": {"source_crs": null, "axis_order": null, "evidence": "좌표 없음"},
       "normalize": {"record_type": "time_observation", "long_format": true,
                     "metric_namespace": "seoul.air", "subject_namespace": "seoul.air_station",
-                    "observed_at": "kst_hourly_24rule", "value_field": "value_raw"}
+                    "observed_at_fmt": "%Y%m%d%H", "value_field": "value_raw",
+                    "missing_value_prefix": "-9999",
+                    "metric_table": {
+                      "1": {"name": "SO2", "unit": "ppm"},
+                      "3": {"name": "NO2", "unit": "ppm"},
+                      "5": {"name": "CO", "unit": "ppm"},
+                      "6": {"name": "O3", "unit": "ppm"},
+                      "8": {"name": "PM10", "unit": "㎍/㎥"}
+                    },
+                    "metric_table_evidence": "OA-15515 airPolutionMeasuringItem sample rows 1-5 (2026-10-29 WF-0). ITEM_CD 9는 sample 키 1~5행 제한으로 공식 행 미확인 -> metric seoul.air:9, unit unknown (T-I 이슈)",
+                    "missing_value_evidence": "dossier g09: AVG_VL -9999.0000 = 결측 marker(MSRMT_STTS=4), 숫자 적재 금지"}
     },
     "T021": {
       "reader": {"kind": "shp_zip", "section": "trade_area", "variant_by_header": false},

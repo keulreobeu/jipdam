@@ -75,6 +75,14 @@
 - **T002 패키지**: `서울교통공사_9호선역좌표_서울_20260131_20261029_….zip` 10,869B, SHA `6247004a…c448a2`. selfcheck ok, importer oracle accepted 13·rejected 0·integrity ok.
 - **파일럿 go/no-go: GO.** 나머지 배치 패키징으로 진행(Drive 업로드는 배치 목록 사용자 승인 후).
 
+## 잔여 배치 스테이징·패키징 (2026-10-30 15:00~16:00)
+
+- 스테이징: T005 11,236 / T006 41,688(와이어링 키 어댑트 수정 후 전량 수락) / T007 723 / T011 3,945,588(long-format: 공식 항목표 5개 코드 단위 적용, ITEM_CD 9는 sample 키 1~5행 제한으로 공식 행 미확인 → unit unknown·T-I / -9999.* 결측 marker는 value_status missing) / T021 1,650 / T004 43,112(연도별 14파일). 코드 변경 후 미패키징 배치는 전부 최종 code_signature로 재스테이징(균일 재현성; 파일럿 T001·T002는 기록 유지).
+- T004 변형 확정 5종: historical_14col(2010~2020) / schema_2022(18열: OBJECTID 매핑으로 유일화, F_SAT/END_YMD는 행마다 형식이 섞여 text 보존) / schema_2023(15열, **GU_NAM 실존 — 이전 "A안 오류" 판정은 2023엔 오판이어서 정정**, 기판정 쌍으로 매핑) / schema_2024(17열, GU_NAM 포함) / schema_2025(11열). 14개 파일 전부 변형 1:1 매칭 확인. 2022 dbf의 F_ZONE_NM 36행 인코딩 손상은 관용 판독 폴백으로 ragged→rejected 분류(원본 바이트는 raw ZIP에 보존, T-I).
+- 리드 스펙 수정 2호: P2 manifest가 raw_only를 거부(레지스트리·P1은 허용) → 스펙·숨김 테스트 수정 → Sonnet 재감사 pass → claude:sonnet 재실행 수락 → 재통합(스위트 401 OK). raw-only 패키지는 normalized_withheld=true로 공유.
+- 패키지 9종 완료·검사 통과: T001·T002(파일럿), T004(9.3MB, oracle 43,058/54), T005·T006·T007, T021, R2(raw-only 2.9MB, selfcheck ok). R1(518MB)·T011(394만 행)은 패키징 진행 중. T020(SEMAS)은 10/31 신판 공개 후 수집 예정.
+- 키 레인 현황: 패키징된 레지스트리에는 파일 출처 10건만 등록돼 있어, 예약 12건의 키 레인 수집은 도시에 기반 레지스트리 확장(B/C/D 템플릿·쿼터 버킷) 후 진행한다.
+
 ## sdd 검증
 
 not_run. `scripts/check_sdd.py --base origin/main`과 `scripts/verify_environment.py` 결과를 기록한다.

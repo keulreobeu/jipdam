@@ -117,15 +117,33 @@ def cmd_stage(args) -> dict:
     if config.get("raw_only"):
         raise ContractError("raw_only_source")
     doc = wiring.load_mapping_doc(plan["t_id"])
-    files = wiring.xlsx_files(folder, plan, config)
-    header, _ = files[0].read()
-    variant, mapping = wiring.pick_variant(doc, header)
-    ctx = BatchContext(source_id=plan["source_id"], batch_id=plan["batch_id"],
-                       mapping_version=mapping["mapping_version"],
-                       record_type=plan["record_type"], staged_at_utc=utc_z())
-    summary = stage_batch(folder, ctx=ctx, record_type=plan["record_type"], mapping_doc=mapping,
-                          files=files, units=wiring.stage_units(wiring.make_normalizer(config)),
-                          scope=wiring.make_scope(config), code_signature=wiring.code_signature())
+    spatial_meta = None
+    if config["reader"]["kind"] == "shp_zip":
+        import tempfile
+        with tempfile.TemporaryDirectory(prefix="role2-shp-") as work:
+            files, spatial_meta = wiring.shp_files(folder, plan, config, doc, Path(work))
+            mapping_version = doc.get("mapping_version") or doc["mapping"]["mapping_version"]
+            variant = "per_file"
+            ctx = BatchContext(source_id=plan["source_id"], batch_id=plan["batch_id"],
+                               mapping_version=mapping_version,
+                               record_type=plan["record_type"], staged_at_utc=utc_z())
+            units = wiring.stage_units(wiring.make_normalizer(config, spatial_meta))
+            summary = stage_batch(folder, ctx=ctx, record_type=plan["record_type"],
+                                  mapping_doc=files[0].mapping_doc, files=files, units=units,
+                                  scope=wiring.make_scope(config),
+                                  code_signature=wiring.code_signature())
+    else:
+        files = wiring.xlsx_files(folder, plan, config)
+        header, _ = files[0].read()
+        variant, mapping = wiring.pick_variant(doc, header)
+        ctx = BatchContext(source_id=plan["source_id"], batch_id=plan["batch_id"],
+                           mapping_version=mapping["mapping_version"],
+                           record_type=plan["record_type"], staged_at_utc=utc_z())
+        summary = stage_batch(folder, ctx=ctx, record_type=plan["record_type"],
+                              mapping_doc=mapping, files=files,
+                              units=wiring.stage_units(wiring.make_normalizer(config)),
+                              scope=wiring.make_scope(config),
+                              code_signature=wiring.code_signature())
     return {"status": "staged", "variant": variant, "batch_id": summary["batch_id"],
             "resumed": summary["resumed"], "jsonl_lines": summary["jsonl_lines"],
             "sections": summary["sections"]}
@@ -140,35 +158,54 @@ def cmd_package(args) -> dict:
     plan = load_plan(folder)
     registry = load_registry(args.registry)
     source = check_fetch_gate(registry, plan)
-    staging = read_json(folder / "staging.json")
-    doc = wiring.load_mapping_doc(plan["t_id"])
-    variants = doc.get("variants")
-    mapping = doc["mapping"] if not variants else next(iter(variants.values()))
     config = wiring.load_staging_config(plan["t_id"])
+    raw_only = bool(config.get("raw_only")) or plan["record_type"] == C.RAW_ONLY
+    if raw_only:
+        staging = {"sections": [], "jsonl_lines": 0,
+                   "staged_at_utc": f"{args.collected[0:4]}-{args.collected[4:6]}-"
+                                    f"{args.collected[6:8]}T00:00:00Z"}
+        doc = {"mapping": {"mapping_version": "raw-only-v1", "fields": [], "unmapped": []}}
+        mapping_version = "raw-only-v1"
+        union_fields, union_unmapped = {}, []
+    else:
+        staging = read_json(folder / "staging.json")
+        doc = wiring.load_mapping_doc(plan["t_id"])
+        variants = doc.get("variants")
+        all_mappings = list(variants.values()) if variants else [doc["mapping"]]
+        mapping_version = doc.get("mapping_version") or all_mappings[0]["mapping_version"]
+        union_fields, union_unmapped = {}, []
+        for m in all_mappings:
+            for f in m["fields"]:
+                union_fields.setdefault(f["target"], f)
+            for header in m["unmapped"]:
+                if header not in union_unmapped and header not in {
+                        f.get("source") for fm in all_mappings for f in fm["fields"]}:
+                    union_unmapped.append(header)
     dataset = wiring.dataset_meta(plan, registry_source=source,
-                                  mapping_version=mapping["mapping_version"],
+                                  mapping_version=mapping_version,
                                   collected=args.collected, period=args.period,
                                   region=args.region, kind=args.kind,
                                   provider_slug=args.provider)
     schema_inputs = {
         "source_id": plan["source_id"], "record_type": plan["record_type"],
-        "mapping_version": mapping["mapping_version"],
-        "columns": [{"name": f["target"], "type": f["type"]} for f in mapping["fields"]],
+        "mapping_version": mapping_version,
+        "columns": [{"name": f["target"], "type": f["type"]} for f in union_fields.values()],
         "source_file": dataset["zip_name"],
-        "field_map": {f["target"]: f.get("source") for f in mapping["fields"]},
-        "unmapped": mapping["unmapped"],
+        "field_map": {f["target"]: f.get("source") for f in union_fields.values()},
+        "unmapped": union_unmapped,
         "extra": {"coordinates": (config.get("coords") or {}).get("evidence"),
                   "missing_markers": "C3 SEMANTIC_TOKENS + placeholder phones",
-                  "identifier": "; ".join(f"{f['target']}={f['const']}" for f in mapping["fields"]
+                  "identifier": "; ".join(f"{f['target']}={f['const']}"
+                                          for f in union_fields.values()
                                           if f.get("const") is not None) or None}}
     extra_files = {
-        "code/mapping.json": json_module.dumps(mapping, ensure_ascii=False, indent=2).encode("utf-8"),
+        "code/mapping.json": json_module.dumps(doc, ensure_ascii=False, indent=2).encode("utf-8"),
         "code/staging.json": json_module.dumps(config, ensure_ascii=False, indent=2).encode("utf-8"),
         "code/REFERENCE.json": json_module.dumps(
             {"package": "budongi.team_collection", "code_signature": wiring.code_signature(),
              "mapping_t_id": plan["t_id"]}, ensure_ascii=False, indent=2).encode("utf-8")}
     readme = wiring.readme_text(plan, registry_source=source, staging=staging,
-                                mapping_version=mapping["mapping_version"])
+                                mapping_version=mapping_version)
     stamp = tuple(int(part) for part in (staging["staged_at_utc"][0:4], staging["staged_at_utc"][5:7],
                                          staging["staged_at_utc"][8:10], staging["staged_at_utc"][11:13],
                                          staging["staged_at_utc"][14:16], staging["staged_at_utc"][17:19]))

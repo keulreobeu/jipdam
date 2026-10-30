@@ -42,6 +42,7 @@ class StageFile:
     section: str
     read: Callable
     position_kind: str = "row"       # "row" -> source_row_number, "feature" -> source_feature_id
+    mapping_doc: dict | None = None  # per-file variant; None uses the batch mapping
 
 
 def input_signature(*, batch_id: str, mapping_doc: dict, files, code_signature: str) -> str:
@@ -107,7 +108,9 @@ def stage_batch(batch_dir: Path, *, ctx, record_type: str, mapping_doc: dict, fi
             stats = sections.setdefault(item.section, {"section": item.section, "raw": 0,
                                                        "accepted": 0, "excluded": 0, "rejected": 0})
             header, rows = item.read()
-            coverage = units.header_coverage(mapping, header)
+            file_mapping = (units.compile_mapping(item.mapping_doc)
+                            if item.mapping_doc is not None else mapping)
+            coverage = units.header_coverage(file_mapping, header)
             if not coverage["complete"]:
                 raise ContractError(f"mapping_incomplete:{item.section}")
             for row in rows:
@@ -126,7 +129,7 @@ def stage_batch(batch_dir: Path, *, ctx, record_type: str, mapping_doc: dict, fi
                     emit(units.finalize(record, "rejected", row.reason or "ragged_row"), "rejected")
                     stats["rejected"] += 1
                     continue
-                fields, errors = units.apply_mapping(mapping, header, row.values)
+                fields, errors = units.apply_mapping(file_mapping, header, row.values)
                 if errors:
                     record = {**envelope, **fields}
                     emit(units.finalize(record, "rejected", errors[0]), "rejected")
