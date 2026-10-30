@@ -1,0 +1,222 @@
+{
+  "t_id": "T009",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "std-parking-lot-v1",
+    "record_type": "facility",
+    "header_row": 1,
+    "fields": [
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "std_parking_lot.prkplce_no",
+        "type": "code"
+      },
+      {
+        "target": "source_entity_id",
+        "source": "PRKPLCE_NO",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "name",
+        "source": "PRKPLCE_NM",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "prkplce_se_raw",
+        "source": "PRKPLCE_SE",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "prkplce_type_raw",
+        "source": "PRKPLCE_TYPE",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "capacity",
+        "source": "PRKCMPRT",
+        "type": "int",
+        "required": false
+      },
+      {
+        "target": "road_address_raw",
+        "source": "RDNMADR",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "jibun_address_raw",
+        "source": "LNMADR",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "source_y",
+        "source": "LATITUDE",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "source_x",
+        "source": "LONGITUDE",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "reference_date",
+        "source": "REFERENCE_DATE",
+        "type": "date",
+        "required": false
+      },
+      {
+        "target": "phone_number_raw",
+        "source": "PHONE_NUMBER",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "institution_name_raw",
+        "source": "INSTITUTION_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "instt_name_raw",
+        "source": "INSTT_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "instt_code_raw",
+        "source": "INSTT_CODE",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "enforce_se_raw",
+        "source": "ENFORCE_SE",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "oper_day_raw",
+        "source": "OPER_DAY",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "weekday_oper_open_hhmm_raw",
+        "source": "WEEKDAY_OPER_OPEN_HHMM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "weekday_oper_close_hhmm_raw",
+        "source": "WEEKDAY_OPER_COLSE_HHMM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "sat_oper_open_hhmm_raw",
+        "source": "SAT_OPER_OPER_OPEN_HHMM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "sat_oper_close_hhmm_raw",
+        "source": "SAT_OPER_CLOSE_HHMM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "holiday_oper_open_hhmm_raw",
+        "source": "HOLIDAY_OPER_OPEN_HHMM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "holiday_close_open_hhmm_raw",
+        "source": "HOLIDAY_CLOSE_OPEN_HHMM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "parkingchrge_info_raw",
+        "source": "PARKINGCHRGE_INFO",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "basic_time_raw",
+        "source": "BASIC_TIME",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "basic_charge_raw",
+        "source": "BASIC_CHARGE",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "add_unit_time_raw",
+        "source": "ADD_UNIT_TIME",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "add_unit_charge_raw",
+        "source": "ADD_UNIT_CHARGE",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "day_cmmtkt_raw",
+        "source": "DAY_CMMTKT",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "day_cmmtkt_adj_time_raw",
+        "source": "DAY_CMMTKT_ADJ_TIME",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "month_cmmtkt_raw",
+        "source": "MONTH_CMMTKT",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "feeding_se_raw",
+        "source": "FEEDING_SE",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "metpay_raw",
+        "source": "METPAY",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "spcmnt_raw",
+        "source": "SPCMNT",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "pwdbs_ppk_zone_yn_raw",
+        "source": "PWDBS_PPK_ZONE_YN",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unmapped": []
+  }
+}

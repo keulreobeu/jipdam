@@ -237,6 +237,45 @@ def cmd_package(args) -> dict:
             "parts": bool(report["parts"])}
 
 
+def cmd_fetch_standard(args) -> dict:
+    """data.go.kr standard datasets: columList.json first, then the paged grid downloads."""
+    import json as json_module
+    from .adapters import filedata as E10
+    from .base import RequestSpec
+    folder = Path(args.batch_dir)
+    registry = load_registry(args.registry)
+    plan = load_plan(folder)
+    source = check_fetch_gate(registry, plan)
+    if plan["lane"] not in C.FILE_LANES:
+        raise ContractError("not_a_file_lane")
+    hosts = {urllib.parse.urlsplit(o).hostname for o in source.get("origin_allowlist", [])}
+    opener = file_opener(hosts)
+    lock = _lock(folder)
+    results = []
+    try:
+        columns_spec = spec_from_plan(plan["requests"][0])
+        journal = fetch_file(columns_spec, folder, opener=opener)
+        results.append({"request_id": columns_spec.request_id, "status": journal["status"]})
+        payload = (folder / "raw" / columns_spec.request_id /
+                   journal["pages"][0]["file"]).read_text(encoding="utf-8")
+        column_doc = json_module.loads(payload)
+        pages = E10.standard_page_params(column_doc, public_data_pk=plan["dataset_id"])
+        for number, params in enumerate(pages, start=1):
+            spec = RequestSpec(request_id=f"page-{number}", lane=plan["lane"],
+                               origin=columns_spec.origin,
+                               url_template="https://www.data.go.kr/download/standard.json",
+                               params=params, section="grid", expected_kind="json")
+            page_journal = fetch_file(spec, folder, opener=opener)
+            results.append({"request_id": spec.request_id, "status": page_journal["status"]})
+            _progress(**results[-1])
+    finally:
+        lock.unlink(missing_ok=True)
+    done = sum(r["status"] in C.BATCH_COMPLETE for r in results)
+    return {"status": "complete" if done == len(results) else "incomplete",
+            "batch_id": plan["batch_id"], "completed": done, "requests": len(results),
+            "results": results}
+
+
 def cmd_fetch_api(args) -> dict:
     """Keyed lanes B/C/D: paced, journalled, quota-ledgered collection via the supervisor."""
     from datetime import datetime, timezone
@@ -328,6 +367,8 @@ def main(argv=None) -> int:
     p.add_argument("--provided-at")
     p = sub.add_parser("status")
     p.add_argument("--batch-dir", required=True)
+    p = sub.add_parser("fetch-standard")
+    p.add_argument("--batch-dir", required=True)
     p = sub.add_parser("fetch-api")
     p.add_argument("--batch-dir", required=True)
     p.add_argument("--limit", type=int)
@@ -345,7 +386,8 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     handlers = {"plan": cmd_plan, "fetch-files": cmd_fetch_files, "ingest-provided": cmd_ingest,
                 "status": lambda a: batch_status(Path(a.batch_dir)),
-                "fetch-api": cmd_fetch_api, "stage": cmd_stage, "package": cmd_package}
+                "fetch-api": cmd_fetch_api, "fetch-standard": cmd_fetch_standard,
+                "stage": cmd_stage, "package": cmd_package}
     try:
         result = handlers[args.command](args)
     except ContractError as exc:

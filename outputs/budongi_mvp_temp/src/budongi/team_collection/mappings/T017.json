@@ -1,0 +1,60 @@
+{
+  "t_id": "T017",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul-air-quality-hourly-v1",
+    "record_type": "time_observation",
+    "header_row": 1,
+    "fields": [
+      {
+        "target": "station_name_raw",
+        "source": "MSRSTN_NM",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "observed_at_raw",
+        "source": "MSRMT_DT",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "no2_ppm_raw",
+        "source": "NTDX",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "o3_ppm_raw",
+        "source": "OZON",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "co_ppm_raw",
+        "source": "CBMX",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "so2_ppm_raw",
+        "source": "SPDX",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "pm10_ugm3_raw",
+        "source": "PM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "pm25_ugm3_raw",
+        "source": "FPM",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unmapped": []
+  }
+}

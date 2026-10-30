@@ -1,0 +1,156 @@
+{
+  "t_id": "T015",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul-heat-shelter-v1",
+    "record_type": "facility",
+    "header_row": 1,
+    "fields": [
+      {
+        "target": "name",
+        "source": "R_AREA_NM",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "facility_type1_raw",
+        "source": "FACILITY_TYPE1",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "facility_type2_raw",
+        "source": "FACILITY_TYPE2",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "year",
+        "source": "YEAR",
+        "type": "int",
+        "required": false
+      },
+      {
+        "target": "area_cd_raw",
+        "source": "AREA_CD",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "road_address_raw",
+        "source": "R_DETL_ADD",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "jibun_address_raw",
+        "source": "LOTNO_ADDR",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "remarks_raw",
+        "source": "RMRK",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "opr_days_raw",
+        "source": "OPR_DAYS",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "opr_start_time_raw",
+        "source": "OPR_START_TIME",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "opr_end_time_raw",
+        "source": "OPR_END_TIME",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "ext_opr_yn_raw",
+        "source": "EXT_OPR_YN",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "ext_opr_days_raw",
+        "source": "EXT_OPR_DAYS",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "ext_opr_start_time_raw",
+        "source": "EXT_OPR_START_TIME",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "ext_opr_end_time_raw",
+        "source": "EXT_OPR_END_TIME",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "add_opr_yn_raw",
+        "source": "ADD_OPR_YN",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "add_opr_days_raw",
+        "source": "ADD_OPR_DAYS",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "add_opr_start_time_raw",
+        "source": "ADD_OPR_START_TIME",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "add_opr_end_time_raw",
+        "source": "ADD_OPR_END_TIME",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "source_x",
+        "source": "LON",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "source_y",
+        "source": "LAT",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "map_coord_x_raw",
+        "source": "MAP_COORD_X",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "map_coord_y_raw",
+        "source": "MAP_COORD_Y",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "seoul_heat_shelter",
+        "type": "code"
+      }
+    ],
+    "unmapped": []
+  }
+}

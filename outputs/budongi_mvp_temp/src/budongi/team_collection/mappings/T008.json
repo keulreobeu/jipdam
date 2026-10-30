@@ -1,0 +1,132 @@
+{
+  "t_id": "T008",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "std-urban-park-v1",
+    "record_type": "facility",
+    "header_row": 1,
+    "fields": [
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "std_urban_park.manage_no",
+        "type": "code"
+      },
+      {
+        "target": "source_entity_id",
+        "source": "MANAGE_NO",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "name",
+        "source": "PARK_NM",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "park_se_raw",
+        "source": "PARK_SE",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "park_area",
+        "source": "PARK_AR",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "mvm_fclty_raw",
+        "source": "MVM_FCLTY",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "amsmt_fclty_raw",
+        "source": "AMSMT_FCLTY",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "cnvnnc_fclty_raw",
+        "source": "CNVNNC_FCLTY",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "cltr_fclty_raw",
+        "source": "CLTR_FCLTY",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "etc_fclty_raw",
+        "source": "ETC_FCLTY",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "appn_ntfc_date",
+        "source": "APPN_NTFC_DATE",
+        "type": "date",
+        "required": false
+      },
+      {
+        "target": "reference_date",
+        "source": "REFERENCE_DATE",
+        "type": "date",
+        "required": false
+      },
+      {
+        "target": "road_address_raw",
+        "source": "RDNMADR",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "jibun_address_raw",
+        "source": "LNMADR",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "source_y",
+        "source": "LATITUDE",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "source_x",
+        "source": "LONGITUDE",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "phone_number_raw",
+        "source": "PHONE_NUMBER",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "institution_name_raw",
+        "source": "INSTITUTION_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "instt_name_raw",
+        "source": "INSTT_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "instt_code_raw",
+        "source": "INSTT_CODE",
+        "type": "code",
+        "required": false
+      }
+    ],
+    "unmapped": []
+  }
+}

@@ -1,0 +1,238 @@
+{
+  "t_id": "T016",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul-public-parking-v1",
+    "record_type": "facility",
+    "header_row": 1,
+    "fields": [
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "seoul_public_parking.pklt_cd",
+        "type": "code"
+      },
+      {
+        "target": "source_entity_id",
+        "source": "PKLT_CD",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "name",
+        "source": "PKLT_NM",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "pklt_knd_raw",
+        "source": "PKLT_KND",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "pklt_knd_nm_raw",
+        "source": "PKLT_KND_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "address_raw",
+        "source": "ADDR",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "oper_se_raw",
+        "source": "OPER_SE",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "oper_se_name_raw",
+        "source": "OPER_SE_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "phone_raw",
+        "source": "TELNO",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "prk_now_info_pvsn_yn_name_raw",
+        "source": "PRK_NOW_INFO_PVSN_YN_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "total_capacity",
+        "source": "TPKCT",
+        "type": "int",
+        "required": false
+      },
+      {
+        "target": "chgd_free_se_raw",
+        "source": "CHGD_FREE_SE",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "chgd_free_name_raw",
+        "source": "CHGD_FREE_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "nght_free_opn_yn_name_raw",
+        "source": "NGHT_FREE_OPN_YN_NAME",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "wd_oper_bgng_tm_raw",
+        "source": "WD_OPER_BGNG_TM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "wd_oper_end_tm_raw",
+        "source": "WD_OPER_END_TM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "we_oper_bgng_tm_raw",
+        "source": "WE_OPER_BGNG_TM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "we_oper_end_tm_raw",
+        "source": "WE_OPER_END_TM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "lhldy_bgng_raw",
+        "source": "LHLDY_BGNG",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "lhldy_raw",
+        "source": "LHLDY",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "last_data_sync_tm_raw",
+        "source": "LAST_DATA_SYNC_TM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "sat_chgd_free_se_raw",
+        "source": "SAT_CHGD_FREE_SE",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "sat_chgd_free_name_raw",
+        "source": "SAT_CHGD_FREE_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "lhldy_name_raw",
+        "source": "LHLDY_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "mntl_cmut_crg_raw",
+        "source": "MNTL_CMUT_CRG",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "crb_pklt_mng_group_no_raw",
+        "source": "CRB_PKLT_MNG_GROUP_NO",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "prk_crg_raw",
+        "source": "PRK_CRG",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "prk_hm_raw",
+        "source": "PRK_HM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "add_crg_raw",
+        "source": "ADD_CRG",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "add_unit_tm_mnt_raw",
+        "source": "ADD_UNIT_TM_MNT",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "bus_prk_crg_raw",
+        "source": "BUS_PRK_CRG",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "bus_prk_hm_raw",
+        "source": "BUS_PRK_HM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "bus_prk_add_hm_raw",
+        "source": "BUS_PRK_ADD_HM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "bus_prk_add_crg_raw",
+        "source": "BUS_PRK_ADD_CRG",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "dly_max_crg_raw",
+        "source": "DLY_MAX_CRG",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "source_y",
+        "source": "LAT",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "source_x",
+        "source": "LOT",
+        "type": "decimal",
+        "required": false
+      }
+    ],
+    "unmapped": [
+      "PRK_NOW_INFO_PVSN_YN",
+      "NGHT_FREE_OPN_YN",
+      "LHLDY_YN"
+    ]
+  }
+}

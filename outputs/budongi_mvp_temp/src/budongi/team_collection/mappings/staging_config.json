@@ -81,6 +81,7 @@
                     "metric_code": "seoul.living_population:total",
                     "frequency": "daily", "unit_code": "명",
                     "region_fields": ["adm_cd"], "date_field": "date_raw",
+                    "value_field": "total_living_population_raw",
                     "dimension_fields": {"hour": "hour_raw"},
                     "note": "총생활인구수만; 성·연령 밴드는 unmapped (계약 §5)"}
     },

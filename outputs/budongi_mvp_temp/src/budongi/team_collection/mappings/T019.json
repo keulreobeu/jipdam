@@ -1,0 +1,135 @@
+{
+  "t_id": "T019",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "civil-defense-shelter-v1",
+    "record_type": "facility",
+    "header_row": 1,
+    "fields": [
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "civil_defense_shelter.mng_no",
+        "type": "code"
+      },
+      {
+        "target": "source_entity_id",
+        "source": "MNG_NO",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "name",
+        "source": "FCLT_NM",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "facility_type",
+        "source": "FCLT_SE",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "road_address_raw",
+        "source": "ROAD_NM_WHOL_ADDR",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "jibun_address_raw",
+        "source": "LCTN_WHOL_ADDR",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "road_nm_zip_raw",
+        "source": "ROAD_NM_ZIP",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "source_y",
+        "source": "LAT_EPSG4326",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "source_x",
+        "source": "LOT_EPST4326",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "crd_info_x_epsg5179_raw",
+        "source": "CRD_INFO_X_EPSG5179",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "crd_info_y_epsg5179_raw",
+        "source": "CRD_INFO_Y_EPSG5179",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "designated_date",
+        "source": "DSGN_YMD",
+        "type": "date",
+        "required": false
+      },
+      {
+        "target": "removed_date",
+        "source": "RMV_YMD",
+        "type": "date",
+        "required": false
+      },
+      {
+        "target": "data_update_pnt_raw",
+        "source": "DAT_UPDT_PNT",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "last_mdfcn_pnt_raw",
+        "source": "LAST_MDFCN_PNT",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "fcltloc_grnd_udgd_raw",
+        "source": "FCLTLOC_GRND_UDGD",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "facility_area",
+        "source": "FCLT_AREA",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "max_capacity",
+        "source": "MAX_ACTC_PERNE",
+        "type": "int",
+        "required": false
+      },
+      {
+        "target": "oper_stts_raw",
+        "source": "OPER_STTS",
+        "type": "text",
+        "required": false
+      }
+    ],
+    "unmapped": [
+      "LAT_DEGR",
+      "LAT_MINT",
+      "LAT_SEC",
+      "LOT_DEGR",
+      "LOT_MINT",
+      "LOT_SEC",
+      "DAT_UPDT_SE",
+      "OPN_ATMY_GRP_CD"
+    ]
+  }
+}

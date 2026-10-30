@@ -1,0 +1,84 @@
+{
+  "t_id": "T014",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul-subway-elevator-v1",
+    "record_type": "facility",
+    "header_row": 1,
+    "fields": [
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "seoul_subway_elevator.node_id",
+        "type": "code"
+      },
+      {
+        "target": "facility_type",
+        "source": null,
+        "const": "subway_elevator",
+        "type": "code"
+      },
+      {
+        "target": "source_entity_id",
+        "source": "NODE_ID",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "name",
+        "source": "SBWY_STN_NM",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "node_type_raw",
+        "source": "NODE_TYPE",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "node_type_cd_raw",
+        "source": "NODE_TYPE_CD",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "node_wkt_raw",
+        "source": "NODE_WKT",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "sgg_cd",
+        "source": "SGG_CD",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "region_name_raw",
+        "source": "SGG_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "emd_cd_raw",
+        "source": "EMD_CD",
+        "type": "code",
+        "required": false
+      },
+      {
+        "target": "emd_name_raw",
+        "source": "EMD_NM",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "sbwy_stn_cd_raw",
+        "source": "SBWY_STN_CD",
+        "type": "code",
+        "required": false
+      }
+    ],
+    "unmapped": []
+  }
+}

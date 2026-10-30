@@ -1,0 +1,54 @@
+{
+  "t_id": "T003",
+  "decided_by": "deterministic_diff+sonnet_referee",
+  "mapping": {
+    "mapping_version": "seoul-subway-station-master-v1",
+    "record_type": "facility",
+    "header_row": 1,
+    "fields": [
+      {
+        "target": "identifier_namespace",
+        "source": null,
+        "const": "seoul_subway_station_master.bldn_id",
+        "type": "code"
+      },
+      {
+        "target": "facility_type",
+        "source": null,
+        "const": "subway_station",
+        "type": "code"
+      },
+      {
+        "target": "source_entity_id",
+        "source": "BLDN_ID",
+        "type": "code",
+        "required": true
+      },
+      {
+        "target": "name",
+        "source": "BLDN_NM",
+        "type": "text",
+        "required": true
+      },
+      {
+        "target": "route_raw",
+        "source": "ROUTE",
+        "type": "text",
+        "required": false
+      },
+      {
+        "target": "source_y",
+        "source": "LAT",
+        "type": "decimal",
+        "required": false
+      },
+      {
+        "target": "source_x",
+        "source": "LOT",
+        "type": "decimal",
+        "required": false
+      }
+    ],
+    "unmapped": []
+  }
+}

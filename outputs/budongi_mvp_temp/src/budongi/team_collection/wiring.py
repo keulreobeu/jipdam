@@ -162,7 +162,8 @@ def make_normalizer(config: dict, spatial_meta: dict | None = None):
                           for name, source in dimension_fields.items()}
             return C10.normalize_statistic(prepared, envelope=envelope,
                                            metric_code=metric_code, frequency=frequency,
-                                           unit_code=unit_code, value_field="value_raw",
+                                           unit_code=unit_code,
+                                           value_field=settings.get("value_field", "value_raw"),
                                            region_fields=region_fields,
                                            dimensions=dimensions)
         return normalize
@@ -332,11 +333,27 @@ def zip_csv_files(batch_dir: Path, plan: dict, config: dict, workdir: Path) -> l
             work = Path(workdir) / item["request_id"] / Path(page["file"]).stem
             work.mkdir(parents=True, exist_ok=True)
             extracted = E3.extract_member(zip_path, members[0], work, max_bytes=1 << 31)
+            head = extracted.read_bytes()[:2]
+            if head == b'?"' and _sniff_encoding(extracted) == "cp949":
+                # provider defect (observed: 202509 file): the exporter turned a BOM into a
+                # literal '?' before the quoted cp949 header — drop that one byte
+                extracted.write_bytes(extracted.read_bytes()[1:])
 
             def read(path=extracted):
-                return csvread.read_csv(path, encoding=_sniff_encoding(path),
-                                        section=section,
-                                        header_row=reader.get("header_row", 1))
+                header, rows = csvread.read_csv(path, encoding=_sniff_encoding(path),
+                                                section=section,
+                                                header_row=reader.get("header_row", 1))
+
+                def repaired():
+                    # provider defect (observed on every R1 row): a trailing comma makes each
+                    # data row one empty cell longer than the header — drop exactly that cell
+                    for row in rows:
+                        if (row.status == "ragged" and len(row.values) == len(header) + 1
+                                and row.values[-1] in (None, "")):
+                            yield _raw_row(row.section, row.position, row.values[:-1])
+                        else:
+                            yield row
+                return header, repaired()
 
             files.append(StageFile(file_ref=f"raw/{item['request_id']}/{page['file']}",
                                    sha256=page["sha256"], section=section, read=read))
