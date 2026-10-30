@@ -1,5 +1,7 @@
 # Current Tasks — 전월세 제품 전환과 보존된 평가 기록
 
+2026-10-30 [TASK-BENCH-FACILITY-001](facility-benchmark.md): KAN-31. 시설 제출 패키지 검증기·고정 독립 평가·실제 Codex Baseline/반복과 Objective 중복 제거 pilot. 실제 숫자는 [실측 보고](../harness/FACILITY_BENCHMARK.md)에 기록한다.
+
 2026-10-30 [TASK-OBS-001](observability.md): KAN-30. 관측성 v2.3의 Codex-first shadow Usage·불변 원장·원본 과제 품질 집계 적용. [운영/적용 표](../harness/OBSERVABILITY.md). 실제 Baseline·절감률·Cloud/Claude 측정은 별도 게이트.
 
 2026-10-21 [TASK-MAC-LAUNCHER-001](mac-launcher.md): macOS 통합 터미널 실행기와 Keychain 기반 API 키 보관함 지원. 네이티브 앱 빌드 및 Mac 실행 검증은 Mac 호스트에서 수행해야 한다.
