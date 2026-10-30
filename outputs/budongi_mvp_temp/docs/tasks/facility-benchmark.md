@@ -3,14 +3,44 @@
 ```toml
 kind = "task"
 id = "TASK-BENCH-FACILITY-001"
-status = "in_progress"
+status = "verified"
 owner = "keulreobeu"
 specs = ["outputs/budongi_mvp_temp/docs/specs/29_facility_package_validation_spec.md", "outputs/budongi_mvp_temp/docs/specs/30_context_benchmark_spec.md"]
 scope = ["outputs/budongi_mvp_temp/src/budongi/team_package.py", "outputs/budongi_mvp_temp/tests/test_team_package.py", "outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py", "outputs/budongi_mvp_temp/src/jipdam_harness/execution.py", "outputs/budongi_mvp_temp/src/jipdam_harness/managed.py", "outputs/budongi_mvp_temp/tests/test_managed_providers.py", "outputs/budongi_mvp_temp/tests/test_managed_harness.py", "outputs/budongi_mvp_temp/scripts/benchmark_facility.py", "outputs/budongi_mvp_temp/tests/test_facility_benchmark.py", "outputs/budongi_mvp_temp/docs/specs/29_facility_package_validation_spec.md", "outputs/budongi_mvp_temp/docs/specs/30_context_benchmark_spec.md", "outputs/budongi_mvp_temp/docs/adr/ADR-027-controlled-facility-benchmark.md", "outputs/budongi_mvp_temp/docs/plans/facility-benchmark.md", "outputs/budongi_mvp_temp/docs/tasks/facility-benchmark.md", "outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md", "outputs/budongi_mvp_temp/docs/team-data-contract.md", "outputs/budongi_mvp_temp/docs/tasks/current.md", "docs/sdd/traceability.json", "outputs/budongi_mvp_temp/docs/wiki/pages/"]
 acs = ["FACILITY-PACKAGE-001-AC-01", "FACILITY-PACKAGE-001-AC-02", "FACILITY-PACKAGE-001-AC-03", "FACILITY-PACKAGE-001-AC-04", "FACILITY-PACKAGE-001-AC-05", "FACILITY-PACKAGE-001-AC-06", "BENCH-CONTEXT-001-AC-01", "BENCH-CONTEXT-001-AC-02", "BENCH-CONTEXT-001-AC-03", "BENCH-CONTEXT-001-AC-04"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_team_package*.py -v"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/facility-benchmark.md#실제-결과와-인계--2026-10-30"
+acs = ["FACILITY-PACKAGE-001-AC-01", "FACILITY-PACKAGE-001-AC-02", "FACILITY-PACKAGE-001-AC-03", "FACILITY-PACKAGE-001-AC-04", "FACILITY-PACKAGE-001-AC-05", "FACILITY-PACKAGE-001-AC-06"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_facility_benchmark.py -v"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/facility-benchmark.md#실제-결과와-인계--2026-10-30"
+acs = ["BENCH-CONTEXT-001-AC-01", "BENCH-CONTEXT-001-AC-02", "BENCH-CONTEXT-001-AC-03"]
+
+[[verification]]
+command = "fixed C_SHA actual Codex Usage smoke and ABBA trials; independent review rejects; wiki read-back"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md"
+acs = ["BENCH-CONTEXT-001-AC-01", "BENCH-CONTEXT-001-AC-03"]
+
+[[verification]]
+command = "python -X utf8 scripts/check_sdd.py --base origin/main (original dirty checkout)"
+result = "failed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/facility-benchmark.md#최종-저장-상태"
+acs = ["BENCH-CONTEXT-001-AC-04"]
+
+[[verification]]
+command = "python -m harness git verify --task TASK-BENCH-FACILITY-001 (isolated publisher d27b8150)"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/facility-benchmark.md#최종-저장-상태"
+acs = ["FACILITY-PACKAGE-001-AC-01", "FACILITY-PACKAGE-001-AC-02", "FACILITY-PACKAGE-001-AC-03", "FACILITY-PACKAGE-001-AC-04", "FACILITY-PACKAGE-001-AC-05", "FACILITY-PACKAGE-001-AC-06", "BENCH-CONTEXT-001-AC-01", "BENCH-CONTEXT-001-AC-02", "BENCH-CONTEXT-001-AC-03", "BENCH-CONTEXT-001-AC-04"]
 ```
 
-Jira [KAN-31](https://kwulreobeu.atlassian.net/browse/KAN-31), agent-codex, 진행 중. 실제 구현은
+Jira [KAN-31](https://kwulreobeu.atlassian.net/browse/KAN-31), agent-codex. 실제 구현은
 measured Codex CLI가 담당하며 부모는 명세/독립 평가/검토/적용/문서를 담당한다.
 
 - [x] FACILITY-PACKAGE-001-AC-01 manifest
@@ -22,7 +52,7 @@ measured Codex CLI가 담당하며 부모는 명세/독립 평가/검토/적용/
 - [x] BENCH-CONTEXT-001-AC-01 preflight/smoke/seal
 - [x] BENCH-CONTEXT-001-AC-02 objective-only option
 - [x] BENCH-CONTEXT-001-AC-03 fixed trials/independent approval
-- [ ] BENCH-CONTEXT-001-AC-04 complete comparison/delivery
+- [x] BENCH-CONTEXT-001-AC-04 complete comparison/delivery
 
 ## 시작 증거
 
@@ -80,7 +110,22 @@ read-back v1, HTML SHA=038c3ecdaefa8db5f77c2365ff9c548e061f7ec5def8614af775cd958
 ## 최종 저장 상태
 
 Git preparation은 codex/facility-benchmark-kan31의 d6cc4bad로 원격 확인됐다. 제품 보완/
-보고서의 최종 snapshot·publisher 검증·CI·merge commit 및 원격 read-back은 진행 중이다.
+보고서는 snapshot0002로 저장됐고 아래 고정 publisher 검증을 통과했다. 이 Task의 최종 문서
+snapshot·최신 CI·merge commit·원격 read-back 영수증은 Jira KAN-31의 최종 Git 댓글을 따른다.
 Git 담당자는 merge commit을 사용해 C_SHA가 main 조상으로 남는지 확인한다. 기존 dirty
 source f01faa/다른 작업/index와 측정 worktree는 보존한다. 완료 영수증이 없으면 다음 담당자는
-KAN-31을 진행 중으로 유지하고 최종 Git 저장부터 확인한다.
+KAN-31에 완료 영수증이 없으면 최종 Git 저장부터 확인한다. verified는 이 범위 AC의 검증이며
+실측 trial 성공이나 원격 병합 성공을 뜻하지 않는다.
+
+원래 source의 verify_environment.py는 exit0(Application tests + model-free CLI smoke PASS)였다.
+검사 실행 중 최종 JSON 보완이 있었으므로 전달 후보의 고정 publisher 검증을 최종 근거로 쓴다.
+이후 root check_sdd --base origin/main은 범위 밖 새31_metadata_integration_spec.md의
+미등록 metadata로 exit1이었다. 이 다른 작업을 수정·포함하지 않았으며 isolated scope18과
+분리한다. 제품/보고서 snapshot0002-0551e48140f9는 원격 d27b8150a8b79bd3f94f4f9dea5d2256c42a3f75로
+확인됐다. 이 단락 이후의 최종 문서 snapshot과 PR/merge는 별도 영수증을 따른다.
+
+고정 publisher d27b8150: acceptance19/public9/provider17/managed14/driver10 모두 exit0,
+전체 verify_environment.py exit0, check_sdd.py --base origin/main exit0, exact18/민감 history
+검사 PASS. C_SHA의 조상 관계도 확인했다. 생성 wiki의 필수 동기화는 완료됐으며, 최종 코드
+검증 이후 변경은 이 Task의 결과/인계 기록뿐이다. 다음 환경은 Jira 최종 영수증의 브랜치/PR/
+merge SHA와 위키 stable ID를 확인하고 시작한다.
