@@ -127,7 +127,8 @@ def _kill_tree(process: subprocess.Popen, job=None) -> None:
 
 
 def run_process(argv, cwd: Path, input_text: str | None, timeout: float,
-                should_stop: StopCheck, *, env_overrides=None) -> tuple[int, str, str, str | None]:
+                should_stop: StopCheck, *, env_overrides=None, on_stdout_line=None,
+                on_stream_error=None) -> tuple[int, str, str, str | None]:
     """Drain capped streams concurrently and terminate the entire subprocess group."""
     timeout = min(MAX_TIMEOUT, max(0.05, float(timeout)))
     stop = should_stop()
@@ -141,12 +142,33 @@ def run_process(argv, cwd: Path, input_text: str | None, timeout: float,
     job = _WindowsJob(process)
     captured = [bytearray(), bytearray()]
 
-    def drain(stream, bucket):
+    def drain(stream, bucket, observe=False):
+        pending = bytearray()
+        dropping = False
+        def problem(code):
+            if on_stream_error:
+                try: on_stream_error(code)
+                except Exception: pass
+        def emit(line):
+            if on_stdout_line:
+                try: on_stdout_line(line.decode("utf-8", "strict"))
+                except UnicodeError: problem("malformed_json")
+                except Exception: problem("collector_failed")
         try:
             while True:
-                chunk = stream.read(8192)
+                chunk = stream.read1(8192)
                 if not chunk:
                     break
+                if observe and on_stdout_line:
+                    for part in chunk.splitlines(keepends=True):
+                        # Split on LF only: JSON strings may contain escaped newlines,
+                        # and a UTF-8 character may straddle two received chunks.
+                        pending.extend(part if not dropping else b"")
+                        if len(pending) > 1024 * 1024:
+                            pending.clear(); dropping = True; problem("line_overflow")
+                        if part.endswith(b"\n"):
+                            if not dropping and pending.strip(): emit(bytes(pending))
+                            pending.clear(); dropping = False
                 if len(bucket) + len(chunk) <= MAX_OUTPUT:
                     bucket.extend(chunk)
                 else:
@@ -154,8 +176,10 @@ def run_process(argv, cwd: Path, input_text: str | None, timeout: float,
                     # even when intermediate command output is very large.
                     half = MAX_OUTPUT // 2
                     bucket[:] = bucket[:half] + (bucket[half:] + chunk)[-half:]
+            if observe and pending and not dropping:
+                emit(bytes(pending))
         except (OSError, ValueError):
-            pass
+            if observe: problem("collector_failed")
         finally:
             stream.close()
 
@@ -167,7 +191,7 @@ def run_process(argv, cwd: Path, input_text: str | None, timeout: float,
         except (BrokenPipeError, OSError, ValueError):
             pass
 
-    readers = [threading.Thread(target=drain, args=(process.stdout, captured[0]), daemon=True),
+    readers = [threading.Thread(target=drain, args=(process.stdout, captured[0], True), daemon=True),
                threading.Thread(target=drain, args=(process.stderr, captured[1]), daemon=True)]
     writer = threading.Thread(target=feed, daemon=True)
     for thread in [*readers, writer]:
@@ -200,13 +224,15 @@ class ExecutionResult:
     usage: dict | None = None
     summary: str = ""
     events: list[dict] = field(default_factory=list)
+    usage_observations: list[dict] = field(default_factory=list)
+    measurement: dict | None = None
 
 
 def _usage(value) -> dict | None:
     if not isinstance(value, dict):
         return None
     safe = {key: count for key, count in value.items()
-            if key in {"input_tokens", "output_tokens", "cached_input_tokens", "total_tokens"}
+            if key in {"input_tokens", "output_tokens", "cached_input_tokens", "total_tokens", "reasoning_output_tokens"}
             and type(count) is int and count >= 0}
     return safe or None
 
@@ -244,6 +270,10 @@ class CodexCLIProvider:
             return ExecutionResult("error", "permission", summary="Unsupported sandbox policy.")
         try:
             command = self._command()
+            from .observability import CodexUsageCollector
+            version_code, version_text, _, version_stop = run_process([*command, "--version"], cwd, None, 10, should_stop)
+            match = re.fullmatch(r"codex-cli ([0-9]+\.[0-9]+\.[0-9]+)\s*", version_text) if version_code == 0 and not version_stop else None
+            collector = CodexUsageCollector(match[1] if match else None, task.get("_usage_sink"))
             session = settings.get("session_id")
             if session:
                 if not isinstance(session, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", session):
@@ -260,7 +290,8 @@ class CodexCLIProvider:
                     argv.extend(["--model", self.model])
                 argv.append("-")
             prompt = redact(str(task.get("objective", "")) + "\n\n" + context)
-            rc, stdout, stderr, stop = run_process(argv, cwd, prompt, settings.get("timeout_seconds", 600), should_stop)
+            rc, stdout, stderr, stop = run_process(argv, cwd, prompt, settings.get("timeout_seconds", 600), should_stop,
+                                                  on_stdout_line=collector.line, on_stream_error=collector.problem)
         except (OSError, ValueError, TypeError):
             return ExecutionResult("error", "unknown", summary="Codex process could not be started.")
         result = ExecutionResult()
@@ -299,6 +330,17 @@ class CodexCLIProvider:
             result.summary = "Codex execution failed: " + result.error
         elif not completed:
             result.status, result.error, result.summary = "error", "unknown", "Codex produced no completed turn."
+        # The bounded diagnostic stream can lose middle lines; usage never comes
+        # from reparsing that truncated buffer. Keep the compatibility last-usage field.
+        result.session_id = collector.session_id or result.session_id
+        result.usage_observations = collector.observations
+        result.measurement = collector.measurement(bool(stop) or rc != 0)
+        if collector.finished:
+            result.usage = _usage(collector.observations[-1]["usage"]) if collector.observations else result.usage
+            if not completed and rc == 0 and not stop and not collector.failed:
+                result.status, result.error = "success", None
+        if collector.failed and result.status == "success":
+            result.status, result.error, result.summary = "error", "unknown", "Codex reported a failed turn."
         return result
 
 

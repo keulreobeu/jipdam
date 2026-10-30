@@ -35,6 +35,9 @@ class Orchestrator:
 
     def finish(self, task, lease, state, **result):
         self.store.update(task, lease, state, result=result, release=True)
+        metrics_run = self.store.get(task)["result"].get("metrics_run_id")
+        if metrics_run:
+            self.store.observe(task, "lifecycle", metrics_run, state)
         if state == "COMPLETED":
             from .autocommit import auto_commit_task
             return auto_commit_task(self.store, task)
@@ -42,12 +45,20 @@ class Orchestrator:
 
     def run(self, task_id):
         with repository_lock(self.store.root):
-            return self._run(task_id)
+            self._run(task_id)
+            return self.store.export(task_id)
 
     def _run(self, task_id):
         row = self.store.claim(task_id)
         lease, task = row["lease"], row["task"]
         started = time.monotonic()
+        metrics = None
+        closed = False
+        def close_metrics():
+            nonlocal closed
+            if metrics and not closed:
+                closed = True
+                self.store.observe(task_id, "end_attempt", metrics, self.store.get(task_id), time.monotonic() - started)
         def stop():
             reason = self.control(task_id, lease)
             if reason: return reason
@@ -59,6 +70,11 @@ class Orchestrator:
             base = row["result"].get("base_commit") or git(tree, "rev-parse", "HEAD").strip()
             if git(tree, "rev-parse", "HEAD").strip() != base:
                 raise HarnessError("worktree_head_changed")
+            # Measure the code/config actually executed, not the dirty controller
+            # checkout. No model request occurs before these identities are fixed.
+            metrics = self.store.observe(task_id, "begin", row, tree)
+            if metrics:
+                self.store.update(task_id, lease, "PLANNING", result={"metrics_run_id": metrics["run_id"]})
             self.store.update(task_id, lease, "PLANNING", worktree=str(tree), result={"base_commit": base, "validation_passed": False})
             before = snapshot(tree); check_scope(task, before)
             context = pack_context(task, tree, row["result"].get("validation"))
@@ -79,7 +95,13 @@ class Orchestrator:
                     request["execution"]["session_id"] = row["result"]["session_id"]
                 remaining = int(task["execution"]["total_timeout_seconds"] - row["elapsed"] - (time.monotonic() - started))
                 request["execution"]["timeout_seconds"] = min(task["execution"]["timeout_seconds"], max(1, remaining))
+                invocation = self.store.observe(task_id, "invocation", metrics, provider_name) if metrics else None
+                if invocation:
+                    request["_usage_sink"] = lambda observation: self.store.observe(task_id, "usage", metrics, invocation, observation)
+                invocation_started = time.monotonic()
                 outcome = provider.execute(request, context, tree, stop)
+                if invocation:
+                    self.store.observe(task_id, "end_invocation", metrics, invocation, outcome, time.monotonic() - invocation_started)
                 if git(tree, "rev-parse", "HEAD").strip() != base: raise HarnessError("worktree_head_changed")
                 after = snapshot(tree); check_scope(task, after)
                 reason = stop()
@@ -107,11 +129,15 @@ class Orchestrator:
                     if error in {"rate_limit", "network"} and provider_name != "gms" and after == before:
                         if row["attempt"] < task["execution"]["max_attempts"]:
                             self.store.update(task_id, lease, "RETRYING", result={"reason": error}, release=True)
+                            close_metrics()
                             self.store.ready(task_id, automatic=True)
                             return self._run(task_id)
                     return self.finish(task_id, lease, "WAITING_FOR_PROVIDER" if provider_name == "gms" else "BLOCKED" if error in {"auth", "permission", "unknown"} else "FAILED", reason=error)
                 self.store.update(task_id, lease, "VALIDATING")
+                validation_started = time.monotonic()
                 validation = self.validate(task, tree, stop)
+                if metrics:
+                    self.store.observe(task_id, "phase", metrics, "validation", time.monotonic() - validation_started)
                 reason = stop()
                 if reason:
                     return self.finish(task_id, lease, "PAUSED" if reason == "pause" else "CANCELLED" if reason == "cancel" else "INTERRUPTED", reason=reason)
@@ -123,6 +149,7 @@ class Orchestrator:
                     return self.finish(task_id, lease, state, validation=validation, validation_passed=True, changed_files=final_changes)
                 if row["attempt"] < task["execution"]["max_attempts"]:
                     self.store.update(task_id, lease, "RETRYING", result={"validation": validation, "validation_passed": False}, release=True)
+                    close_metrics()
                     self.store.ready(task_id, automatic=True)
                     return self._run(task_id)
                 return self.finish(task_id, lease, "FAILED", reason="validation_failed", validation=validation, validation_passed=False)
@@ -138,6 +165,8 @@ class Orchestrator:
             finally:
                 if isinstance(exc, (KeyboardInterrupt, SystemExit)): raise
             return self.store.export(task_id)
+        finally:
+            close_metrics()
 
     def validate(self, task, tree, stop):
         from .execution import redact, run_process

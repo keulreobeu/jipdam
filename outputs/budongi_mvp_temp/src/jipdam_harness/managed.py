@@ -120,10 +120,23 @@ class ManagedStore:
         self.directory, self.root = Path(directory).resolve(), Path(root).resolve()
         self.directory.mkdir(parents=True, exist_ok=True)
         self.path = self.directory / "state.sqlite3"
+        self._metrics = None
         with self.tx() as c:
             c.execute("CREATE TABLE IF NOT EXISTS managed_tasks(id TEXT PRIMARY KEY, body TEXT NOT NULL, hash TEXT NOT NULL, state TEXT NOT NULL, priority INTEGER NOT NULL, lease TEXT, pid INTEGER, started REAL, attempt INTEGER NOT NULL DEFAULT 0, elapsed REAL NOT NULL DEFAULT 0, control TEXT, worktree TEXT, result TEXT NOT NULL DEFAULT '{}')")
             c.execute("CREATE TABLE IF NOT EXISTS managed_events(id INTEGER PRIMARY KEY AUTOINCREMENT, task_id TEXT NOT NULL, kind TEXT NOT NULL, body TEXT NOT NULL, at REAL NOT NULL)")
             c.execute("CREATE TABLE IF NOT EXISTS managed_settings(key TEXT PRIMARY KEY,value TEXT NOT NULL)")
+
+    def observe(self, task, action, *args):
+        """Shadow failures cannot change execution, but remain visible after restart."""
+        try:
+            if self._metrics is None:
+                from .observability import MetricsStore
+                self._metrics = MetricsStore(self.directory)
+            return getattr(self._metrics, action)(*args)
+        except Exception:
+            with self.tx() as c:
+                c.execute("INSERT OR IGNORE INTO managed_settings VALUES(?,?)", ("metrics_error:" + task, '"collector_unavailable"'))
+            return None
 
     @contextmanager
     def tx(self):
@@ -279,6 +292,8 @@ class ManagedStore:
                 raise HarnessError("worktree_head_changed")
             c.execute("UPDATE managed_tasks SET state='COMPLETED' WHERE id=?", (task,))
             self.event(c, task, "COMPLETED", {"reviewer": reviewer, "result_hash": digest(result)})
+        if result.get("metrics_run_id"):
+            self.observe(task, "lifecycle", result["metrics_run_id"], "COMPLETED")
         return self.get(task)
 
     def prepare_validation(self, task):
@@ -296,6 +311,17 @@ class ManagedStore:
 
     def export(self, task):
         report = self.get(task)
+        run_id = report["result"].get("metrics_run_id")
+        measurement = self.observe(task, "report", run_id) if run_id else None
+        with self.tx() as c:
+            failed = c.execute("SELECT 1 FROM managed_settings WHERE key=?", ("metrics_error:" + task,)).fetchone()
+        if measurement is not None:
+            if failed:
+                measurement.update(coverage_state="partial", complete_run_tokens=None, collector_health="collector_unavailable")
+            report["measurement"] = measurement
+        else:
+            report["measurement"] = {"coverage_state": "partial" if failed else "unavailable", "known_observed_tokens": None,
+                                     "collector_health": "collector_unavailable" if failed else "not_observed"}
         directory = self.directory / "reports"; directory.mkdir(exist_ok=True)
         # Unique temporary file + replace; snapshots are derivative, DB remains authoritative.
         target = directory / (identifier(task) + ".json")

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import sqlite3
 import sys
 
 from .cli import read_json
@@ -18,6 +19,8 @@ def main(argv=None, *, workspace=None):
     p.add_argument("--codex-bin", default=None)
     p.add_argument("--gms-port", type=int, default=8786)
     sub = p.add_subparsers(dest="command", required=True)
+    from .metrics_cli import parser as metrics_parser
+    metrics_parser(sub)
     for name in ("status", "tasks"):
         s = sub.add_parser(name); s.add_argument("--task"); s.add_argument("--state")
     for name in ("new-task", "create"):
@@ -41,6 +44,10 @@ def main(argv=None, *, workspace=None):
         directory = (root / args.state_dir).resolve()
         if not directory.is_relative_to(root / ".local_runtime"):
             raise HarnessError("state_directory_must_be_local_runtime")
+        if args.command == "metrics":
+            from .metrics_cli import run as metrics_run
+            print(encode(metrics_run(args, directory)))
+            return 0
         store = ManagedStore(directory, root)
         from .execution import CodexCLIProvider, GMSProvider, MockProvider
         providers = {"codex": CodexCLIProvider(**({"binary": args.codex_bin} if args.codex_bin else {})),
@@ -86,7 +93,7 @@ def main(argv=None, *, workspace=None):
         return 0
     except HarnessError as exc:
         print(encode({"status": "error", "error": str(exc)})); return 2
-    except (OSError, ValueError, TypeError, KeyError):
+    except (OSError, ValueError, TypeError, KeyError, sqlite3.Error):
         print(encode({"status": "error", "error": "invalid_input_or_storage"})); return 2
 
 
