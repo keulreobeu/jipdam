@@ -3,7 +3,7 @@
 ```toml
 kind = "task"
 id = "TASK-OBS-001"
-status = "in_progress"
+status = "verified"
 owner = "keulreobeu"
 specs = ["outputs/budongi_mvp_temp/docs/specs/28_observability_spec.md"]
 scope = ["outputs/budongi_mvp_temp/src/jipdam_harness/execution.py", "outputs/budongi_mvp_temp/src/jipdam_harness/orchestrator.py", "outputs/budongi_mvp_temp/src/jipdam_harness/managed.py", "outputs/budongi_mvp_temp/src/jipdam_harness/managed_cli.py", "outputs/budongi_mvp_temp/src/jipdam_harness/observability.py", "outputs/budongi_mvp_temp/src/jipdam_harness/metrics_cli.py", "outputs/budongi_mvp_temp/tests/test_observability.py", "outputs/budongi_mvp_temp/docs/specs/28_observability_spec.md", "outputs/budongi_mvp_temp/docs/adr/ADR-026-observability.md", "outputs/budongi_mvp_temp/docs/plans/observability.md", "outputs/budongi_mvp_temp/docs/tasks/observability.md", "outputs/budongi_mvp_temp/docs/tasks/current.md", "outputs/budongi_mvp_temp/docs/harness/OBSERVABILITY.md", "outputs/budongi_mvp_temp/docs/wiki/pages/", "docs/sdd/traceability.json"]
@@ -20,16 +20,28 @@ command = "python -X utf8 scripts/check_sdd.py --base origin/main"
 result = "passed"
 evidence = "outputs/budongi_mvp_temp/docs/tasks/observability.md#검증"
 acs = ["OBS-001-AC-04"]
+
+[[verification]]
+command = "python -X utf8 scripts/verify_environment.py (source checkout)"
+result = "failed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/observability.md#검증"
+acs = ["OBS-001-AC-04"]
+
+[[verification]]
+command = "python -m harness git verify --task TASK-OBS-001 (isolated publisher, snapshot 0001-9b66e5d5a3d2)"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/observability.md#격리-후보-검증"
+acs = ["OBS-001-AC-01", "OBS-001-AC-02", "OBS-001-AC-03", "OBS-001-AC-04"]
 ```
 
-Jira: [KAN-30](https://kwulreobeu.atlassian.net/browse/KAN-30), agent-codex, 진행 중.
+Jira: [KAN-30](https://kwulreobeu.atlassian.net/browse/KAN-30), agent-codex. 검증·위키·Git receipt를 확인해 종료한다.
 요청: 두 제공 문서의 적용 가능성 확인 및 적용. Git completion_mode=reviewed_merge(기본 계약),
 공유 범위는 이번 변경 hunk만, commit/push는 전담 gstack_committer가 수행한다.
 
-- [ ] OBS-001-AC-01 공식 Usage·streaming·정규화/정정
-- [ ] OBS-001-AC-02 불변 원장·재시도/fallback·기존 승인 보존
-- [ ] OBS-001-AC-03 원본 benchmark item·독립 평가·실패 포함 집계
-- [ ] OBS-001-AC-04 CLI·SDD·환경·운영/위키 동기화
+- [x] OBS-001-AC-01 공식 Usage·streaming·정규화/정정
+- [x] OBS-001-AC-02 불변 원장·재시도/fallback·기존 승인 보존
+- [x] OBS-001-AC-03 원본 benchmark item·독립 평가·실패 포함 집계
+- [x] OBS-001-AC-04 CLI·SDD·환경·운영/위키 동기화
 
 ## 검토와 현재 증거
 
@@ -49,11 +61,29 @@ SDD 기본/main 비교는 features25·AC123·tasks55로 통과했다. 제한된 
 `test_target_assessment_requires_distinct_anchored_runs_and_exact_outputs` 1개가
 `targets_status: not_met != verified`로 실패했다. pipeline은 관측성 모듈을 import하지 않으며
 이번 exact scope/Git 전달에 포함하지 않는다. 별도 origin/main 기반 publisher에서 이번 변경만
-분리해 최종 전체 검증한다. 실제 Baseline/최적화·Cloud/Claude 실측은 미실행이다.
+분리한 전체 검증은 아래와 같이 통과했다. 실제 Baseline/최적화·Cloud/Claude 실측은 미실행이다.
+
+같은 pipeline 실패 메서드의 단독 비변경 재실행은1개PASS였다. 전체 실행 중 실패를 지우거나
+전체 통과로 바꾸지 않는다. 후속 팀 검사35개 및 합성 doctor/get_apartment_detail smoke는
+별도PASS이며 실제 평가 준비로 승격하지 않았다. 소스의 이번 작업 외 변경은 보존했다.
 
 독립 읽기 전용 reviewer가 실제 worktree provenance, 중복 완료, usage 누락을 재현했고 수정했다.
 후속 probe/정규화4개 PASS와 추가 P0 결함 없음 보고를 받았다. 독립 평가 artifact hash·현재
 subject 확인 및 operator_attestation 표시도 반영했다. 전체 회귀 결과와 reviewer probe는 구분한다.
+
+## 격리 후보 검증
+
+origin/main `a7b17141a52e37b0ad4ee43afb4fb35fe5b2ad61`에서 분리한14개 exact 파일만
+전담 gstack_committer가 저장했다. snapshot `0001-9b66e5d5a3d2`, 구현 커밋/원격 read-back
+`7b6a31ed8eca3b763876d63c9b3341c2773fdf63`, branch `codex/observability-kan30`.
+publisher의 관측성29개(exit0), 기존 managed13개(exit0), 전체 `verify_environment.py`(exit0),
+`check_sdd.py --base origin/main`(exit0)이 모두 통과했다. helper가 전체 환경 출력의 상세 개수를
+보존하지 않아 개수를 추정하지 않았다. 기존 미공유 wiki hook/pipeline과 사용자 index는 전달하지
+않았다. 원래 source의 전체 검사 실패 이력도 위에 보존했다. 이 Task의 verified는 현재 범위의
+오프라인 구현·검증이며 실제 모델/Cloud/멀티프로바이더·효율 개선 완료를 뜻하지 않는다.
+
+위 검증 결과를 추가한 문서 snapshot도 같은 Git 절차로 재검증하며 PR/CI/최종 병합/정리 상태는
+TASK-OBS-001의 Git lifecycle receipt와 Jira에 실제 결과로 별도 기록한다.
 
 ## 위키 판단
 
