@@ -83,6 +83,30 @@ class FacilityBenchmarkTests(unittest.TestCase):
         self.assertTrue(all(p["token_reduction_pct"] is None for p in result["paired"]))
         self.assertTrue(all(not p["comparable"] for p in result["paired"]))
 
+    def test_negative_review_requires_unchanged_evidence_and_subject(self):
+        seal = driver.seal(self.root, self.directory)
+        store = driver.ManagedStore(self.directory / 'managed', self.root)
+        artifact = dict(suite_id='FACILITY-PILOT-A1', item_id='BENCH-FACILITY-001', run_revisions={'run': 'revision'},
+                        evaluation_sha256=seal['evaluation_sha256'], independent=True, evaluator='agent-codex-evaluator',
+                        gates=dict(ac=False, regression=True, security=True, scope=True, review=False, approval=False))
+        evidence = self.root / '.local_runtime/observability-evaluations/BENCH-FACILITY-001-A1-review-rejected.json'
+        driver.write(evidence, artifact)
+        request = dict(artifact, evidence_file=evidence.relative_to(self.root).as_posix(), evidence_sha256=driver.file_sha(evidence))
+        driver.write(self.directory / 'results/A1-review.json', request)
+        with patch.object(driver.MetricsStore, 'suite_report', return_value={'items': [{'run_revisions': {'run': 'revision'}}]}):
+            self.assertEqual(driver.rejected_review(self.root, self.directory, 'A1', seal, store), artifact)
+            with patch.object(driver.Orchestrator, 'run', side_effect=RuntimeError('reached_after_negative_review')):
+                with self.assertRaisesRegex(RuntimeError, 'reached_after_negative_review'):
+                    driver.run_trial(self.root, self.directory, 'B1')
+            evidence.write_text('{}')
+            with self.assertRaisesRegex(ValueError, 'review_evidence_changed'):
+                driver.rejected_review(self.root, self.directory, 'A1', seal, store)
+
+    def test_rejection_cannot_mark_an_unstarted_trial_as_reviewed(self):
+        driver.seal(self.root, self.directory)
+        with self.assertRaisesRegex(ValueError, 'finished_execution'):
+            driver.reject_trial(self.root, self.directory, 'A1', 'agent-codex-evaluator', 'quality_failure')
+
     def test_actual_prompt_receipt_keeps_hash_and_bytes_without_the_body(self):
         body = driver.validate(driver.task_body("A1", "once", "DO-NOT-STORE-PROMPT-BODY"), self.root)
         context = driver.pack_context(body, self.root)

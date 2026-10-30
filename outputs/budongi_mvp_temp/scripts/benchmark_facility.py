@@ -191,6 +191,29 @@ def smoke(root, directory):
     return result
 
 
+def rejected_review(root, directory, label, content, store):
+    """A failed review permits scheduling, never a verified-success approval."""
+    path = directory / 'results' / (label + '-review.json')
+    if not path.is_file():
+        return None
+    request = json.loads(path.read_text(encoding='utf-8'))
+    expected = root / '.local_runtime/observability-evaluations' / ('BENCH-FACILITY-001-' + label + '-review-rejected.json')
+    if request.get('evidence_file') != expected.relative_to(root).as_posix() or file_sha(expected) != request.get('evidence_sha256'):
+        raise ValueError('review_evidence_changed')
+    artifact = json.loads(expected.read_text(encoding='utf-8'))
+    item = MetricsStore(store.directory).suite_report('FACILITY-PILOT-' + label)['items'][0]
+    if (artifact != {k: v for k, v in request.items() if k not in ('evidence_file', 'evidence_sha256')}
+            or artifact.get('suite_id') != 'FACILITY-PILOT-' + label
+            or artifact.get('item_id') != 'BENCH-FACILITY-001'
+            or artifact.get('run_revisions') != item['run_revisions']
+            or artifact.get('evaluation_sha256') != content['evaluation_sha256']
+            or artifact.get('independent') is not True
+            or artifact.get('gates', {}).get('review') is not False
+            or artifact.get('gates', {}).get('approval') is not False):
+        raise ValueError('review_subject_changed')
+    return artifact
+
+
 def run_trial(root, directory, label):
     content = checked(root, directory)
     store = ManagedStore(directory / "managed", root)
@@ -198,7 +221,8 @@ def run_trial(root, directory, label):
     row = store.get(task_id)
     if hashed(row["task"]) != content["task_hashes"][task_id]: raise ValueError("task_changed")
     for earlier in content["order"][:content["order"].index(label)]:
-        if store.get("BENCH-FACILITY-001-" + earlier)["state"] != "COMPLETED":
+        if (store.get("BENCH-FACILITY-001-" + earlier)["state"] != "COMPLETED"
+                and rejected_review(root, directory, earlier, content, store) is None):
             raise ValueError("earlier_trial_requires_independent_approval")
     if row["state"] != "READY": raise ValueError("trial_already_started")
     started = time.monotonic()
@@ -216,6 +240,34 @@ def run_trial(root, directory, label):
               "checks": [{"argv": c["argv"], "exit_code": c["exit_code"]} for c in report["result"].get("validation", [])]}
     write(directory / "results" / (label + ".json"), result)
     return result
+
+
+def reject_trial(root, directory, label, reviewer, reason):
+    content = checked(root, directory)
+    if not re.fullmatch(r'[a-z][a-z0-9_]{0,95}', reason):
+        raise ValueError('static_review_reason_required')
+    store = ManagedStore(directory / 'managed', root)
+    task_id = 'BENCH-FACILITY-001-' + label
+    row = store.export(task_id)
+    if row['state'] not in ('REVIEW_REQUIRED', 'FAILED', 'BLOCKED', 'CANCELLED'):
+        raise ValueError('review_requires_finished_execution')
+    result = json.loads((directory / 'results' / (label + '.json')).read_text(encoding='utf-8'))
+    if result.get('prompt_matches_seal') is not True:
+        raise ValueError('actual_prompt_did_not_match_seal')
+    metrics = MetricsStore(store.directory)
+    suite_id = 'FACILITY-PILOT-' + label
+    item = metrics.suite_report(suite_id)['items'][0]
+    artifact = dict(suite_id=suite_id, item_id='BENCH-FACILITY-001', run_revisions=item['run_revisions'],
+                    evaluation_sha256=content['evaluation_sha256'], independent=True, evaluator=reviewer,
+                    gates={k: False for k in ('ac', 'regression', 'security', 'scope', 'review', 'approval')},
+                    reason=reason)
+    evidence = root / '.local_runtime/observability-evaluations' / (task_id + '-review-rejected.json')
+    write(evidence, artifact)
+    request = dict(artifact, evidence_file=evidence.relative_to(root).as_posix(), evidence_sha256=file_sha(evidence))
+    outcome = metrics.outcome(request)
+    write(directory / 'results' / (label + '-review.json'), request)
+    return dict(state=row['state'], review_outcome='rejected', reason=reason,
+                verified_success_count=outcome['verified_success_count'])
 
 
 def approve_trial(root, directory, label, reviewer):
@@ -256,10 +308,13 @@ def report_trials(root, directory):
         row = store.export("BENCH-FACILITY-001-" + label)
         suite = metrics.suite_report("FACILITY-PILOT-" + label)
         m = row["measurement"]
+        review = rejected_review(root, directory, label, content, store)
         trials.append({"label": label, "objective_mode": mode, "state": row["state"],
                        "coverage_state": m["coverage_state"], "known_tokens": m.get("known_observed_tokens"),
                        "complete_tokens": m.get("complete_run_tokens"), "retry_count": m.get("retry_count"),
                        "failed_attempt_tokens_known": m.get("failed_attempt_tokens_known"),
+                       "review_outcome": 'rejected' if review else 'approved' if suite['verified_success_count'] == 1 else 'pending',
+                       "review_rejected_tokens": m.get('known_observed_tokens') if review else None,
                        "wall_seconds": m.get("task_wall_time_seconds"), "human_attention_minutes": None,
                        "verified_success": suite["verified_success_count"] == 1,
                        "tokens_per_verified_success": suite["tokens_per_verified_success"],
@@ -286,9 +341,10 @@ def main(argv=None):
     parser.add_argument("--state-dir", default=".local_runtime/facility-benchmark")
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ("preflight", "seal", "smoke", "report"): sub.add_parser(name)
-    for name in ("run", "approve"):
+    for name in ("run", "approve", "reject"):
         item = sub.add_parser(name); item.add_argument("--trial", choices=[x[0] for x in ORDER], required=True)
-        if name == "approve": item.add_argument("--reviewer", required=True)
+        if name in ('approve', 'reject'): item.add_argument("--reviewer", required=True)
+        if name == 'reject': item.add_argument('--reason', required=True)
     args = parser.parse_args(argv)
     directory = (ROOT / args.state_dir).resolve()
     try:
@@ -298,6 +354,7 @@ def main(argv=None):
         elif args.command == "smoke": result = smoke(ROOT, directory)
         elif args.command == "run": result = run_trial(ROOT, directory, args.trial)
         elif args.command == "approve": result = approve_trial(ROOT, directory, args.trial, args.reviewer)
+        elif args.command == 'reject': result = reject_trial(ROOT, directory, args.trial, args.reviewer, args.reason)
         else: result = report_trials(ROOT, directory)
         print(encoded(result))
         return 0
