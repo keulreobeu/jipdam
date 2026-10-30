@@ -91,6 +91,27 @@ class RoleGuardTests(unittest.TestCase):
             self.assertEqual((report["violations"], report["unverified"]), (1, 1))
 
 
+REVIEW_SPEC = importlib.util.spec_from_file_location("review_packet",
+                                                     ROOT / "tooling" / "role2_harness" / "review_packet.py")
+review_packet = importlib.util.module_from_spec(REVIEW_SPEC)
+REVIEW_SPEC.loader.exec_module(review_packet)
+
+
+class ReviewPacketTests(unittest.TestCase):
+    def test_judge_refuses_producer_family_and_gemini(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            packet = Path(tmp) / "p.json"
+            packet.write_text(json.dumps({"prompt": "judge", "schema": {}, "conflicts": []}),
+                              encoding="utf-8")
+            with self.assertRaisesRegex(review_packet.roles.RoleError, "R4_judge_is_producer_family"):
+                review_packet.judge(packet, model="sonnet",
+                                    producers=["gemini-3.8-flash", "claude-sonnet-5-5"],
+                                    out=Path(tmp) / "v.json", ledger_path=None)
+            with self.assertRaisesRegex(review_packet.roles.RoleError, "judge_must_be_claude"):
+                review_packet.judge(packet, model="gemini-4-argon", producers=["claude-opus-5-5"],
+                                    out=Path(tmp) / "v.json", ledger_path=None)
+
+
 ORACLE_SPEC = importlib.util.spec_from_file_location("importer_oracle",
                                                      ROOT / "tooling" / "role2_harness" / "importer_oracle.py")
 importer_oracle = importlib.util.module_from_spec(ORACLE_SPEC)

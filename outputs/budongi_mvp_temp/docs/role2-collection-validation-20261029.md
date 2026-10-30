@@ -24,7 +24,7 @@
 
 ## ac-01-06 단위 테스트
 
-진행 중(리드 코드만). `.venv\Scripts\python.exe -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests/team_collection_tests -t outputs/budongi_mvp_temp/tests` → 15 tests OK(W0 레지스트리 게이트·계획 불변성·파일 저널·복구·잠금, 키 핸들·비밀 스윕·GitHub 검색). `python -m unittest tests.test_role2_harness` → 5 tests OK(role_guard R1~R5, importer oracle). outsource 유닛은 아직 미통합.
+진행 중. `.venv\Scripts\python.exe -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests/team_collection_tests -t outputs/budongi_mvp_temp/tests` → 2026-10-30 12:00 기준 **195 tests OK**: W0 15개 + 리드 셸 28개(transport·stage·supervisor·package_build·profile_run, 주입식 fake 기반) + 통합 유닛 공개 테스트 152개. `python -m unittest tests.test_role2_harness` → 6 tests OK(role_guard R1~R5 + R2 waiver, importer oracle). r2-core 10유닛·r2-adapt 6유닛을 `integrate --dry-run` 확인 후 제품 트리에 통합(compileall 통과, 커밋 로컬). 숨김 테스트는 run 디렉터리에 봉인 유지.
 
 ## ac-07 수집 배치 기록
 
@@ -58,7 +58,9 @@
 - 2026-10-30 사용자 지시로 agy 계약자를 `agy:claude-sonnet-5-5`(effort 기본 high)로 전환. 전 계획 감사자가 Sonnet이라 R2와 충돌 → `role_guard.py`에 기록형 waiver(`--waive-r2-overlap`)를 추가해 "감사자 ≠ 계약자 계열" 절만 사유 명시 시 완화(감사자 Anthropic·비리드·비gemini 핵심은 불변, R1·R3 불변). 근거: [ADR-025 Amendment](adr/ADR-025-role2-collection-harness.md), `python -m unittest tests.test_role2_harness` → 6 tests OK. r2-pack·r2-xcheck·r2-edge·r2-adapt effort를 high로 변경(outsource 감사 해시는 effort를 판정 대상에서 제외).
 - 2026-10-30 r2-adapt(어댑터 유닛 E6·E7·E8·E9·E10·E12, WF-0 도시에 기반) 계획 작성: `check --red` 통과, Sonnet 감사 6/6 pass(E9·E10은 1차 지적 → 스펙 보강 → 재감사 pass). 리드 셸 `transport.py` 작성, team_collection 테스트 20개 OK.
 - 2026-10-30 10:05~10:59 r2-pack을 `agy:claude-sonnet-5-5`(effort high, `-j 2`, R2 waiver 기록)로 실행: P5·P11·P12 수락(기존 P1·P4·P7 포함 6/11). P2는 3회 전부 forbid 게이트 거부 — 원인은 스펙 필수 식별자 `requests`(manifest 요청 목록 키·시그니처)가 네트워크 금지 단어 패턴에 걸리는 **게이트 오탐**(공개 6·숨김 25 테스트는 통과). P3·P6·P9·P10은 agy 프로세스 잔류로 timeout(sonnet 세션 자체는 39~57초 완료, 잔류는 간헐·벤더 공통, 15분 timeout으로 수습).
-- 2026-10-30 11:00 forbid 패턴 세분화: r2-pack·r2-hard·r2-adapt에서 `requests` 단어 매칭을 import/호출 형태 매칭 2건으로 교체(라이브러리 import 차단은 imports 게이트가 별도 수행, urllib·socket·subprocess 단어 차단 유지). 게이트 변경으로 r2-pack은 수락분 포함 전체 재검증 실행. 수정이 불필요한 r2-edge·r2-xcheck는 원본 패턴으로 원복해 기존 수락 6유닛(E1·E3·E4·E5·E11·X2)의 상태를 보존(r2-core와 패턴 일치 확인).
+- 2026-10-30 11:05~11:58 Claude 미터 소진(리셋 약 4시간) 후 사용자 지시로 gemini flash high 대체: r2-xcheck는 X2 수락 유지·X1 접합부 멈춤 3회째(X1·X3는 sonnet 복귀 후 처리), r2-adapt는 **6/6 수락**(E6~E9·E12 1차, E10 재시도 수락, 통합 테스트 passed), verify-run 두 계획 모두 위반 0·미확인 0. r2-core 10유닛·r2-adapt 6유닛 제품 통합. 매핑 B안(Opus) 8종 초안과 A안용 헤더-only 입력(`mappings_prep/`)을 작성.
+- 2026-10-30 12:06~12:35 r2-pack 잔여를 gemini high로 완주: **11/11 수락**(P9·P10·P11은 게이트 피드백 2차 수락, P6·P12 재시도 수락), r2-core·r2-adapt·r2-pack 3계획 27유닛 제품 통합 — 스위트 290 tests OK.
+- 2026-10-30 12:38~13:10 필드 매핑 A/B(§6-4): Gemini A안(값 없는 헤더 형상만 입력, confined delegate) + Opus B안 8종 독립 작성 → `diff_ab.py` 결정적 비교(1차에서 B안의 T001 헤더 누락 3열과 T004 변형 분할 필요를 발견해 수정) → 충돌 84건을 익명·해시 정렬 패킷으로 Sonnet 블라인드 심판(`tooling/role2_harness/review_packet.py` 신규 구현: 저장소 밖·tools 차단·check_ran_as·원장 기록) → `apply_verdicts.py`로 결정적 반영. 미합의 9건(한쪽만 매핑 유형)은 unmapped+T-I 이슈로 분류. 최종 매핑 10종(T004 4변형 포함)은 H1 통합 후 compile_mapping 검증을 거쳐 src/mappings로 옮긴다. r2-pack·r2-hard·r2-adapt에서 `requests` 단어 매칭을 import/호출 형태 매칭 2건으로 교체(라이브러리 import 차단은 imports 게이트가 별도 수행, urllib·socket·subprocess 단어 차단 유지). 게이트 변경으로 r2-pack은 수락분 포함 전체 재검증 실행. 수정이 불필요한 r2-edge·r2-xcheck는 원본 패턴으로 원복해 기존 수락 6유닛(E1·E3·E4·E5·E11·X2)의 상태를 보존(r2-core와 패턴 일치 확인).
 
 ## sdd 검증
 
