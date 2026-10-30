@@ -35,9 +35,7 @@ class Orchestrator:
 
     def finish(self, task, lease, state, **result):
         self.store.update(task, lease, state, result=result, release=True)
-        metrics_run = self.store.get(task)["result"].get("metrics_run_id")
-        if metrics_run:
-            self.store.observe(task, "lifecycle", metrics_run, state)
+        self.store.observe_idle_state(task)
         if state == "COMPLETED":
             from .autocommit import auto_commit_task
             return auto_commit_task(self.store, task)

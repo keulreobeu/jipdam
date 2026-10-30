@@ -32,6 +32,24 @@ command = "python -m harness git verify --task TASK-OBS-001 (isolated publisher,
 result = "passed"
 evidence = "outputs/budongi_mvp_temp/docs/tasks/observability.md#격리-후보-검증"
 acs = ["OBS-001-AC-01", "OBS-001-AC-02", "OBS-001-AC-03", "OBS-001-AC-04"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_observability.py -k idle_pause (before correction)"
+result = "failed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/observability.md#자동-리뷰-후속-수정"
+acs = ["OBS-001-AC-02", "OBS-001-AC-03"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_observability.py -k serialized (before serialization)"
+result = "failed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/observability.md#자동-리뷰-후속-수정"
+acs = ["OBS-001-AC-02"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_observability.py; python -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_managed_harness.py"
+result = "passed"
+evidence = "outputs/budongi_mvp_temp/docs/tasks/observability.md#자동-리뷰-후속-수정"
+acs = ["OBS-001-AC-01", "OBS-001-AC-02", "OBS-001-AC-03", "OBS-001-AC-04"]
 ```
 
 Jira: [KAN-30](https://kwulreobeu.atlassian.net/browse/KAN-30), agent-codex. 검증·위키·Git receipt를 확인해 종료한다.
@@ -84,6 +102,22 @@ publisher의 관측성29개(exit0), 기존 managed13개(exit0), 전체 `verify_e
 
 위 검증 결과를 추가한 문서 snapshot도 같은 Git 절차로 재검증하며 PR/CI/최종 병합/정리 상태는
 TASK-OBS-001의 Git lifecycle receipt와 Jira에 실제 결과로 별도 기록한다.
+
+## 자동 리뷰 후속 수정
+
+[PR64 리뷰](https://github.com/keulreobeu/jipdam/pull/64#discussion_r4419358269)의 P2를 병합 전에
+재현했다. worker가 없는 상태에서 control(pause/cancel)·ready가 managed DB만 바꾸고 기존
+finish lifecycle hook을 지나지 않아 측정 원장과 suite 상태가 낡는 원인이었다. 신규 회귀가
+수정 전 `WAITING_FOR_PROVIDER != PAUSED`로 실패했고, managed DB transaction 이후 lease가
+없는 경우에만 실제 idle 상태를 append하도록 두 경로를 보강했다. 실행 중 control은 그대로
+worker 종료에 맡긴다. idle pause→ready→cancel과 suite의 failed1/blocked0을 검증했다.
+동시 관리 검토에서 read→append 사이에 다른 ready/claim이 끼어드는 TOCTOU도 발견해,
+threading 회귀로 수정 전 실제 추월을 재현했다. 현재 row 재조회와 append를 managed write
+transaction 안에서 직렬화하고, 관측 장애 경고는 같은 connection에 기록해 중첩 잠금을 피했다.
+finish/approve도 최신 상태 재조회 경로를 사용하며, 늦은 attempt 종료가 authoritative lifecycle
+상태를 되돌리지 않게 했다. reviewer가 후속 잠금 순서·경합 해결을 읽기 전용 확인했다.
+최종 수정 후 관측성32개 및 managed13개 PASS. 자동 리뷰로 발견한 실패 이력도 보존하며, 이 후보를
+격리 전체 검증·새 head의4개 CI·리뷰 확인까지 통과한 후에만 병합한다.
 
 ## 위키 판단
 

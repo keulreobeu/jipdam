@@ -8,6 +8,7 @@ from pathlib import Path
 import sqlite3
 import sys
 import tempfile
+import threading
 import time
 import unittest
 from unittest.mock import patch
@@ -249,6 +250,12 @@ class LedgerTests(unittest.TestCase):
         self.assertEqual(reopened.report(ids["run_id"])["known_observed_tokens"], 12)
         self.assertEqual(reopened.report(ids["run_id"])["known_observed_tokens"], 12)
 
+    def test_late_attempt_close_cannot_overwrite_authoritative_cancellation(self):
+        ids, _ = self.completed(state="WAITING_FOR_PROVIDER")
+        self.metrics.lifecycle(ids["run_id"], "CANCELLED")
+        self.metrics.end_attempt(ids, {"state": "WAITING_FOR_PROVIDER", "result": {}}, 10)
+        self.assertEqual(self.metrics.report(ids["run_id"])["state"], "CANCELLED")
+
     def test_original_item_split_into_five_tasks_counts_once(self):
         tasks = ["TASK-" + str(i) for i in range(5)]
         self.suite(tasks)
@@ -399,6 +406,58 @@ class ManagedObservationTests(unittest.TestCase):
         self.assertEqual(r["state"], "REVIEW_REQUIRED")
         self.assertEqual(r["measurement"]["profile"]["context_manifest"][0]["sha256"], original_hash)
         self.assertFalse(r["measurement"]["profile"]["repo_dirty"])
+
+    def test_idle_pause_resume_cancel_update_metrics_and_suite_denominators(self):
+        metrics = MetricsStore(self.store.directory)
+        metrics.suite({"suite_id": "IDLE-SUITE", "suite_version": "v1", "items": [{"item_id": "IDLE-ITEM",
+                      "task_ids": ["TASK-OBS"], "difficulty": "S", "ac_sha256": "a" * 64, "evaluation_sha256": "e" * 64}]})
+        provider = self.provider()
+        provider.execute = lambda *args: ExecutionResult("error", "quota")
+        result = Orchestrator(self.store, {"codex": provider}).run("TASK-OBS")
+        self.assertEqual(result["state"], "WAITING_FOR_PROVIDER")
+        self.store.control("TASK-OBS", "pause")
+        self.assertEqual(self.store.export("TASK-OBS")["measurement"]["state"], "PAUSED")
+        self.store.ready("TASK-OBS")
+        self.assertEqual(self.store.export("TASK-OBS")["measurement"]["state"], "READY")
+        self.store.control("TASK-OBS", "cancel")
+        self.assertEqual(self.store.export("TASK-OBS")["measurement"]["state"], "CANCELLED")
+        suite = metrics.suite_report("IDLE-SUITE")
+        self.assertEqual(suite["blocked_count"], 0)
+        self.assertEqual(suite["failed_count"], 1)
+
+    def test_idle_state_read_and_append_are_serialized_with_other_management(self):
+        provider = self.provider()
+        provider.execute = lambda *args: ExecutionResult("error", "quota")
+        Orchestrator(self.store, {"codex": provider}).run("TASK-OBS")
+        entered, release, resumed = threading.Event(), threading.Event(), threading.Event()
+        original = MetricsStore.lifecycle
+        def delayed(metrics, run_id, state):
+            if state == "PAUSED":
+                entered.set()
+                if not release.wait(5): raise AssertionError("fixture release missing")
+            return original(metrics, run_id, state)
+        errors = []
+        def pause():
+            try: self.store.control("TASK-OBS", "pause")
+            except Exception as exc: errors.append(type(exc).__name__)
+        def resume():
+            try:
+                self.store.ready("TASK-OBS")
+                resumed.set()
+            except Exception as exc: errors.append(type(exc).__name__)
+        with patch.object(MetricsStore, "lifecycle", delayed):
+            first = threading.Thread(target=pause); second = threading.Thread(target=resume)
+            first.start()
+            try:
+                self.assertTrue(entered.wait(5))
+                second.start()
+                self.assertFalse(resumed.wait(.2), "resume must not overtake the paused-state append")
+            finally:
+                release.set(); first.join(5)
+                if second.ident is not None: second.join(5)
+        self.assertEqual(errors, [])
+        self.assertFalse(first.is_alive() or second.is_alive())
+        self.assertEqual(self.store.export("TASK-OBS")["measurement"]["state"], "READY")
 
 
 if __name__ == "__main__":

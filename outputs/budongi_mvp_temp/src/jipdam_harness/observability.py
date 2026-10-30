@@ -319,6 +319,7 @@ class MetricsStore:
                 raise ValueError("unknown_metrics_run")
             events = [dict(r, body=json.loads(r["body"])) for r in c.execute("SELECT * FROM events WHERE run_id=? ORDER BY seq", (run_id,))]
         invocations, attempts, state, conflict = {}, {}, "running", False
+        lifecycle_state = None
         conflicting_events = set()
         for e in events:
             b, kind = e["body"], e["kind"]
@@ -328,7 +329,7 @@ class MetricsStore:
                 attempts[e["attempt_id"]].update(b)
                 state = b["state"]
             elif kind == "lifecycle":
-                state = b["state"]
+                lifecycle_state = b["state"]
             elif kind == "invocation.started":
                 invocations[e["invocation_id"]] = {**b, "attempt_id": e["attempt_id"], "coverage_state": "partial", "observations": [], "flags": []}
             elif kind == "invocation.finished" and e["invocation_id"] in invocations:
@@ -387,7 +388,7 @@ class MetricsStore:
         known = sum(totals) if totals else None
         return {"schema_version": VERSION, "run_id": run_id, "task_id": run["task_id"], "profile": json.loads(run["profile"]),
                 "profile_hash": run["profile_hash"], "run_revision": hashed([(e["event_id"], e["body"]) for e in events]),
-                "state": state, "coverage_state": coverage, "known_observed_tokens": known,
+                "state": lifecycle_state if lifecycle_state is not None else state, "coverage_state": coverage, "known_observed_tokens": known,
                 "collector_health": collector_health,
                 "complete_run_tokens": known if coverage == "complete" else None, "reported_session_tokens": None,
                 "failed_attempt_tokens_known": sum(failed_tokens) if failed_tokens else None,

@@ -17,6 +17,8 @@
           "id": "OBS-001-REQ-02",
           "acs": [{"id": "OBS-001-AC-02", "tests": [
             {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_retry_usage_survives_validation_failure"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_idle_pause_resume_cancel_update_metrics_and_suite_denominators"},
+            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_idle_state_read_and_append_are_serialized_with_other_management"},
             {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_collector_database_failure_preserves_execution_and_marks_partial"},
             {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_shadow_keeps_approval_semantics_and_reports_after_restart"}
           ]}]
