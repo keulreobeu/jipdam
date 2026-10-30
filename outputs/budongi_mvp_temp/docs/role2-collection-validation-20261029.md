@@ -9,7 +9,7 @@
 | S0 준비(브랜치·venv·agy) | passed |
 | AC-01~06 단위 테스트 | not_run |
 | AC-07 수집 배치 기록 | in_progress(raw 10배치, 패키징 전) |
-| AC-08 다중 LLM 검증 기록 | in_progress(감사 38/38, 채택 20/38) |
+| AC-08 다중 LLM 검증 기록 | in_progress(감사 44/44 Sonnet pass, **채택 44/44**, 전 유닛 실모델 확인·R1 위반 0) |
 | SDD·전체 환경 검사 | not_run |
 
 ## s0 준비
@@ -63,6 +63,7 @@
 - 2026-10-30 12:38~13:10 필드 매핑 A/B(§6-4): Gemini A안(값 없는 헤더 형상만 입력, confined delegate) + Opus B안 8종 독립 작성 → `diff_ab.py` 결정적 비교(1차에서 B안의 T001 헤더 누락 3열과 T004 변형 분할 필요를 발견해 수정) → 충돌 84건을 익명·해시 정렬 패킷으로 Sonnet 블라인드 심판(`tooling/role2_harness/review_packet.py` 신규 구현: 저장소 밖·tools 차단·check_ran_as·원장 기록) → `apply_verdicts.py`로 결정적 반영. 미합의 9건(한쪽만 매핑 유형)은 unmapped+T-I 이슈로 분류: T001 부가 5열(영문·한자 역사명, 환승 3열), T004 2023·2024의 GU_NAM(실파일에 없는 열 — A안 오류, 결정적 제외), T006 좌표 2열(T005 보유).
 - 2026-10-30 13:40~14:00 매핑 동결: 수락된 H1 compile_mapping으로 **11개 매핑 전부 compile 통과**, 실제 헤더 집합 26개 전부 coverage complete. 2022 침수흔적도 dbf(76MB, 프로브 상한 초과로 형상 누락)는 스트림 헤더 판독으로 18열 확인 후 **schema_2022 변형을 기판정 필드만 재사용해 추가**(OBJECTID·layer·path는 unmapped+T-I; T004는 총 5변형, 14개 연도 파일이 각각 정확히 1개 변형에 매칭). 최종 매핑 8파일을 `src/budongi/team_collection/mappings/`로 동결(pyproject package-data 기포함).
 - 2026-10-30 13:42~14:25 r2-hard 완주: gemini high로 H1·H2·H3·H6·H8(1차)·H4·H7(재시도) 수락, 마지막 H5는 자원 사다리(사용자 지시)로 **claude 측 미터(claude:sonnet 계약자, R2 waiver 기록)**에서 1차 수락 — **r2-hard 8/8, 통합 테스트 passed**. 제품 통합 후 스위트 **337 tests OK**. 참고: H6·H8 프로파일러가 gemini 작성으로 확정되어 X1·X3을 claude:sonnet으로 돌리는 것이 교차벤더에 부합(X2 recount만 프로파일러와 동일 gemini — Opus 숨김 테스트·data_only 재읽기·Excel COM 재계산이 견제, 기록으로 관리).
+- 2026-10-30 14:40~14:55 외주 빌드 종료: X1·X3·E2가 claude:sonnet 1차 수락으로 **6계획 44/44 유닛 전부 수락·제품 통합**, 스위트 **401 tests OK**. 실제 계약자 계열 집계(attempt 기록 기준): gemini 35·sonnet 9, 리드 계열(Opus) 위반 0, 모델 미확인 0. 계획별: core 10 gemini / edge 5 gemini+1 sonnet / adapt 6 gemini / pack 6 gemini+5 sonnet / xcheck 1 gemini+2 sonnet / hard 7 gemini+1 sonnet. R2 중첩 waiver가 적용된 실행은 실행 로그에 사유 JSON으로 기록됨.
 - 2026-10-30 14:30 wiring(조립 모듈) 스모크: T001 실헤더 변형 선택·주소 접두사 scope·매핑 적용 0오류·facility 정규화·4326 근거 좌표 표준화(lat/lon 채움, review pending)까지 통과. 이 과정에서 심판이 고른 `facility_type_code=rail_station`이 계약 §5의 명시 어휘와 달라 **계약 우선 원칙으로 `transit.subway_station`으로 결정적 교정**(T001·T002, 투표는 계약을 뒤집지 못함). 식별자 네임스페이스는 T005~T007 교차 참조 일관성 확인 후 심판 선택 유지. r2-pack·r2-hard·r2-adapt에서 `requests` 단어 매칭을 import/호출 형태 매칭 2건으로 교체(라이브러리 import 차단은 imports 게이트가 별도 수행, urllib·socket·subprocess 단어 차단 유지). 게이트 변경으로 r2-pack은 수락분 포함 전체 재검증 실행. 수정이 불필요한 r2-edge·r2-xcheck는 원본 패턴으로 원복해 기존 수락 6유닛(E1·E3·E4·E5·E11·X2)의 상태를 보존(r2-core와 패턴 일치 확인).
 
 ## sdd 검증
