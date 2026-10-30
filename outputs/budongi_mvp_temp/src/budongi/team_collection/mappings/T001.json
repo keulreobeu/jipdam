@@ -14,7 +14,7 @@
       {
         "target": "facility_type_code",
         "source": null,
-        "const": "rail_station",
+        "const": "transit.subway_station",
         "type": "code"
       },
       {
