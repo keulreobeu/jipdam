@@ -73,7 +73,17 @@
       "normalize": {"record_type": "spatial_layer", "representation": "vector",
                     "layer_id": "seoul_trade_area"}
     },
-    "R1": {"raw_only": true, "note": "생활인구: 정규화 없이 raw 패키징 (TEAM-DATA-001 개정 대기)"},
+    "R1": {
+      "reader": {"kind": "zip_csv", "section": "living_population", "header_row": 1},
+      "scope": {"policy": "always_in", "evidence": "서울 행정동 생활인구"},
+      "coords": {"source_crs": null, "axis_order": null, "evidence": "좌표 없음"},
+      "normalize": {"record_type": "regional_statistic",
+                    "metric_code": "seoul.living_population:total",
+                    "frequency": "daily", "unit_code": "명",
+                    "region_fields": ["adm_cd"], "date_field": "date_raw",
+                    "dimension_fields": {"hour": "hour_raw"},
+                    "note": "총생활인구수만; 성·연령 밴드는 unmapped (계약 §5)"}
+    },
     "R2": {"raw_only": true, "note": "승하차: 정규화 없이 raw 패키징 (TEAM-DATA-001 개정 대기)"}
   }
 }

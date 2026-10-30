@@ -528,6 +528,1562 @@
           "section": "OA-15560:seq5"
         }
       ]
+    },
+    {
+      "t_id": "T003",
+      "source_id": "seoul_subway_station_master",
+      "dataset_id": "OA-21232",
+      "title": "서울시 지하철역 마스터 정보",
+      "provider": "서울특별시 (서울 열린데이터광장)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-21232/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "D",
+      "record_type": "facility",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-21232/S/1/datasetView.do",
+        "text": "공공누리 1유형: 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/48",
+      "origin_allowlist": [
+        "http://openapi.seoul.go.kr:8088"
+      ],
+      "requests": [
+        {
+          "request_id": "q1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/subwayStationMaster/1/1000/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:subwayStationMaster",
+          "section": "station",
+          "expected_rows": 784,
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "T013",
+      "source_id": "seoul_subway_entrance_lift",
+      "dataset_id": "OA-21211",
+      "title": "서울시 지하철 출입구 리프트 현황",
+      "provider": "서울특별시 (서울 열린데이터광장)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-21211/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "D",
+      "record_type": "facility",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-21211/S/1/datasetView.do",
+        "text": "공공누리 1유형: 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/56",
+      "origin_allowlist": [
+        "http://openapi.seoul.go.kr:8088"
+      ],
+      "requests": [
+        {
+          "request_id": "q1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/tbTraficEntrcLft/1/1000/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:tbTraficEntrcLft",
+          "section": "lift",
+          "expected_rows": 83,
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "T014",
+      "source_id": "seoul_subway_elevator",
+      "dataset_id": "OA-21212",
+      "title": "서울시 지하철 엘리베이터 현황",
+      "provider": "서울특별시 (서울 열린데이터광장)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-21212/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "D",
+      "record_type": "facility",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-21212/S/1/datasetView.do",
+        "text": "공공누리 1유형: 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/57",
+      "origin_allowlist": [
+        "http://openapi.seoul.go.kr:8088"
+      ],
+      "requests": [
+        {
+          "request_id": "q1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/tbTraficElvtr/1/1000/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:tbTraficElvtr",
+          "section": "elevator",
+          "expected_rows": 552,
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "T015",
+      "source_id": "seoul_heatwave_shelter",
+      "dataset_id": "OA-21065",
+      "title": "서울시 무더위쉼터 현황",
+      "provider": "서울특별시 (서울 열린데이터광장)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-21065/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "D",
+      "record_type": "facility",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-21065/S/1/datasetView.do",
+        "text": "공공누리 1유형: 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/58",
+      "origin_allowlist": [
+        "http://openapi.seoul.go.kr:8088"
+      ],
+      "requests": [
+        {
+          "request_id": "q1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TbGtnHwcwP/1/1000/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TbGtnHwcwP",
+          "section": "shelter",
+          "expected_rows": 4092,
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "T016",
+      "source_id": "seoul_public_parking_info",
+      "dataset_id": "OA-13122",
+      "title": "서울시 공영주차장 안내 정보",
+      "provider": "서울특별시 (서울 열린데이터광장)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-13122/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "D",
+      "record_type": "facility",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-13122/S/1/datasetView.do",
+        "text": "공공누리 1유형: 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/59",
+      "origin_allowlist": [
+        "http://openapi.seoul.go.kr:8088"
+      ],
+      "requests": [
+        {
+          "request_id": "q1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/GetParkInfo/1/1000/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:GetParkInfo",
+          "section": "parking",
+          "expected_rows": 2181,
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "T017",
+      "source_id": "seoul_air_quality_time_average",
+      "dataset_id": "OA-2275",
+      "title": "서울시 시간평균 대기환경 정보 (90일 백필)",
+      "provider": "서울특별시 (서울 열린데이터광장)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-2275/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "D",
+      "record_type": "time_observation",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-2275/S/1/datasetView.do",
+        "text": "공공누리 1유형: 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/60",
+      "origin_allowlist": [
+        "http://openapi.seoul.go.kr:8088"
+      ],
+      "requests": [
+        {
+          "request_id": "day-20260801",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260801/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260802",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260802/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260803",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260803/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260804",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260804/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260805",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260805/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260806",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260806/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260807",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260807/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260808",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260808/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260809",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260809/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260810",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260810/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260811",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260811/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260812",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260812/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260813",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260813/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260814",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260814/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260815",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260815/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260816",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260816/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260817",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260817/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260818",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260818/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260819",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260819/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260820",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260820/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260821",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260821/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260822",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260822/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260823",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260823/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260824",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260824/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260825",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260825/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260826",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260826/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260827",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260827/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260828",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260828/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260829",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260829/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260830",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260830/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260831",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260831/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260901",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260901/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260902",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260902/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260903",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260903/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260904",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260904/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260905",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260905/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260906",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260906/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260907",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260907/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260908",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260908/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260909",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260909/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260910",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260910/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260911",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260911/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260912",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260912/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260913",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260913/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260914",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260914/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260915",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260915/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260916",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260916/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260917",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260917/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260918",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260918/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260919",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260919/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260920",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260920/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260921",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260921/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260922",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260922/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260923",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260923/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260924",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260924/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260925",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260925/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260926",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260926/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260927",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260927/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260928",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260928/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260929",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260929/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20260930",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20260930/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261001",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261001/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261002",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261002/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261003",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261003/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261004",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261004/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261005",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261005/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261006",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261006/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261007",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261007/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261008",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261008/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261009",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261009/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261010",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261010/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261011",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261011/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261012",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261012/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261013",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261013/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261014",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261014/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261015",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261015/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261016",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261016/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261017",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261017/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261018",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261018/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261019",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261019/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261020",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261020/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261021",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261021/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261022",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261022/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261023",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261023/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261024",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261024/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261025",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261025/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261026",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261026/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261027",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261027/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261028",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261028/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "day-20261029",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/TimeAverageAirQuality/1/1000/20261029/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:TimeAverageAirQuality",
+          "section": "air_day",
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "R3",
+      "source_id": "seoulmetro_first_last_train",
+      "dataset_id": "OA-15492",
+      "title": "서울교통공사 호선별 첫·막차 시각 (raw-only)",
+      "provider": "서울특별시 (서울 열린데이터광장)",
+      "documentation_url": "https://data.seoul.go.kr/dataList/OA-15492/S/1/datasetView.do",
+      "status": "approved",
+      "lane": "D",
+      "record_type": "raw_only",
+      "license": {
+        "class": "kogl1",
+        "ref": "https://data.seoul.go.kr/dataList/OA-15492/S/1/datasetView.do",
+        "text": "공공누리 1유형: 출처표시 (상업적 이용 및 변경 가능)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/45",
+      "origin_allowlist": [
+        "http://openapi.seoul.go.kr:8088"
+      ],
+      "requests": [
+        {
+          "request_id": "line1-1-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/1%ED%98%B8%EC%84%A0/1/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line1",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line1-1-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/1%ED%98%B8%EC%84%A0/1/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line1",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line1-1-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/1%ED%98%B8%EC%84%A0/1/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line1",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line1-2-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/1%ED%98%B8%EC%84%A0/2/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line1",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line1-2-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/1%ED%98%B8%EC%84%A0/2/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line1",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line1-2-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/1%ED%98%B8%EC%84%A0/2/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line1",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line2-1-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/2%ED%98%B8%EC%84%A0/1/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line2",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line2-1-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/2%ED%98%B8%EC%84%A0/1/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line2",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line2-1-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/2%ED%98%B8%EC%84%A0/1/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line2",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line2-2-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/2%ED%98%B8%EC%84%A0/2/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line2",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line2-2-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/2%ED%98%B8%EC%84%A0/2/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line2",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line2-2-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/2%ED%98%B8%EC%84%A0/2/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line2",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line3-1-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/3%ED%98%B8%EC%84%A0/1/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line3",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line3-1-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/3%ED%98%B8%EC%84%A0/1/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line3",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line3-1-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/3%ED%98%B8%EC%84%A0/1/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line3",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line3-2-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/3%ED%98%B8%EC%84%A0/2/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line3",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line3-2-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/3%ED%98%B8%EC%84%A0/2/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line3",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line3-2-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/3%ED%98%B8%EC%84%A0/2/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line3",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line4-1-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/4%ED%98%B8%EC%84%A0/1/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line4",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line4-1-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/4%ED%98%B8%EC%84%A0/1/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line4",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line4-1-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/4%ED%98%B8%EC%84%A0/1/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line4",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line4-2-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/4%ED%98%B8%EC%84%A0/2/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line4",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line4-2-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/4%ED%98%B8%EC%84%A0/2/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line4",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line4-2-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/4%ED%98%B8%EC%84%A0/2/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line4",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line5-1-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/5%ED%98%B8%EC%84%A0/1/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line5",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line5-1-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/5%ED%98%B8%EC%84%A0/1/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line5",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line5-1-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/5%ED%98%B8%EC%84%A0/1/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line5",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line5-2-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/5%ED%98%B8%EC%84%A0/2/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line5",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line5-2-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/5%ED%98%B8%EC%84%A0/2/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line5",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line5-2-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/5%ED%98%B8%EC%84%A0/2/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line5",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line6-1-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/6%ED%98%B8%EC%84%A0/1/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line6",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line6-1-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/6%ED%98%B8%EC%84%A0/1/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line6",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line6-1-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/6%ED%98%B8%EC%84%A0/1/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line6",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line6-2-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/6%ED%98%B8%EC%84%A0/2/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line6",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line6-2-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/6%ED%98%B8%EC%84%A0/2/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line6",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line6-2-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/6%ED%98%B8%EC%84%A0/2/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line6",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line7-1-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/7%ED%98%B8%EC%84%A0/1/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line7",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line7-1-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/7%ED%98%B8%EC%84%A0/1/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line7",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line7-1-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/7%ED%98%B8%EC%84%A0/1/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line7",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line7-2-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/7%ED%98%B8%EC%84%A0/2/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line7",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line7-2-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/7%ED%98%B8%EC%84%A0/2/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line7",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line7-2-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/7%ED%98%B8%EC%84%A0/2/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line7",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line8-1-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/8%ED%98%B8%EC%84%A0/1/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line8",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line8-1-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/8%ED%98%B8%EC%84%A0/1/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line8",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line8-1-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/8%ED%98%B8%EC%84%A0/1/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line8",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line8-2-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/8%ED%98%B8%EC%84%A0/2/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line8",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line8-2-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/8%ED%98%B8%EC%84%A0/2/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line8",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line8-2-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/8%ED%98%B8%EC%84%A0/2/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line8",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line9-1-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/9%ED%98%B8%EC%84%A0/1/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line9",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line9-1-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/9%ED%98%B8%EC%84%A0/1/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line9",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line9-1-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/9%ED%98%B8%EC%84%A0/1/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line9",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line9-2-1",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/9%ED%98%B8%EC%84%A0/2/1/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line9",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line9-2-2",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/9%ED%98%B8%EC%84%A0/2/2/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line9",
+          "expected_kind": "json"
+        },
+        {
+          "request_id": "line9-2-3",
+          "url_template": "http://openapi.seoul.go.kr:8088/{KEY}/json/SearchFirstAndLastTrainbyLineServiceNew/1/1000/9%ED%98%B8%EC%84%A0/2/3/",
+          "credential_ref": "seoul_open_data",
+          "quota_bucket": "seoul:SearchFirstAndLastTrainbyLineServiceNew",
+          "section": "line9",
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "T019",
+      "source_id": "mois_civil_defense_shelter",
+      "dataset_id": "15155067",
+      "title": "행정안전부 민방위 대피시설 (전국, 서울만 정규화)",
+      "provider": "행정안전부",
+      "documentation_url": "https://www.data.go.kr/data/15155067/openapi.do",
+      "status": "approved",
+      "lane": "B",
+      "record_type": "facility",
+      "license": {
+        "class": "unrestricted",
+        "ref": "https://www.data.go.kr/data/15155067/openapi.do",
+        "text": "이용허락범위 제한 없음"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/61",
+      "origin_allowlist": [
+        "https://apis.data.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "shelters",
+          "url_template": "https://apis.data.go.kr/1741000/civil_defense_shelter_info/info?serviceKey={KEY}",
+          "params": [
+            [
+              "pageNo",
+              "1"
+            ],
+            [
+              "numOfRows",
+              "100"
+            ],
+            [
+              "returnType",
+              "json"
+            ]
+          ],
+          "credential_ref": "datagokr",
+          "quota_bucket": "datagokr:1741000",
+          "section": "shelter",
+          "expected_rows": 18676,
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "L1a",
+      "source_id": "airkorea_msrstn_list",
+      "dataset_id": "15073877",
+      "title": "에어코리아 측정소 목록 (서울, raw-only)",
+      "provider": "한국환경공단 에어코리아",
+      "documentation_url": "https://www.data.go.kr/data/15073877/openapi.do",
+      "status": "approved",
+      "lane": "B",
+      "record_type": "raw_only",
+      "license": {
+        "class": "kogl3",
+        "ref": "https://www.data.go.kr/data/15073877/openapi.do",
+        "text": "공공저작물 제3유형(출처표시·변경금지) + 에어코리아 약관(재제공 금지)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/42",
+      "origin_allowlist": [
+        "https://apis.data.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "stations",
+          "url_template": "https://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getMsrstnList?serviceKey={KEY}",
+          "params": [
+            [
+              "returnType",
+              "json"
+            ],
+            [
+              "numOfRows",
+              "100"
+            ],
+            [
+              "pageNo",
+              "1"
+            ],
+            [
+              "addr",
+              "서울"
+            ],
+            [
+              "ver",
+              "1.1"
+            ]
+          ],
+          "credential_ref": "datagokr",
+          "quota_bucket": "airkorea:B552584",
+          "section": "stations",
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "L1b",
+      "source_id": "airkorea_seoul_realtime_sample",
+      "dataset_id": "15073861",
+      "title": "에어코리아 서울 실시간 측정 표본 (raw-only)",
+      "provider": "한국환경공단 에어코리아",
+      "documentation_url": "https://www.data.go.kr/data/15073861/openapi.do",
+      "status": "approved",
+      "lane": "B",
+      "record_type": "raw_only",
+      "license": {
+        "class": "kogl3",
+        "ref": "https://www.data.go.kr/data/15073861/openapi.do",
+        "text": "공공저작물 제3유형(출처표시·변경금지) + 에어코리아 약관(재제공 금지)"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/42",
+      "origin_allowlist": [
+        "https://apis.data.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "realtime-sample",
+          "url_template": "https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?serviceKey={KEY}",
+          "params": [
+            [
+              "returnType",
+              "json"
+            ],
+            [
+              "numOfRows",
+              "100"
+            ],
+            [
+              "pageNo",
+              "1"
+            ],
+            [
+              "sidoName",
+              "서울"
+            ],
+            [
+              "ver",
+              "1.0"
+            ]
+          ],
+          "credential_ref": "datagokr",
+          "quota_bucket": "airkorea:B552584",
+          "section": "realtime",
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "T008",
+      "source_id": "datagokr_std_city_park",
+      "dataset_id": "15012890",
+      "title": "전국도시공원정보표준데이터 (서울만 정규화)",
+      "provider": "공공데이터포털 표준데이터 (행정안전부 취합)",
+      "documentation_url": "https://www.data.go.kr/data/15012890/standard.do",
+      "status": "approved",
+      "lane": "A1",
+      "record_type": "facility",
+      "license": {
+        "class": "unrestricted",
+        "ref": "https://www.data.go.kr/biz/dcat/metadata/15012890.do",
+        "text": "이용허락범위 제한 없음"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/53",
+      "origin_allowlist": [
+        "https://www.data.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "columns",
+          "url_template": "https://www.data.go.kr/download/columList.json?pk=15012890&ext=CSV",
+          "section": "columns",
+          "expected_kind": "json"
+        }
+      ]
+    },
+    {
+      "t_id": "T009",
+      "source_id": "datagokr_std_parking_lot",
+      "dataset_id": "15012896",
+      "title": "전국주차장정보표준데이터 (서울만 정규화)",
+      "provider": "공공데이터포털 표준데이터 (행정안전부 취합)",
+      "documentation_url": "https://www.data.go.kr/data/15012896/standard.do",
+      "status": "approved",
+      "lane": "A1",
+      "record_type": "facility",
+      "license": {
+        "class": "unrestricted",
+        "ref": "https://www.data.go.kr/biz/dcat/metadata/15012896.do",
+        "text": "이용허락범위 제한 없음"
+      },
+      "record_url": "https://github.com/keulreobeu/jipdam/issues/54",
+      "origin_allowlist": [
+        "https://www.data.go.kr"
+      ],
+      "requests": [
+        {
+          "request_id": "columns",
+          "url_template": "https://www.data.go.kr/download/columList.json?pk=15012896&ext=CSV",
+          "section": "columns",
+          "expected_kind": "json"
+        }
+      ]
     }
   ],
   "excluded": [

@@ -145,6 +145,27 @@ def make_normalizer(config: dict, spatial_meta: dict | None = None):
                 subject_namespace=subject_ns, subject_field="source_subject_id",
                 observed_at_utc=observed)
         return normalize
+    if record_type == "regional_statistic":
+        from .core import timefmt as C2
+        from .normalize import regional_statistic as C10
+        metric_code = settings.get("metric_code", "metric")
+        frequency = settings.get("frequency", "daily")
+        unit_code = settings.get("unit_code", "unknown")
+        dimension_fields = settings.get("dimension_fields") or {}
+        region_fields = tuple(settings.get("region_fields") or ("adm_cd",))
+        date_field = settings.get("date_field", "date_raw")
+
+        def normalize(fields, envelope):
+            prepared = dict(fields)
+            prepared["period_key"] = C2.iso_date(fields.get(date_field))
+            dimensions = {name: fields.get(source)
+                          for name, source in dimension_fields.items()}
+            return C10.normalize_statistic(prepared, envelope=envelope,
+                                           metric_code=metric_code, frequency=frequency,
+                                           unit_code=unit_code, value_field="value_raw",
+                                           region_fields=region_fields,
+                                           dimensions=dimensions)
+        return normalize
     if record_type == "spatial_layer":
         meta_table = spatial_meta or {}
         event_date_field = settings.get("event_date_field")
@@ -290,6 +311,40 @@ def xlsx_files(batch_dir: Path, plan: dict, config: dict) -> list[StageFile]:
     return files
 
 
+def zip_csv_files(batch_dir: Path, plan: dict, config: dict, workdir: Path) -> list[StageFile]:
+    """StageFiles for batches whose raw payloads are ZIPs each holding CSV members."""
+    from .readers import csvread
+    from .readers import zipguard as E3
+    reader = config["reader"]
+    section = reader.get("section", "data")
+    files = []
+    for item in plan["requests"]:
+        journal_path = Path(batch_dir) / "raw" / item["request_id"] / "journal.json"
+        if not journal_path.is_file():
+            continue
+        journal = read_json(journal_path)
+        for page in journal["pages"]:
+            zip_path = journal_path.parent / page["file"]
+            members = [m["name"] for m in E3.list_members(zip_path)
+                       if m["name"].lower().endswith(".csv")]
+            if len(members) != 1:
+                raise ContractError("zip_csv_member_count")
+            work = Path(workdir) / item["request_id"] / Path(page["file"]).stem
+            work.mkdir(parents=True, exist_ok=True)
+            extracted = E3.extract_member(zip_path, members[0], work, max_bytes=1 << 31)
+
+            def read(path=extracted):
+                return csvread.read_csv(path, encoding=_sniff_encoding(path),
+                                        section=section,
+                                        header_row=reader.get("header_row", 1))
+
+            files.append(StageFile(file_ref=f"raw/{item['request_id']}/{page['file']}",
+                                   sha256=page["sha256"], section=section, read=read))
+    if not files:
+        raise ContractError("no_staged_files")
+    return files
+
+
 def shp_files(batch_dir: Path, plan: dict, config: dict, doc: dict,
               workdir: Path) -> tuple[list[StageFile], dict]:
     """StageFiles plus per-file spatial metadata for shp_zip batches (variant per file)."""
@@ -418,6 +473,82 @@ def _tolerant_dbf_rows(data: bytes, encoding: str, section: str):
             yield RawRow(section, number, tuple(values), status="ragged", reason="ragged_row")
         else:
             yield RawRow(section, number, tuple(values))
+
+
+QUOTA_CAPS = {"airkorea": 500, "datagokr": 10000, "seoul": 1000, "topis": 1000}
+LANE_RATES = {"B": (2.0, 0.2, 5.0), "C": (1.0, 0.2, 2.0), "D": (1.0, 0.2, 3.0)}
+
+
+def quota_cap(bucket: str) -> int:
+    return QUOTA_CAPS.get((bucket or "").split(":")[0], 1000)
+
+
+def _seoul_service(template: str) -> str:
+    parts = template.split("/json/", 1)
+    if len(parts) != 2:
+        raise ContractError("unsupported_template")
+    return parts[1].split("/", 1)[0]
+
+
+def lane_units(lane: str, *, registry: dict, origin: str):
+    """LaneUnits for one keyed batch: journal H2, pacing E5, transport, adapter, classify E6."""
+    import time
+    from datetime import datetime, timezone
+    from . import transport
+    from ._reuse import no_proxy_opener, utc_z
+    from .adapters import datagokr as E8
+    from .adapters import seoul as E7
+    from .registry import http_acknowledged
+    from .runtime import classify as E6
+    from .runtime.journal import RequestJournal
+    from .runtime.ratelimit import Aimd, TokenBucket
+    from .supervisor import LaneUnits
+    start, floor, ceiling = LANE_RATES.get(lane, (1.0, 0.2, 2.0))
+    bucket = TokenBucket(start, 1, clock=time.monotonic, sleep=time.sleep)
+    aimd = Aimd(start, floor, ceiling)
+    opener = no_proxy_opener()
+    allow_http = http_acknowledged(registry, origin)
+    is_seoul = ":8088" in origin
+
+    def fetch(spec, handle):
+        return transport.fetch_page(spec, handle, opener=opener, allow_http=allow_http)
+
+    def parse(spec, payload):
+        if is_seoul:
+            page, code = E7.parse_page(payload, service=_seoul_service(spec.url_template))
+            return page, code, ""
+        page, code = E8.parse_page(payload)
+        return page, code, ""
+
+    def classify(spec, code, message):
+        return E6.classify_seoul(code) if is_seoul else E6.classify_datagokr(code)
+
+    def make_pages(spec, total):
+        if total is None:
+            return []
+        if is_seoul:
+            windows = E7.window_params(int(total))
+            return [(index + 1,
+                     _replace_spec(spec, url_template=spec.url_template.replace(
+                         "/1/1000/", f"/{start_row}/{end_row}/", 1)))
+                    for index, (start_row, end_row) in enumerate(windows) if index > 0]
+        pages = E8.page_count(int(total), rows=100)
+        out = []
+        for number in range(2, pages + 1):
+            params = tuple(("pageNo", str(number)) if name == "pageNo" else (name, value)
+                           for name, value in spec.params)
+            out.append((number, _replace_spec(spec, params=params)))
+        return out
+
+    return LaneUnits(journal=lambda folder, request: RequestJournal(
+                         folder, request, clock=utc_z),
+                     bucket=lambda _origin: bucket, aimd=lambda _origin: aimd,
+                     fetch=fetch, parse=parse, classify=classify, make_pages=make_pages)
+
+
+def _replace_spec(spec, **changes):
+    from dataclasses import replace
+    return replace(spec, **changes)
 
 
 def _sniff_encoding(path: Path) -> str:

@@ -118,7 +118,21 @@ def cmd_stage(args) -> dict:
         raise ContractError("raw_only_source")
     doc = wiring.load_mapping_doc(plan["t_id"])
     spatial_meta = None
-    if config["reader"]["kind"] == "shp_zip":
+    if config["reader"]["kind"] == "zip_csv":
+        import tempfile
+        with tempfile.TemporaryDirectory(prefix="role2-zipcsv-") as work:
+            files = wiring.zip_csv_files(folder, plan, config, Path(work))
+            header, _ = files[0].read()
+            variant, mapping = wiring.pick_variant(doc, header)
+            ctx = BatchContext(source_id=plan["source_id"], batch_id=plan["batch_id"],
+                               mapping_version=mapping["mapping_version"],
+                               record_type=plan["record_type"], staged_at_utc=utc_z())
+            summary = stage_batch(folder, ctx=ctx, record_type=plan["record_type"],
+                                  mapping_doc=mapping, files=files,
+                                  units=wiring.stage_units(wiring.make_normalizer(config)),
+                                  scope=wiring.make_scope(config),
+                                  code_signature=wiring.code_signature())
+    elif config["reader"]["kind"] == "shp_zip":
         import tempfile
         with tempfile.TemporaryDirectory(prefix="role2-shp-") as work:
             files, spatial_meta = wiring.shp_files(folder, plan, config, doc, Path(work))
@@ -223,6 +237,56 @@ def cmd_package(args) -> dict:
             "parts": bool(report["parts"])}
 
 
+def cmd_fetch_api(args) -> dict:
+    """Keyed lanes B/C/D: paced, journalled, quota-ledgered collection via the supervisor."""
+    from datetime import datetime, timezone
+    from . import wiring
+    from .credentials import opened
+    from .issues_net import fetch_issues, find_overlaps
+    from .runtime.quota import QuotaLedger
+    from .supervisor import LaneSupervisor
+    import time
+    folder = Path(args.batch_dir)
+    registry = load_registry(args.registry)
+    plan = load_plan(folder)
+    source = check_fetch_gate(registry, plan)
+    if plan["lane"] in C.FILE_LANES:
+        raise ContractError("not_an_api_lane")
+    own = int(plan["record_url"].rsplit("/", 1)[1])
+    overlaps = [issue for issue in find_overlaps({"dataset_id": plan["dataset_id"]},
+                                                 fetch_issues())
+                if issue["number"] != own]
+    if overlaps and not args.skip_overlap_check:
+        raise ContractError(f"reservation_overlap:{overlaps[0]['number']}")
+    specs = [spec_from_plan(item) for item in plan["requests"]]
+    origin = specs[0].origin
+    credential_ref = specs[0].credential_ref
+    units = wiring.lane_units(plan["lane"], registry=registry, origin=origin)
+    ledger_dir = folder.parent / "ledger"
+    ledger_dir.mkdir(parents=True, exist_ok=True)
+    quota = QuotaLedger(ledger_dir / "runtime.sqlite3",
+                        clock=lambda: datetime.now(timezone.utc))
+    lock = _lock(folder)
+    try:
+        with opened({credential_ref: registry["credentials"][credential_ref]}) as handles:
+            supervisor = LaneSupervisor(
+                units, handle=handles[credential_ref], quota=quota,
+                quota_cap=wiring.quota_cap(specs[0].quota_bucket), sleep=time.sleep)
+            if args.limit is not None:
+                specs = specs[:args.limit]
+            results = supervisor.run_batch(specs, folder)
+    finally:
+        lock.unlink(missing_ok=True)
+    rows = [{"request_id": r.request_id, "status": r.status, "pages": r.pages, "rows": r.rows,
+             "error": r.error, "blocked_until_utc": r.blocked_until_utc} for r in results]
+    done = sum(r.status in C.BATCH_COMPLETE for r in results)
+    for row in rows:
+        _progress(**row)
+    return {"status": "complete" if done == len(plan["requests"]) else "incomplete",
+            "batch_id": plan["batch_id"], "completed": done,
+            "requests": len(plan["requests"]), "results": rows}
+
+
 def batch_status(folder: Path) -> dict:
     plan = load_plan(folder)
     rows = []
@@ -264,6 +328,10 @@ def main(argv=None) -> int:
     p.add_argument("--provided-at")
     p = sub.add_parser("status")
     p.add_argument("--batch-dir", required=True)
+    p = sub.add_parser("fetch-api")
+    p.add_argument("--batch-dir", required=True)
+    p.add_argument("--limit", type=int)
+    p.add_argument("--skip-overlap-check", action="store_true")
     p = sub.add_parser("stage")
     p.add_argument("--batch-dir", required=True)
     p = sub.add_parser("package")
@@ -277,7 +345,7 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     handlers = {"plan": cmd_plan, "fetch-files": cmd_fetch_files, "ingest-provided": cmd_ingest,
                 "status": lambda a: batch_status(Path(a.batch_dir)),
-                "stage": cmd_stage, "package": cmd_package}
+                "fetch-api": cmd_fetch_api, "stage": cmd_stage, "package": cmd_package}
     try:
         result = handlers[args.command](args)
     except ContractError as exc:
