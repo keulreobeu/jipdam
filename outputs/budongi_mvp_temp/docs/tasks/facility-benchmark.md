@@ -145,3 +145,7 @@ PR 병합 receipt 전까지 Git lifecycle은 pending이다.
 현재 PC에는 원 PC의 `.local_runtime/git-managed/`와 publisher가 없으며 관리 CLI는 `git_task_unavailable`을 반환한다. 원본 PC 자료도 없다는 사용자 답변과 “그냥 복원해서 사용해” 지시에 따라 전담 Git agent가 기존 원격 브랜치에서 별도 worktree를 재구성한다. 이번에 한해 일반 Git 복구를 사용하고 과거 state/snapshot/receipt를 만들어 채우지 않는다. source/index·기존 C_SHA 이력과 실패 실측은 보존한다.
 
 현재 source의 package 공개10+봉인19=29개 및 benchmark driver10개 검사는 exit0. 최초 제한 환경 실행은 임시 디렉터리 WinError5로 실패했으며 승인된 재실행에서 해소됐다. 로그는 `.local_runtime/kan31-package-tests.log`와 `kan31-driver-tests.log`다. 최종 격리 후보의 전체 검증·최신 CI·위키 및 병합 영수증은 아직 pending이다.
+
+격리 publisher의 수정본 전체 검증은 exit0: 제품357개·팀35개 및 합성 CLI, package29/driver10/provider17/managed14 PASS. SDD `--base origin/main`은 features19/AC106/tasks40/changed18 PASS, exact scope·민감 history 검사와 C_SHA ancestry도 통과했다. 보완 코드 SHA-256은 `a63c3306ded5a8234837b28345c686e5ac9b203acd8cc81a1a747634f92a323d`, 공개 테스트는 `e96a071378b1549c4844df27c093e19ebcef46f2a3b2574fca7fa020a866e94c`다. Git 전담 agent의 현재 로컬 commit은 `206a844a092cd3406381fdc7a7995d2db992dcac`이며 원격 read-back·새 CI·병합은 별도 확인한다.
+
+기존 위키 stable ID의 revision2를 공식 Atlassian 연결로 UPDATE하고 full read-back에서 새 검증 내용을 확인했다: [Confluence 2555905](https://kwulreobeu.atlassian.net/wiki/spaces/~7120201d82685826914674999dcbf004921921/pages/2555905), version2, 2026-11-02T00:15:30.702Z. 새 문서를 만들지 않았고 기존 실측 실패 결과와 측정 밖 제품 보완을 유지했다. 원 PC의 로컬 wiki outbox/receipt가 복원됐다고 표시하지 않는다.
