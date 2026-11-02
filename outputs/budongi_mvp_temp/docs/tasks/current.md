@@ -123,3 +123,5 @@ Evaluate each Golden `required_facts` item against its generated answer determin
 [TASK-HARNESS-OPS-001](harness-operations.md): 현재 GMS 보존1,000, native Codex gateway 호환성 점검, 전용 브랜치와 검증 후 자동 로컬 커밋.
 
 2026-10-20 [TASK-CLAUDE-GSTACK-001](../../../../docs/tasks/claude-gstack-support.md): Codex/Claude host별 gstack 설치 지원 및 검증.
+
+2026-10-30 [TASK-META-INTEGRATE-001](metadata-integration-20261030.md) / KAN-32: 4인 75항목 통합 메타데이터·수집자 검증 Jira·DB/PK 설계. [설계·분담](../metadata-db-design.md) / [재개](../plans/metadata-integration-20261030.md).

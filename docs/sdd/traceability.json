@@ -2,6 +2,68 @@
   "schema_version": 1,
   "features": [
     {
+      "id": "META-INTEGRATE-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/31_metadata_integration_spec.md",
+      "requirements": [
+        {
+          "id": "META-INTEGRATE-001-REQ-01",
+          "acs": [
+            {
+              "id": "META-INTEGRATE-001-AC-01",
+              "manual": [
+                {
+                  "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "META-INTEGRATE-001-REQ-02",
+          "acs": [
+            {
+              "id": "META-INTEGRATE-001-AC-02",
+              "manual": [
+                {
+                  "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "META-INTEGRATE-001-REQ-03",
+          "acs": [
+            {
+              "id": "META-INTEGRATE-001-AC-03",
+              "manual": [
+                {
+                  "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "META-INTEGRATE-001-REQ-04",
+          "acs": [
+            {
+              "id": "META-INTEGRATE-001-AC-04",
+              "manual": [
+                {
+                  "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
+                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "FACILITY-PACKAGE-001",
       "spec": "outputs/budongi_mvp_temp/docs/specs/29_facility_package_validation_spec.md",
       "requirements": [
@@ -2641,6 +2703,7 @@
     }
   ],
   "tasks": [
+    "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md",
     "outputs/budongi_mvp_temp/docs/tasks/facility-benchmark.md",
     "outputs/budongi_mvp_temp/docs/tasks/observability.md",
     "outputs/budongi_mvp_temp/docs/tasks/credential-alias-only.md",
