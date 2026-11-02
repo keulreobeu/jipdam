@@ -97,6 +97,20 @@ hash는 그대로였다. 최종 driver에는 `reject --trial A1 --reviewer agent
 sealed-manifest.json/comparison.json/results/prompt-receipts와 managed metrics/state를 보존했다.
 Git/위키/최종 환경 검증의 실제 완료 여부는 영구 Task 영수증을 따른다.
 
+### 병합 전 추가 검토 보완
+
+PR `9f3d3e72`의 최종 자동 검토에서 `str.splitlines()`가 JSON 문자열 내부의 합법적인
+U+2028/U+2029/U+0085를 JSONL 행 경계로 처리하는 결함을 발견했다. 검토 재현은
+[PR comment 4422070758](https://github.com/keulreobeu/jipdam/pull/65#discussion_r4422070758)이다.
+파서를 LF 기준으로 분할하고 CRLF의 CR만 제거하도록 수정했다. 공개 테스트에 세 문자를
+포함한 합성 시설명을 추가했으며 public10 및 봉인 acceptance19가 통과했다. 이 보완은
+실측 밖이고 기존 4개 trial의 거부/토큰·비용 결과를 바꾸지 않는다. 수정 후 publisher
+snapshot, 최신 필수 CI 및 C_SHA 조상 확인이 끝나기 전까지 PR은 병합 완료가 아니다.
+
+### 다른 PC의 재개 — 2026-11-02
+
+원격 PR #65는 `9f3d3e72`에서 open이며 위 Unicode 수정은 백업2에만 있다. 원격 head의 네 CI job은 성공했지만 수정본 검증을 대신하지 않는다. 현재 source의 공개10+봉인19 및 driver10은 재실행 통과했다. 원 PC의 하네스 상태와 publisher는 전달되지 않았고 원본도 없으므로, 사용자 지시에 따라 전담 Git agent가 원격 브랜치에서 작업 폴더를 재구성한다. 과거 하네스 영수증과 실험 원장은 복원됐다고 주장하지 않는다. 추가 실측 없이 이번 수정의 검증·인계만 진행하며 최종 게시/병합 상태는 Task의 현재 영수증을 따른다.
+
 | 증거 | 값 |
 | --- | --- |
 | manifest SHA-256 | fa08475c47e9996bdb3172b826fd6b72386dccccb12e71935771dddb67ba3ccc |

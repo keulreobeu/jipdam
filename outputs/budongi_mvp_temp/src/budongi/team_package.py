@@ -207,7 +207,12 @@ def validate_package(package_root: Path | str) -> dict:
                     parsed = [dict(zip(header, r)) for r in parsed_rows]
                 else:
                     n = 0
-                    for line in content.splitlines():
+                    # JSON permits Unicode line separators (for example U+2028)
+                    # inside strings. JSONL records are delimited by LF, so do
+                    # not use str.splitlines(), which treats those characters
+                    # as record boundaries.
+                    for line in content.split('\n'):
+                        if line.endswith('\r'): line = line[:-1]
                         if not line.strip(): continue
                         n += 1
                         try:

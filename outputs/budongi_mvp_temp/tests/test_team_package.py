@@ -42,6 +42,18 @@ class TeamPackageTests(unittest.TestCase):
             self.assertEqual(report, validate_package(root))
             self.assertEqual(before, {p.relative_to(root): p.read_bytes() for p in root.rglob('*') if p.is_file()})
 
+    def test_jsonl_preserves_unicode_line_separators_inside_strings(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); manifest, record = self.fixture(root)
+            record['name'] = 'North\u2028South\u2029West\u0085East'
+            data = (json.dumps(record, ensure_ascii=False) + '\n').encode('utf-8')
+            (root / 'normalized/a.jsonl').write_bytes(data)
+            manifest['files'][1].update(bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
+            (root / 'manifest.json').write_text(json.dumps(manifest), encoding='utf-8')
+            report = validate_package(root)
+            self.assertTrue(report['valid'], report)
+            self.assertEqual(report['counts']['accepted'], 1)
+
     def test_malformed_status_is_unknown_not_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp); manifest, record = self.fixture(root)

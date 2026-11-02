@@ -129,3 +129,19 @@ KAN-31에 완료 영수증이 없으면 최종 Git 저장부터 확인한다. ve
 검사 PASS. C_SHA의 조상 관계도 확인했다. 생성 wiki의 필수 동기화는 완료됐으며, 최종 코드
 검증 이후 변경은 이 Task의 결과/인계 기록뿐이다. 다음 환경은 Jira 최종 영수증의 브랜치/PR/
 merge SHA와 위키 stable ID를 확인하고 시작한다.
+
+2026-10-30 병합 전 GitHub 자동 검토에서 JSONL 문자열의 U+2028/U+2029/U+0085를 행 경계로
+오인하는 P2를 발견했다(PR comment 4422070758). 구현은 LF 전용 분할과 CRLF 처리로 수정했고,
+공개 package tests 10개 및 고정 acceptance 19개를 통과했다. 이 수정은 실측 밖이다. 수정된
+snapshot의 전체 publisher 검사/CI와 C_SHA ancestry 확인이 남아 있으므로 Jira issue 완료 및
+PR 병합 receipt 전까지 Git lifecycle은 pending이다.
+
+## 다른 PC에서 재개 — 2026-11-02
+
+사용자는 KAN-31부터 재개하고 KAN-28/KAN-32/다른 작업과 새 작업 생성 전 먼저 알리도록 지시했다. 이번 재개 범위는 KAN-31의 마지막 JSONL 수정 검증·게시·인계다. 추가 actual trial은 실행하지 않는다.
+
+현재 source는 백업2 `0cd44fd`다. PR #65는 open, head `9f3d3e72`이며 Unicode 구분자 수정은 아직 원격에 없다. 이 head의 Actions run 41031149486은 Ubuntu/Windows × Python 3.11/3.12 네 job 모두 success다. 이 결과를 새 수정본의 CI 성공으로 재사용하지 않는다. Jira KAN-31은 진행 중이고 기존 위키 2555905는 revision 1/current로 조회됐다.
+
+현재 PC에는 원 PC의 `.local_runtime/git-managed/`와 publisher가 없으며 관리 CLI는 `git_task_unavailable`을 반환한다. 원본 PC 자료도 없다는 사용자 답변과 “그냥 복원해서 사용해” 지시에 따라 전담 Git agent가 기존 원격 브랜치에서 별도 worktree를 재구성한다. 이번에 한해 일반 Git 복구를 사용하고 과거 state/snapshot/receipt를 만들어 채우지 않는다. source/index·기존 C_SHA 이력과 실패 실측은 보존한다.
+
+현재 source의 package 공개10+봉인19=29개 및 benchmark driver10개 검사는 exit0. 최초 제한 환경 실행은 임시 디렉터리 WinError5로 실패했으며 승인된 재실행에서 해소됐다. 로그는 `.local_runtime/kan31-package-tests.log`와 `kan31-driver-tests.log`다. 최종 격리 후보의 전체 검증·최신 CI·위키 및 병합 영수증은 아직 pending이다.
