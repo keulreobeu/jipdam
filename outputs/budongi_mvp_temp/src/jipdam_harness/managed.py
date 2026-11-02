@@ -53,6 +53,8 @@ def validate(body, root):
         for key, cap in (("max_attempts", 5), ("timeout_seconds", 7200), ("total_timeout_seconds", 14400)):
             if type(execution[key]) is not int or not 1 <= execution[key] <= cap:
                 raise HarnessError("invalid_execution_limit")
+        if "objective_mode" in execution and execution["objective_mode"] not in ("repeat", "once"):
+            raise HarnessError("invalid_objective_mode")
         if execution["sandbox"] not in {"read-only", "workspace-write"} or type(execution["allow_fallback"]) is not bool:
             raise HarnessError("unsafe_execution_policy")
         safety = {"require_approval": True, "allow_destructive_operations": False, **body.get("safety", {})}

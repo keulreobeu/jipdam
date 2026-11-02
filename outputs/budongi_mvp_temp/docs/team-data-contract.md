@@ -161,6 +161,11 @@ CSV는 UTF-8, 구분자·인용 규칙을 schema에 명시하고 코드·정밀 
 
 **제출 수락 순서:** 등록/승인·사용권 상태 확인 → 파일 hash/안전한 경로 → section/행·단위/코드/NULL 검사 → 전체 대사 → 지원 record_type만 새 출력에 적재 → PK/FK/무결성/원본 조인 → report 게시. 미지원 종류는 `adapter_pending`으로 수락 보존하고 적재 완료로 세지 않는다. 실제 신규 입력의 이 검사 자동화는 별도 구현 Task다.
 
+시설 제출의 첫 자동 검증 구현은 [FACILITY-PACKAGE-001](specs/29_facility_package_validation_spec.md)과
+[TASK-BENCH-FACILITY-001](tasks/facility-benchmark.md)로 추적한다. 첫 범위는 CSV/JSONL의
+facility_all_status_rows_v1 프로파일이며 전체 team_collection_v1의 모든 제출 레이아웃이나
+실제 데이터 적재 지원을 의미하지 않는다. 실제 구현/독립 검증 상태는 해당 Task를 따른다.
+
 ## 8. 수집 후에 확정할 항목
 
 | 후속 결정 | 필요한 증거 | 책임 역할 | 그 전 저장 상태 |

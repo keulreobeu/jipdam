@@ -2,6 +2,28 @@
   "schema_version": 1,
   "features": [
     {
+      "id": "FACILITY-PACKAGE-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/29_facility_package_validation_spec.md",
+      "requirements": [
+        {"id":"FACILITY-PACKAGE-001-REQ-01","acs":[{"id":"FACILITY-PACKAGE-001-AC-01","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_each_required_manifest_group"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_bad_manifest_types_version_and_unknown_dates"}]}]},
+        {"id":"FACILITY-PACKAGE-001-REQ-02","acs":[{"id":"FACILITY-PACKAGE-001-AC-02","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_file_hash_bytes_and_rows_are_independently_compared"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_missing_file_duplicate_and_escape_are_not_read"}]}]},
+        {"id":"FACILITY-PACKAGE-001-REQ-03","acs":[{"id":"FACILITY-PACKAGE-001-AC-03","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_facility_required_fields_and_source_codes"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_envelope_inheritance_and_explicit_identity_conflicts"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_optional_namespace_and_coordinates_remain_optional_but_paired"}]}]},
+        {"id":"FACILITY-PACKAGE-001-REQ-04","acs":[{"id":"FACILITY-PACKAGE-001-AC-04","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_valid_jsonl_counts_are_not_double_counted"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_count_equations_and_boolean_counts"}]}]},
+        {"id":"FACILITY-PACKAGE-001-REQ-05","acs":[{"id":"FACILITY-PACKAGE-001-AC-05","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_malformed_json_and_record_location"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_deterministic_errors_no_writes_or_sensitive_values"}]}]},
+        {"id":"FACILITY-PACKAGE-001-REQ-06","acs":[{"id":"FACILITY-PACKAGE-001-AC-06","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_deterministic_errors_no_writes_or_sensitive_values"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_cli_matches_api_and_exit_code"}]}]}
+      ]
+    },
+    {
+      "id": "BENCH-CONTEXT-001",
+      "spec": "outputs/budongi_mvp_temp/docs/specs/30_context_benchmark_spec.md",
+      "requirements": [
+        {"id":"BENCH-CONTEXT-001-REQ-01","acs":[{"id":"BENCH-CONTEXT-001-AC-01","manual":[{"command":"CLI/ChatGPT preflight, official Usage smoke, sealed manifest read-back","evidence":"outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md"}]}]},
+        {"id":"BENCH-CONTEXT-001-REQ-02","acs":[{"id":"BENCH-CONTEXT-001-AC-02","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_managed_providers.py","class":"ObjectiveModeTests","method":"test_repeat_is_byte_compatible_and_once_removes_only_duplicate"},{"file":"outputs/budongi_mvp_temp/tests/test_managed_providers.py","class":"ObjectiveModeTests","method":"test_direct_calls_keep_the_goal_and_unknown_modes_fail"},{"file":"outputs/budongi_mvp_temp/tests/test_managed_harness.py","class":"ManagedHarnessTests","method":"test_objective_mode_is_explicit_and_existing_defaults_stay_compatible"}]}]},
+        {"id":"BENCH-CONTEXT-001-REQ-03","acs":[{"id":"BENCH-CONTEXT-001-AC-03","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_seal_is_repeatable_and_does_not_call_a_model"},{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_manifest_and_independent_evaluator_are_immutable"},{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_independent_acceptance_rejects_constant_true_and_false_implementations"}]}]},
+        {"id":"BENCH-CONTEXT-001-REQ-04","acs":[{"id":"BENCH-CONTEXT-001-AC-04","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_empty_results_do_not_report_a_saving"}],"manual":[{"command":"fixed C_SHA ABBA actual runs, independent review/approval and paired pilot report","evidence":"outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md"}]}]}
+      ]
+    },
+    {
       "id": "OBS-001",
       "spec": "outputs/budongi_mvp_temp/docs/specs/28_observability_spec.md",
       "requirements": [
@@ -2619,6 +2641,7 @@
     }
   ],
   "tasks": [
+    "outputs/budongi_mvp_temp/docs/tasks/facility-benchmark.md",
     "outputs/budongi_mvp_temp/docs/tasks/observability.md",
     "outputs/budongi_mvp_temp/docs/tasks/credential-alias-only.md",
     "docs/tasks/environment-setup-20261012.md",

@@ -8,7 +8,27 @@ import unittest
 from unittest.mock import patch
 
 from jipdam_harness.execution import (CodexCLIProvider, GMSProvider, MockProvider,
-                                      _gms_delegate, classify_error, redact, run_process)
+                                      _gms_delegate, classify_error, redact, run_process, codex_prompt)
+
+
+class ObjectiveModeTests(unittest.TestCase):
+    def test_repeat_is_byte_compatible_and_once_removes_only_duplicate(self):
+        task = {"objective": "Implement the fixed facility contract", "execution": {"objective_mode": "repeat"}}
+        context = "Task specification (trusted local operator input):\n\n" + task["objective"] + "\n\nAcceptance criteria: ['AC1']\n\nAllowed paths: ['module.py']"
+        repeat = codex_prompt(task, context)
+        self.assertEqual(repeat, task["objective"] + "\n\n" + context)
+        task["execution"]["objective_mode"] = "once"
+        once = codex_prompt(task, context)
+        self.assertEqual(once, context)
+        self.assertEqual(repeat, task["objective"] + "\n\n" + once)
+        self.assertEqual(once.count(task["objective"]), 1)
+
+    def test_direct_calls_keep_the_goal_and_unknown_modes_fail(self):
+        task = {"objective": "Keep this goal", "execution": {"objective_mode": "once"}}
+        self.assertEqual(codex_prompt(task, "ordinary context"), "Keep this goal\n\nordinary context")
+        task["execution"]["objective_mode"] = "unsupported"
+        with self.assertRaisesRegex(ValueError, "invalid_objective_mode"):
+            codex_prompt(task, "ordinary context")
 
 
 class ManagedProviderTests(unittest.TestCase):
@@ -112,8 +132,8 @@ else:
         self.assertFalse(marker.exists())
 
     def test_redaction(self):
-        secret = 'Bearer abcdef api_key="secret_value" serviceKey=urlsecret&x=1 sk-abcdefghijklm'
-        output = redact(secret)
+        synthetic_credential_text = 'Bearer abcdef api_key="secret_value" serviceKey=urlsecret&x=1 sk-abcdefghijklm'
+        output = redact(synthetic_credential_text)
         for value in ["abcdef", "secret_value", "urlsecret", "abcdefghijklm"]:
             self.assertNotIn(value, output)
 

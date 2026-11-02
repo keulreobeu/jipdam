@@ -61,6 +61,16 @@ class ManagedHarnessTests(unittest.TestCase):
         self.assertTrue((self.store.directory / "reports/TASK-ONE.json").exists())
         self.assertTrue((self.store.directory / "events.jsonl").exists())
 
+    def test_objective_mode_is_explicit_and_existing_defaults_stay_compatible(self):
+        self.assertNotIn("objective_mode", self.store.get("TASK-ONE")["task"]["execution"])
+        bad = deepcopy(self.body); bad["task_id"] = "TASK-BAD-OBJECTIVE"
+        bad["execution"]["objective_mode"] = "invalid"
+        with self.assertRaisesRegex(HarnessError, "invalid_objective_mode"):
+            self.store.create(bad)
+        good = deepcopy(self.body); good["task_id"] = "TASK-ONCE"
+        good["execution"]["objective_mode"] = "once"
+        self.assertEqual(self.store.create(good)["task"]["execution"]["objective_mode"], "once")
+
     def test_validation_failure_then_bounded_repair(self):
         def repair(count, task, cwd, stop):
             (cwd / "tests/test_value.py").write_text("import unittest\nclass Test(unittest.TestCase):\n def test_value(self): self.assertTrue(" + str(count > 1) + ")\n", encoding="utf-8")
