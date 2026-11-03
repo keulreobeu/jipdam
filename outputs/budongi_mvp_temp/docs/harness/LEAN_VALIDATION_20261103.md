@@ -17,7 +17,7 @@
 - 실제 `harness input-check`의 source syntax/registry JSON smoke:PASS, approval_granted=false,
   checker가 시작한 provider invocation0.
 
-고정 offline fixture version=`input-check-boundaries-v1`, 정의(test_input_check.py) SHA256
+최초 offline fixture version=`input-check-boundaries-v1`, 당시 정의(test_input_check.py) SHA256
 `ad93dc6173b1e6504a108b77467b7fa8ab3554f98b3802da4024a176d9175749`.
 이는 새로운 경계 fixture의 식별자이며 실제 생성 모델 benchmark를 실행/봉인했다는 뜻이 아니다.
 과거 다섯 결함 유형은 긴 CSV 숫자의 text 보존/JSON 정수 제한, null request 거부,
@@ -44,3 +44,21 @@ LLM safe(payload)128KB 거부, annotated secret 차단을 확인했다. 함수 m
 검토 목적 신규 장문 산출물은0이며 이 기록은 필수 Task/AC 증거다. 로컬 파일 scanner5MB와
 LLM safe(payload)128KB를 분리했고 후자는 불변이다. 이 변경의 공개 범위는 고정 source 검사로 확인한다.
 위키 판단은 SKIP(기존 Spec/Task/운영 자료 재사용, 별도 장문 게시 요청 없음)이며 원격 sync 성공은 주장하지 않는다.
+
+## 독립 리뷰 후 경계 수정
+
+첫 게시 SHA9a57bd3e691fb7a03868e49b54db9df21d01ff67는 원격 read-back 및 등록6검사
+(Input18/metrics10/OBS32/operations9/handoff23/SDD)를 통과했다. 해당 SHA 리뷰에서
+credential 형태 파일명이 결과로 나갈 수 있음, pytest `0 passed`가 PASS가 됨/빈 수집 exit5가
+FAIL로 분류됨, `git diff --check`가 staged 변경을 검사하지 않음이 보고됐다.
+최종 리뷰 응답 전에 리뷰 담당이 사용량 상한에 도달하여 no_findings로 기록하지 않는다.
+
+파일명/check_id의 기존 secret scanner 재사용, pytest positive pass count 및 빈 수집 UNKNOWN,
+worktree/cached 양쪽 diff 검사를 적용했다. 입력21개8.271초 OK(모델0, pytest 판정은 mocked
+subprocess 결과이며 실제 pytest 실행 아님). 실제 합성 Git의 staged-only/unstaged/혼합 변경과
+index 보존, credential 형태 파일명을 읽기 전 차단하는 회귀를 포함한다.
+첫 sandbox 실행은 임시 fixture 생성 WinError5로 실패했고 승인된 동일 합성 검사를 재실행했다.
+전체411/35 결과는 이 수정 이전이며 최신 입력21 결과와 혼동하지 않는다.
+최신 fixture version은 `input-check-boundaries-v2`, 정의 SHA256은
+`e23bdc632cc0c67ee0d5bd42d6a5979cb2b02ffe6bdcf56c7f8be17c5a3327c5`다.
+버전 표기만 갱신한 최종 source는 publisher 등록검사에서 다시 확인한다. 고정 SHA 독립 검토는 대기다.

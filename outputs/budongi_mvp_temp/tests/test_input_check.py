@@ -17,7 +17,7 @@ from jipdam_harness.handoff import _git, _index_hash
 from jipdam_harness.input_check import CheckError, InputChecker, _json
 from jipdam_harness.managed_cli import main
 
-SUITE_VERSION = "input-check-boundaries-v1"
+SUITE_VERSION = "input-check-boundaries-v2"
 
 
 class InputCheckTests(unittest.TestCase):
@@ -196,6 +196,44 @@ class InputCheckTests(unittest.TestCase):
             result = self.checker.run(self.request({"check_id": "T", "kind": "tests", "argv": argv}))
             self.assertEqual(result["status"], "BLOCKED")
 
+    def test_pytest_requires_positive_pass_count_and_empty_collection_is_unknown(self):
+        check = {"check_id": "T", "kind": "tests", "argv": ["python", "-m", "pytest", "tests"]}
+        cases = [(5, "no tests ran", "UNKNOWN", "NO_TESTS_OBSERVED"),
+                 (0, "0 passed, 1 skipped", "UNKNOWN", "NO_EFFECTIVE_TESTS"),
+                 (0, "1 skipped", "UNKNOWN", "NO_EFFECTIVE_TESTS"),
+                 (0, "1 passed, 1 skipped", "PASS", None),
+                 (1, "1 failed", "FAIL", "CHECK_FAILED")]
+        for code, output, status, error in cases:
+            with self.subTest(code=code, output=output), patch("jipdam_harness.execution.run_process", return_value=(code, output, "", None)):
+                result = self.checker.run(self.request(check), execute=True)
+            self.assertEqual(result["status"], status, result)
+            self.assertEqual(result["results"][0]["error_code"], error)
+
+    def test_credential_shaped_metadata_is_blocked_before_read_or_echo(self):
+        marker = "ghp" + "_" + "A" * 30
+        name = "src/" + marker + ".py"
+        self.write(name, "value = 1\n")
+        with patch.object(Path, "read_bytes", side_effect=AssertionError("unsafe metadata must not read")):
+            result = self.run_check("syntax", name)
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertNotIn(marker, json.dumps(result))
+        with self.assertRaises(CheckError):
+            self.checker.run(self.request({"check_id": marker, "kind": "environment"}))
+
+    def test_staged_and_worktree_whitespace_fail_without_index_changes(self):
+        for staged, current in (("value = 2  \n", "value = 2  \n"),
+                                ("value = 2  \n", "value = 2\n"),
+                                ("value = 2\n", "value = 2  \n")):
+            with self.subTest(staged=staged, current=current):
+                self.write("src/module.py", staged)
+                _git(self.root, "add", "src/module.py")
+                self.write("src/module.py", current)
+                before = _index_hash(self.root)
+                result = self.run_check("git", None)
+                self.assertEqual(result["status"], "FAIL", result)
+                self.assertEqual(result["results"][0]["error_code"], "GIT_DIFF_CHECK_FAILED")
+                self.assertEqual(_index_hash(self.root), before)
+
     def test_timeout_and_nonzero_exit_are_structured_failures(self):
         check = {"check_id": "T", "kind": "tests", "argv": ["python", "-m", "unittest", "discover", "-s", "tests"]}
         with patch("jipdam_harness.execution.run_process", return_value=(None, "PRIVATE", "PRIVATE", "timeout")):
@@ -238,7 +276,7 @@ class InputCheckTests(unittest.TestCase):
             with self.assertRaises(HarnessError): eligible_paths([name])
 
     def test_suite_version_and_counterexamples_do_not_promote_prior_benchmark(self):
-        self.assertEqual(SUITE_VERSION, "input-check-boundaries-v1")
+        self.assertEqual(SUITE_VERSION, "input-check-boundaries-v2")
         self.assertEqual(len(hashlib.sha256(Path(__file__).read_bytes()).hexdigest()), 64)
         for value in (True, False, None, {}, []):
             with self.assertRaises(CheckError): self.checker.validate_request(value)

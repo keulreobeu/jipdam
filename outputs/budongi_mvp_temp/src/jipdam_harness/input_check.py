@@ -78,6 +78,7 @@ class InputChecker:
             eligible_paths([name])
             target = _safe_file(self.root, name)
             safe(name)
+            scan_content(name.encode("utf-8"))
         except HarnessError: raise CheckError("UNSAFE_PATH", blocked=True) from None
         if not any(overlaps(name, value) for value in scope): raise CheckError("OUTSIDE_SCOPE", blocked=True)
         return target
@@ -127,7 +128,9 @@ class InputChecker:
         for check in checks:
             if not isinstance(check, dict) or set(check) - {"check_id", "kind", "path", "argv", "headers", "timeout_seconds"}:
                 raise CheckError("INVALID_CHECK", blocked=True)
-            try: key = identifier(check["check_id"])
+            try:
+                key = identifier(check["check_id"])
+                scan_content(key.encode("utf-8"))
             except (KeyError, HarnessError): raise CheckError("INVALID_CHECK_ID", blocked=True) from None
             if key in ids: raise CheckError("DUPLICATE_CHECK_ID", blocked=True)
             ids.add(key)
@@ -242,7 +245,9 @@ class InputChecker:
             records[name] = (hashlib.sha256(self._file(name, scope)).hexdigest() if target.is_file()
                              else "directory" if target.is_dir() else "deleted")
         if len({n.casefold() for n in names}) != len(names): raise CheckError("CASE_COLLISION", blocked=True)
-        try: _git(self.root, "diff", "--check")
+        try:
+            _git(self.root, "diff", "--check")
+            _git(self.root, "diff", "--cached", "--check")
         except HarnessError: raise CheckError("GIT_DIFF_CHECK_FAILED") from None
         if _git(self.root, "rev-parse", "HEAD").decode().strip() != before or _index_hash(self.root) != index_before:
             raise CheckError("GIT_HEAD_OR_INDEX_CHANGED", blocked=True)
@@ -282,8 +287,9 @@ class InputChecker:
                 if code == 0 and excluded >= observed_tests: raise CheckError("NO_EFFECTIVE_TESTS")
         elif kind == "tests" and argv[:3] == ["python", "-m", "pytest"]:
             counts = re.findall(r"(\d+) passed", out + err)
-            if code == 0 and not counts: raise CheckError("NO_EFFECTIVE_TESTS")
             observed_tests = int(counts[-1]) if counts else None
+            if code == 5 and not observed_tests: raise CheckError("NO_TESTS_OBSERVED")
+            if code == 0 and not observed_tests: raise CheckError("NO_EFFECTIVE_TESTS")
         if code != 0: raise CheckError("CHECK_FAILED")
         # Runtime timestamps, test durations and raw output are not input identity.
         return digest({"argv": argv, "exit_code": code, "observed_tests": observed_tests})
