@@ -5,7 +5,7 @@ kind = "spec"
 id = "HANDOFF-001"
 status = "approved"
 owner = "Codex"
-revision = 1
+revision = 2
 approved_by = "사용자"
 approved_at = "2026-11-03"
 approval_ref = "현재 요청: 첨부 v5.4 네 문서 반영해서 작업 진행"
@@ -36,6 +36,7 @@ staged/unstaged/tracked/untracked/ignored 인벤토리와 제외 사유, 기준 
 
 H-01~05,08,09: stop 미확인·중복 writer·HEAD/index/내용 변경·충돌 index·악성 경로·
 symlink/reparse point·비밀·DB/raw/runtime·파일 수/크기 초과를 거부한다.
+Python annotated/attribute/subscript 비밀 리터럴도 handoff 경계에서 추가 차단한다.
 필요한 ignored 파일은 명시 include 및 같은 검사를 거치며, 빠진 필수 파일은 portable 성공 불가다.
 문법 오류 WIP도 보존하며 원본 staged/unstaged 상태와 인벤토리가 유지된다.
 
@@ -54,6 +55,11 @@ Git index와 worktree를 각각 재현하고 새 ManagedStore task/run ID와 새
 새 작업은 PAUSED로 생성하며 실제 모델 재개는 명시 run이다. 이전 session/SQLite/Usage는 복원하지 않는다.
 같은 목적지 재요청은 결과 해시 일치 시만 멱등이며 수동 변경은 덮어쓰지 않는다.
 실패하면 복구 폴더를 보존하고 restore_incomplete/blocked로 출력한다.
+파일↔디렉터리 교체는 선택된 index/파일 삭제와 빈 디렉터리 정리를 먼저 하고 파일을 기록한다.
+제외 파일의 재귀 삭제는 없다. fingerprint_version=2는 index·worktree bytes·실행 mode를 포함한다.
+초기 v1 fingerprint 영수증은 그대로 보존하고 멱등 재복원 승격 대신 별도 검토를 요구한다.
+복원된 독립 clone은 소유 worktree/원래 restore 영수증·manifest·base SHA가 일치할 때만
+같은 관리 root에서 재백업할 수 있다. backup은 WIP 안에 잠금 runtime 파일을 만들지 않는다.
 
 ### HANDOFF-001-AC-03
 

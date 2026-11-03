@@ -362,3 +362,85 @@ class HandoffTests(unittest.TestCase):
         self.assertEqual(_worktree_mode(ordinary, "100755", windows=False), "100644")
         self.assertEqual(_worktree_mode(ordinary, "100755", windows=True), "100755")
         self.assertEqual(_worktree_mode(executable, None, windows=True), "100644")
+
+    def test_python_annotated_and_attribute_secrets_are_rejected_before_capture(self):
+        for text in ('password: str = "synthetic-review-value"\n',
+                     'settings.password = "synthetic-review-value"\n',
+                     'settings["access_token"] = "synthetic-review-value"\n'):
+            with self.subTest(form=text.split("=")[0]):
+                (self.root / "src/config.py").write_text(text, encoding="utf-8")
+                with self.assertRaisesRegex(HarnessError, "secret_in_commit"): self.saved()
+                self.assertFalse((self.handoff.directory / "checkpoints").exists())
+
+    def test_verified_restored_task_can_be_backed_up_without_models(self):
+        self.wip()
+        published = self.published()
+        receiver = self.receiver()
+        restored = receiver.restore(published["checkpoint"], expected_sha=published["commit_sha"])
+        self.assertEqual(restored["status"], "restore_verified", restored)
+        tree = Path(restored["destination"])
+        (tree / "src/new.py").write_text("continued = 5\n", encoding="utf-8")
+        saved = receiver.backup(restored["new_task_id"])
+        self.assertEqual(saved["status"], "local_saved")
+        self.assertEqual(saved["model_calls"], 0)
+        manifest, blobs = receiver._load(saved["checkpoint"])
+        item = next(i for i in manifest["inventory"] if i["path"] == "src/new.py")
+        self.assertIn(b"continued = 5", blobs[item["worktree"]["sha256"]])
+        receiver.store.ready(restored["new_task_id"])
+        from jipdam_harness.execution import MockProvider
+        resumed = Orchestrator(receiver.store, {"codex": MockProvider()}).run(restored["new_task_id"])
+        self.assertEqual(resumed["state"], "REVIEW_REQUIRED", resumed)
+        receipt_path = receiver.directory / "restores" / (published["checkpoint"] + ".json")
+        data = json.loads(receipt_path.read_text(encoding="utf-8"))
+        data["destination"] = str(tree.parent / "other")
+        receipt_path.write_text(json.dumps(data), encoding="utf-8")
+        with self.assertRaisesRegex(HarnessError, "foreign_worktree"):
+            receiver.backup(restored["new_task_id"])
+
+    def test_directory_file_replacements_restore_in_both_directions(self):
+        for direction in ("directory_to_file", "file_to_directory"):
+            with self.subTest(direction=direction):
+                if direction == "directory_to_file":
+                    path = self.root / "src/item/deep/old.py"
+                    path.parent.mkdir(parents=True)
+                    path.write_text("old = 1\n", encoding="utf-8")
+                    _git(self.root, "add", "src/item")
+                    _git(self.root, "commit", "-m", "directory base")
+                    _git(self.root, "push", "origin", "main")
+                    path.unlink(); path.parent.rmdir(); path.parent.parent.rmdir()
+                    (self.root / "src/item").write_text("new_file = 1\n", encoding="utf-8")
+                else:
+                    # Prior saved item is now the committed base file.
+                    _git(self.root, "add", "src/item")
+                    _git(self.root, "commit", "-m", "file base")
+                    _git(self.root, "push", "origin", "main")
+                    (self.root / "src/item").unlink()
+                    (self.root / "src/item").mkdir()
+                    (self.root / "src/item/new.py").write_text("nested = 2\n", encoding="utf-8")
+                _git(self.root, "add", "-A", "src/item")
+                published = self.published()
+                # Same client can restore different immutable checkpoints.
+                receiver = Handoff(self.root)
+                result = receiver.restore(published["checkpoint"], expected_sha=published["commit_sha"])
+                self.assertEqual(result["status"], "restore_verified", result)
+                target = Path(result["destination"]) / "src/item"
+                if direction == "directory_to_file": self.assertEqual(target.read_text(), "new_file = 1\n")
+                else: self.assertEqual((target / "new.py").read_text(), "nested = 2\n")
+
+    def test_fingerprint_detects_mode_changes_and_old_receipts_require_review(self):
+        self.wip()
+        before = self.handoff._fingerprint(self.root)
+        from jipdam_harness.handoff import _worktree_mode as real_mode
+        def changed(info, index_mode, *, windows):
+            return "100755" if real_mode(info, index_mode, windows=windows) == "100644" else "100644"
+        with patch("jipdam_harness.handoff._worktree_mode", side_effect=changed):
+            self.assertNotEqual(self.handoff._fingerprint(self.root), before)
+        published = self.published()
+        receiver = self.receiver()
+        result = receiver.restore(published["checkpoint"], expected_sha=published["commit_sha"])
+        self.assertEqual(result["fingerprint_version"], 2)
+        saved = receiver.directory / "restores" / (published["checkpoint"] + ".json")
+        data = json.loads(saved.read_text(encoding="utf-8")); data.pop("fingerprint_version")
+        saved.write_text(json.dumps(data), encoding="utf-8")
+        with self.assertRaisesRegex(HarnessError, "receipt_version_requires_review"):
+            receiver.restore(published["checkpoint"], expected_sha=published["commit_sha"])

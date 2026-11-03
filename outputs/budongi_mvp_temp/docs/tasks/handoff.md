@@ -32,9 +32,13 @@ Finish, GGUF/Claude는 이 Task의 구현 완료 조건이 아니다.
 new_artifacts_created_for_review=0, chat_tokens=unknown. 고정 SHA 이후 결과/범위·한계를 같은 Task에 기록한다.
 RV-01~12의 자동 라우팅/계측/Finish는 DESIGNED_ONLY이며 이번 delta 문서 반영을 실사용 평가로 세지 않는다.
 
-전체 Python/SDD/합성 검증 passed(제품376/팀35). 구현 후보의 고정 SHA 독립 검토는 KAN-41의
+수정 후 전체 Python/SDD/합성 검증 passed(제품383/팀35, 실제 실행 로그). 구현 후보의 고정 SHA 독립 검토는 KAN-41의
 해당 SHA 댓글에 기록한다. 사용자 명시 승인 후 실제 원격 WIP artifact 게시와 독립 clone 복원을
 확인했다(세부 SHA/시간은 검증 기록). 물리 PC 간 실행은 미측정이다. 후속 POSIX mode 수정은
 handoff 19개 회귀를 통과했다. 코드 최종 게시·STRICT 독립 검토 전 status는 in_progress이며
 고정 SHA의 검토 결과와 관련 한계는 KAN-41에서 확인한다. Jira는 열어 둔다.
 위키 판단 SKIP/미게시: 사용자 v5.4.1의 기존 근거 재사용·장문 생성 금지에 따른다.
+
+독립 검토 cfbce84259dcc8a9175700de412d49e9c9037037의 findings 4건을 수정했고 handoff23개,
+전체383/35를 통과했다. 원래 결과를 지우지 않고 KAN-41 댓글10196에 보존했다.
+새 후보 SHA에 재검토가 필요하다. CI/물리 PC 시험은 미확인이며 main 준비 완료로 표시하지 않는다.

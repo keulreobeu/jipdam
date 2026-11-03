@@ -63,6 +63,18 @@ python -m harness run --task RESTORE-ID
 검토용으로 보존하며 자동 reset/delete하지 않는다. 재복원은 저장한 SHA/파일/index fingerprint가
 같을 때만 멱등이며 수동 변경은 거부한다. ignored 필수 파일은 실제 사용 전에 다시 확인한다.
 
+복원한 새 task도 같은 management_root에서 `handoff backup --task RESTORE-ID`로 재백업할 수 있다.
+소유 목적지·원래 restore 영수증/manifest·base SHA가 일치하는 독립 clone만 허용한다.
+임의의 다른 저장소를 worktree로 지정해 백업할 수 없다. 백업 잠금은 관리 root에 두며 WIP 안에
+runtime 파일을 남겨 후속 실행의 scope 검사를 오염시키지 않는다. 파일↔디렉터리 교체는
+선택한 이전 파일과 빈 디렉터리만 먼저 정리한다. 제외 파일의 재귀 삭제는 없다.
+
+manifest schema는 v1이며 새 복원 영수증의 `fingerprint_version=2`는 index·작업파일 bytes와
+실행 mode를 확인한다. 초기 버전 영수증에 이 필드가 없으면 기존 폴더를 덮어쓰거나 멱등 성공으로
+승격하지 않고 `handoff_restore_receipt_version_requires_review`로 보존·검토한다. 초기 영수증도
+검증된 소유 clone의 WIP 백업에는 사용할 수 있다. POSIX 실행 mode를 표현할 수 없는 대상에서는
+복원 read-back 실패를 성공으로 바꾸지 않는다. 현재 물리 PC 간·POSIX 실제 운영 시험은 미수행이다.
+
 `portable_verified`나 `restore_verified`는 제품 AC/독립 품질/전체 테스트 통과를 의미하지 않는다.
 소규모 180초 이내는 목표이며 물리 PC 간 시간은 실제 실행 뒤만 보고한다. Finish/Lean/GGUF는 후속이다.
 

@@ -16,8 +16,8 @@ import subprocess
 import time
 import uuid
 
-from .autocommit import eligible_paths, scan_content
-from .contracts import HarnessError, digest, encode, identifier, overlaps
+from .autocommit import eligible_paths, scan_content as _legacy_scan_content
+from .contracts import HarnessError, SENSITIVE_FIELDS, digest, encode, identifier, overlaps
 from .isolation import repository_lock
 from .managed import ManagedStore, validate
 
@@ -29,6 +29,26 @@ MAX_MANIFEST = 4_000_000
 MAX_GIT_OUTPUT = 24_000_000
 HEX = re.compile(r"[0-9a-f]{64}\Z")
 SHA = re.compile(r"[0-9a-f]{40}\Z")
+
+
+def scan_content(content, name=""):
+    """Keep the shared scanner and close assignment gaps at this boundary."""
+    _legacy_scan_content(content, name)
+    if Path(name).suffix != ".py": return
+    import ast
+    try: tree = ast.parse(content.decode("utf-8"))
+    except (SyntaxError, UnicodeError): return  # Legacy scan already checked WIP.
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign): targets = node.targets
+        elif isinstance(node, (ast.AnnAssign, ast.NamedExpr)): targets = [node.target]
+        else: continue
+        value = node.value
+        if not isinstance(value, ast.Constant) or not isinstance(value.value, str) or not value.value: continue
+        for target in targets:
+            field = (target.id if isinstance(target, ast.Name) else target.attr if isinstance(target, ast.Attribute)
+                     else target.slice.value if isinstance(target, ast.Subscript) and isinstance(target.slice, ast.Constant) else None)
+            if isinstance(field, str) and field.casefold() in SENSITIVE_FIELDS:
+                raise HarnessError("secret_in_commit")
 
 
 def _git(root, *args, data=None, env=None):
@@ -156,7 +176,10 @@ class Handoff:
     def _locks(self, tree):
         stack = ExitStack()
         try:
-            for root in dict.fromkeys((self.anchor, self.root, tree)):
+            # Managed writers use the controller/common-root locks. Do not create
+            # harness runtime files inside their WIP tree: snapshot() treats
+            # ignored out-of-scope writes there as contamination on the next run.
+            for root in dict.fromkeys((self.anchor, self.root)):
                 stack.enter_context(repository_lock(root))
         except BaseException:
             stack.close()
@@ -179,6 +202,29 @@ class Handoff:
     def _ack(row):
         return row["state"] == "PAUSED" and not row["lease"] and not row["pid"]
 
+    def _owned_restored_tree(self, row, tree, common):
+        """Only a previously verified, task-owned independent restore is portable."""
+        expected = self.store.directory / "worktrees" / row["id"]
+        if tree != expected or not row["id"].startswith("RESTORE-"):
+            return False
+        git_dir = _safe_file(tree, ".git")
+        if not git_dir.is_dir() or common != git_dir.resolve(): return False
+        prefix = row["id"][len("RESTORE-"):]
+        records = _safe_file(self.root, ".local_runtime/handoff/restores")
+        candidates = sorted(records.glob(prefix + "*.json")) if records.is_dir() else []
+        if len(candidates) != 1: return False
+        path = candidates[0]
+        checkpoint = path.stem
+        self._checkpoint(checkpoint)
+        receipt = _read(_safe_file(records, path.name))
+        if (receipt.get("status") != "restore_verified" or receipt.get("checkpoint") != checkpoint
+                or receipt.get("new_task_id") != row["id"] or receipt.get("destination") != str(tree)
+                or receipt.get("management_root") != str(self.root)
+                or receipt.get("state_dir") != self.store.directory.relative_to(self.root).as_posix()
+                or not SHA.fullmatch(receipt.get("commit_sha", ""))): return False
+        manifest, _ = self._load(checkpoint)
+        return _text(tree, "rev-parse", "HEAD") == manifest["base_sha"]
+
     def _capture(self, tree, row, include, required):
         head = _text(tree, "rev-parse", "HEAD")
         index_hash = _index_hash(tree)
@@ -186,8 +232,10 @@ class Handoff:
         tracked = _names(tree, "ls-tree", "-r", "--name-only", "HEAD") | set(entries)
         staged = _names(tree, "diff", "--cached", "--no-renames", "--name-only")
         unstaged = _names(tree, "diff", "--no-renames", "--name-only")
-        untracked = _names(tree, "ls-files", "--others", "--exclude-standard")
-        ignored = _names(tree, "ls-files", "--others", "--ignored", "--exclude-standard")
+        # Git represents nested repositories as directory records ending in '/'.
+        # Keep the excluded directory in inventory without inventing a file path.
+        untracked = {name.rstrip("/") for name in _names(tree, "ls-files", "--others", "--exclude-standard")}
+        ignored = {name.rstrip("/") for name in _names(tree, "ls-files", "--others", "--ignored", "--exclude-standard")}
         # Inventory our own immutable artifact storage as one excluded directory.
         # Listing every receipt/blob would make an unchanged backup hash itself.
         ignored = {name for name in ignored if not name.startswith(".local_runtime/handoff/")}
@@ -226,8 +274,9 @@ class Handoff:
             elif changed:
                 eligible_paths([name])
                 file = _safe_file(tree, name)
-                if file.exists() and not file.is_file(): raise HarnessError("handoff_not_regular_file")
                 index_value = entries.get(name)
+                if file.exists() and not file.is_file() and not (file.is_dir() and name in tracked):
+                    raise HarnessError("handoff_not_regular_file")
                 item.update(included=True, reason="task_wip", index=None, worktree=None)
                 if index_value:
                     mode, sha = index_value
@@ -259,7 +308,8 @@ class Handoff:
             if time.monotonic() - started >= wait_seconds: raise HarnessError("handoff_stop_ack_pending")
             time.sleep(0.05)
         tree = Path(row["worktree"] or self.root).resolve()
-        if Path(_text(tree, "rev-parse", "--path-format=absolute", "--git-common-dir")).resolve() != self.common:
+        common = Path(_text(tree, "rev-parse", "--path-format=absolute", "--git-common-dir")).resolve()
+        if common != self.common and not self._owned_restored_tree(row, tree, common):
             raise HarnessError("handoff_foreign_worktree")
         while True:
             try:
@@ -444,6 +494,8 @@ class Handoff:
                 receipt = _read(saved)
                 if receipt.get("commit_sha") != expected_sha or receipt.get("checkpoint") != checkpoint:
                     raise HarnessError("handoff_destination_mismatch")
+                if receipt.get("fingerprint_version") != 2:
+                    raise HarnessError("handoff_restore_receipt_version_requires_review")
                 if self.store.get(receipt["new_task_id"])["lease"]:
                     raise HarnessError("handoff_restore_task_running")
                 cached, _ = self._load(checkpoint)
@@ -495,6 +547,25 @@ class Handoff:
             _git(destination, "remote", "set-url", "origin", url)
             _git(destination, "checkout", "--detach", manifest["base_sha"])
             try:
+                included_items = [item for item in manifest["inventory"] if item["included"]]
+                # Remove old index paths before adding D/F replacements.
+                for item in sorted(included_items, key=lambda i: (-i["path"].count("/"), i["path"])):
+                    _git(destination, "update-index", "--force-remove", "--", item["path"])
+                # Remove selected old files first, then only the empty ancestors.
+                empty_dirs = set()
+                for item in sorted(included_items, key=lambda i: (-i["path"].count("/"), i["path"])):
+                    if item["worktree"] is not None: continue
+                    path = _safe_file(destination, item["path"])
+                    if path.is_file(): path.unlink()
+                    for parent in path.parents:
+                        if parent == destination: break
+                        empty_dirs.add(parent)
+                for path in sorted(empty_dirs, key=lambda p: (-len(p.parts), str(p))):
+                    if path.is_dir():
+                        try: path.rmdir()
+                        except OSError:
+                            # Never recursively remove an unselected/nonempty path.
+                            if not path.is_dir() or not any(path.iterdir()): raise
                 for item in manifest["inventory"]:
                     if not item["included"]: continue
                     name = item["path"]
@@ -503,9 +574,9 @@ class Handoff:
                     if value:
                         sha = _git(destination, "hash-object", "-w", "--stdin", data=blobs[value["sha256"]]).decode().strip()
                         _git(destination, "update-index", "--add", "--cacheinfo", value["mode"] + "," + sha + "," + name)
-                    else: _git(destination, "update-index", "--force-remove", "--", name)
                     value = item["worktree"]
                     if value:
+                        if path.is_dir(): path.rmdir()  # Empty only; never recursive.
                         path.parent.mkdir(parents=True, exist_ok=True)
                         path.write_bytes(blobs[value["sha256"]])
                         if os.name != "nt": path.chmod(0o755 if value["mode"] == "100755" else 0o644)
@@ -535,11 +606,14 @@ class Handoff:
                     path = _safe_file(destination, item["path"])
                     if value:
                         if not path.is_file() or path.read_bytes() != blobs[value["sha256"]]: raise HarnessError("handoff_restore_file_mismatch")
-                    elif path.exists(): raise HarnessError("handoff_restore_file_mismatch")
+                        mode = _worktree_mode(path.stat(), entry[0] if entry else None, windows=os.name == "nt")
+                        if mode != value["mode"]: raise HarnessError("handoff_restore_mode_mismatch")
+                    elif path.exists() and not path.is_dir(): raise HarnessError("handoff_restore_file_mismatch")
                 result = self._receipt(checkpoint, "restore_verified", started, manifest_sha256=checkpoint,
                                        commit_sha=expected_sha, ref=ref, destination=str(destination),
                                        management_root=str(self.root), state_dir=self.store.directory.relative_to(self.root).as_posix(),
                                        new_task_id=body["task_id"], new_run_id=uuid.uuid4().hex,
+                                       fingerprint_version=2,
                                        restored_fingerprint=self._fingerprint(destination, included), next_action="review_then_resume_new_task")
                 _atomic(saved, result)
                 return result
@@ -551,9 +625,12 @@ class Handoff:
     def _fingerprint(tree, included=()):
         # Runtime state is deliberately not a restored input/usage ledger.
         names = _names(tree, "ls-files") | _names(tree, "ls-files", "--others", "--exclude-standard") | set(included)
-        values = {}
+        values, index_entries = {}, _index(tree)
         for name in sorted(names):
             if name.startswith(".local_runtime/"): continue
             path = _safe_file(tree, name)
-            values[name] = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+            if path.is_file():
+                mode = _worktree_mode(path.stat(), index_entries.get(name, (None,))[0], windows=os.name == "nt")
+                values[name] = {"sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "mode": mode}
+            else: values[name] = None
         return digest({"head": _text(tree, "rev-parse", "HEAD"), "index": _index(tree), "files": values})

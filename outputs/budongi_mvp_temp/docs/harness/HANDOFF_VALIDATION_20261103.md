@@ -10,7 +10,8 @@ degraded 조사로 재현→원인 확인→분리 main에서 검증했다. 도�
 ## 실행 결과
 
 `C:/Users/SSAFY/Desktop/jipdam/.venv/Scripts/python.exe -X utf8 scripts/verify_environment.py`
-exit 0. 제품 376개(발견/실행 대상), 팀 35개와 합성 doctor/tool CLI를 통과했다.
+첫 전체 검증 exit 0. 당시 별도 loader가 발견한 제품 수는376이며 전체 실행 집계와 구분한다.
+팀35와 합성 doctor/tool CLI를 통과했고 최종 전체 실행 수는 아래 수정 후 기록을 따른다.
 제품에는 새 handoff 18개·GMS defer 3개·기존 provider 17개 회귀가 포함된다.
 별도 `scripts/check_sdd.py --base origin/main`: features21/AC114/tasks43 passed.
 `git diff --check` passed. `python -m harness providers`: GMS available=false,
@@ -47,7 +48,9 @@ provider codex/allow_fallback false/resume_session false. 복원 중 실제 모�
 복원 이후 수동 수정 보호를 테스트했다. 전부 합성 fixture이며 유료/외부 모델 호출은 없다.
 
 기본 sandbox에서는 임시폴더 생성 WinError 5가 있어 같은 검증을 승인된 비격리 실행으로 수행한다.
-GMS/LLM 실호출은 0회. 과거 4건 실패/1,085,783토큰 원장은 변경하지 않는다.
+Backup/Restore 기능이 시작한 GMS/LLM provider 호출은0회다. 개발하는 Codex 채팅·native
+검토 자체의 사용량은 이 수치에 포함하지 않으며 공식 usage 미관측은 unknown이다.
+과거 4건 실패/1,085,783토큰 원장은 변경하지 않는다.
 
 ## 상태 한계
 
@@ -59,3 +62,27 @@ GMS/LLM 실호출은 0회. 과거 4건 실패/1,085,783토큰 원장은 변경�
 원격 위키 게시/동기화가 성공했다고 주장하지 않는다. KAN-6은 변경하지 않는다.
 v5.4.1: review 목적 신규 산출물 0개; 본 기록은 기존 필수 AC 검증 증거로 재사용한다.
 고정 코드 SHA의 독립 검토 결과는 KAN-41에 귀속한다. no_findings와 사람 승인·main 병합은 별개다.
+
+## 독립 검토 후 수정
+
+검토 대상 `cfbce84259dcc8a9175700de412d49e9c9037037`, native in-host status=findings,
+requires_revalidation=true. P1 annotated secret 스캔 누락과 P2 재백업 common-dir 차단,
+directory/file 교체 순서, fingerprint mode 누락을 확인했다. reviewer는 고정 source/AC와
+test summary를 확인했으며 전체 테스트/CI/원격/물리 PC를 독립 실행하지 않았다.
+순수 scanner 반례는 exit0으로 재현했고 filesystem 시도는 sandbox WinError5로 중단됐다.
+기존 KAN-41 댓글10196에 결과를 남겼고 별도 review pack은 생성하지 않았다.
+
+hand-off 경계의 비밀 리터럴 검사, 소유 clone/provenance 검사, 삭제→빈 디렉터리→쓰기,
+fingerprint mode/read-back과 v2 receipt를 추가했다. 재백업→재실행이 자기 lock 파일 때문에
+오염되지 않도록 lock은 controller/common root에만 둔다. nested Git directory 인벤토리도 보존한다.
+추가 회귀 4개를 AC 추적 원장에 연결했다. handoff23개 86.521초 OK. 파일↔디렉터리의 실제
+임시 bare remote 왕복과 복원→변경→재백업→mock 재실행을 포함하며 실제 모델/API는 없다.
+수정 후 `scripts/verify_environment.py`: exit0, 제품383개 246.389초/팀35개1.937초 OK,
+합성 doctor/tool CLI passed. 고정 scope24 파일의 handoff scanner도 passed.
+최종 실행 수는 `.local_runtime/kan41-git/full-verification-after-review.log`의 실제 Ran/OK이며
+초기의 별도 loader 발견 수376을 최종 실행 수로 사용하지 않는다. raw 로그는 Git에 넣지 않는다.
+새 코드 SHA의 재검토/CI 전에는 이전
+SHA의 독립 검토/검증을 최신 합격으로 재사용하지 않는다. 기존 승인 artifact ref는 불변이다.
+CI commit-status connector는 statuses=[]로 반환해 성공을 증명하지 못했다. push workflow는
+존재하지만 gh fallback은 'gh auth login' 안내로 실행 불가였다. 토큰/키를 조회하거나 로그인
+설정을 바꾸지 않았으며 CI는 미확인이다. 최종 Finish/ready_for_main 합격으로 표시하지 않는다.
