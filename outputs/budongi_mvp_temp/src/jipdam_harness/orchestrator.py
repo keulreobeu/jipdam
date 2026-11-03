@@ -82,6 +82,9 @@ class Orchestrator:
                 if reason:
                     return self.finish(task_id, lease, "PAUSED" if reason == "pause" else "CANCELLED" if reason == "cancel" else "INTERRUPTED", reason=reason)
                 provider = self.providers.get(provider_name)
+                from .provider_policy import deferred
+                if deferred(provider_name):
+                    return self.finish(task_id, lease, "WAITING_FOR_PROVIDER", reason="DEFERRED_GMS")
                 if provider is None:
                     return self.finish(task_id, lease, "WAITING_FOR_PROVIDER", reason="provider_unavailable")
                 self.store.update(task_id, lease, "RUNNING", result={"provider": provider_name})

@@ -1,5 +1,14 @@
 # Codex 작업 프로토콜 — 집담
 
+## 현재 운영 — 2026-11-03 DEFERRED_GMS
+
+현재 사용자 v5.4 실행 요청은 GMS 신규 개발·키 조회·quote/count·실호출·fallback·실측을
+무기한 보류한다. 아래 GMS 우선 규칙은 과거 이력이며 코드·원장·키는 보존한다.
+유효 키, 명시 사용자 재승인, 잔액/만료·예산/불확실 정산 확인과 mock 회귀 전에는 재개하지 않는다.
+TASK-OPS-GMS-DEFER-001와 TASK-HANDOFF-001의 Python-only backup/restore를 우선한다.
+추가 AI 계획/리뷰·장문 위키·벤치마크·main 자동 병합은 현재 작업에 포함하지 않는다.
+계약: [HANDOFF-001](docs/specs/28_handoff_spec.md), [Task](docs/tasks/handoff.md).
+
 2026-10-13 공유 승인: 사용자의 현재 요청에 따라 PORTABLE-001/TASK-PORTABLE-001로 기존 MOLIT/제공 통계 원본의 Drive 패키지 공유·오프라인 DB 재구성과 구현 코드의 새 브랜치 푸시를 수행한다. COLLECT-001의 사전 기록/해시/개별 링크는 유지하며 새 원격 수집·키 조회·매칭 확정은 포함하지 않는다.
 
 2026-10-13 제공 통계 파일 승인: 사용자가 이미 내려받아 제공한 30개 엑셀은 [STATS-001](docs/specs/14_statistics_storage_spec.md)·[TASK-STATS-001](docs/tasks/statistics-import.md)로 별도 `data/statistics/`에 오프라인 적재한다. 사용자 업데이트 날짜/일반 기준월 메모와 실제 파일의 기간은 구분하고 심리 dashboard/상세표 중복을 검수한다. 새 외부 수집·API·키·업로드·추천 연결은 해당 승인에 포함하지 않는다.

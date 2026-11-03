@@ -1,4 +1,7 @@
-현재 사용자 지시의 GMS 최소 보존1,000·오토커밋은 [최신 후속 운영](OPERATIONS_UPDATE_20261015.md)을 우선한다.
+현재 운영(2026-11-03): **DEFERRED_GMS**. GMS 키/잔액/quote/count 조회·실호출·fallback·
+native probe와 신규 GMS 개발은 명시 재승인 전 보류한다. 아래 GMS/오토커밋은 역사적 기록이다.
+원장·키·과거 테스트는 보존한다. Python-only [WIP backup/restore](HANDOFF.md)를 우선하며
+현재 변경 전달은 전담 Git agent의 branch_only다. main 병합·자동 모델 재개는 하지 않는다.
 
 # CLI-First 하네스 운영
 
@@ -40,7 +43,7 @@ App은 목표를 명시 작업·scope·AC·의존성으로 정리한 뒤 이 명
   "depends_on": [],
   "execution": {
     "preferred_provider": "mock",
-    "fallback_provider": "gms",
+    "fallback_provider": "codex",
     "allow_fallback": false,
     "max_attempts": 2,
     "timeout_seconds": 120,

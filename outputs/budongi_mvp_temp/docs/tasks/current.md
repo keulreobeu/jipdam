@@ -125,3 +125,7 @@ Evaluate each Golden `required_facts` item against its generated answer determin
 2026-10-20 [TASK-CLAUDE-GSTACK-001](../../../../docs/tasks/claude-gstack-support.md): Codex/Claude host별 gstack 설치 지원 및 검증.
 
 2026-10-30 [TASK-META-INTEGRATE-001](metadata-integration-20261030.md) / KAN-32: 4인 75항목 통합 메타데이터·수집자 검증 Jira·DB/PK 설계. [설계·분담](../metadata-db-design.md) / [재개](../plans/metadata-integration-20261030.md).
+2026-11-03 [TASK-OPS-GMS-DEFER-001](ops-gms-defer.md), [TASK-HANDOFF-001](handoff.md): KAN-41.
+GMS는 DEFERRED_GMS로 신규 선택·자동 fallback/조회·실행을 보류한다. 아래 과거 GMS 우선·
+호출 성공·원장 기록은 당시 이력이며 삭제하지 않는다. 현재는 Python-only WIP 백업·복원을
+구현/검증한다. Lean 계측/프로파일·Finish·로컬 모델은 후속이다. main 자동 병합 없음.

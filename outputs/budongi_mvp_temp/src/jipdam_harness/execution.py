@@ -382,6 +382,9 @@ class GMSProvider:
         self.port, self.scratch = port, scratch
 
     def availability(self) -> dict:
+        from .provider_policy import deferred
+        if deferred("gms"):
+            return {"provider": "gms", "available": False, "reason": "DEFERRED_GMS", "external_calls": False}
         connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=3)
         try:
             connection.request("GET", "/api/gms/state", headers={"Origin": f"http://127.0.0.1:{self.port}"})
@@ -397,6 +400,9 @@ class GMSProvider:
             connection.close()
 
     def execute(self, task: dict, context: str, cwd: Path, should_stop: StopCheck) -> ExecutionResult:
+        from .provider_policy import deferred
+        if deferred("gms"):
+            return ExecutionResult("error", "DEFERRED_GMS", summary="GMS is deferred by operator policy.")
         if reason := should_stop():
             return ExecutionResult("error", reason, summary="GMS did not start.")
         # Worktrees retain the repository layout; standalone product roots are also supported.

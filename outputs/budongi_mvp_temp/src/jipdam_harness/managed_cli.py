@@ -19,6 +19,8 @@ def main(argv=None, *, workspace=None):
     p.add_argument("--codex-bin", default=None)
     p.add_argument("--gms-port", type=int, default=8786)
     sub = p.add_subparsers(dest="command", required=True)
+    from .handoff_cli import parser as handoff_parser
+    handoff_parser(sub)
     from .metrics_cli import parser as metrics_parser
     metrics_parser(sub)
     for name in ("status", "tasks"):
@@ -41,6 +43,11 @@ def main(argv=None, *, workspace=None):
     s = sub.add_parser("worker"); s.add_argument("--once", action="store_true")
     args = p.parse_args(argv)
     try:
+        if args.command == "handoff":
+            from .handoff_cli import run as handoff_run
+            result = handoff_run(args, root)
+            print(encode(result))
+            return 3 if result["status"] in {"blocked", "restore_incomplete"} else 0
         directory = (root / args.state_dir).resolve()
         if not directory.is_relative_to(root / ".local_runtime"):
             raise HarnessError("state_directory_must_be_local_runtime")
@@ -66,6 +73,8 @@ def main(argv=None, *, workspace=None):
             result = store.get(args.task) if args.task else store.tasks(args.state)
         elif args.command == "providers": result = {k: v.availability() for k, v in providers.items()}
         elif args.command == "codex-gms-check":
+            from .provider_policy import require_available
+            require_available("gms")
             from .codex_gms import probe
             result = probe(root, binary=args.codex_bin or "codex")
         elif args.command == "autocommit":

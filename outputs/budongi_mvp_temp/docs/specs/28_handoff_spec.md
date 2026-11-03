@@ -1,0 +1,78 @@
+# Python WIP handoff and deferred GMS
+
+```toml
+kind = "spec"
+id = "HANDOFF-001"
+status = "approved"
+owner = "Codex"
+revision = 1
+approved_by = "사용자"
+approved_at = "2026-11-03"
+approval_ref = "현재 요청: 첨부 v5.4 네 문서 반영해서 작업 진행"
+```
+
+## HANDOFF-001-REQ-01 모델 없는 정책
+
+현재 GMS는 DEFERRED_GMS다. 새 preferred/fallback 선택, 기존 task의 실행,
+availability/quote/count/native probe를 통신 전에 거부한다. 과거 코드·키·원장은 보존한다.
+재개는 유효 키, 명시 사용자 재승인, 잔액/만료·불확실 정산·예산 확인과 mock 회귀가 필요하다.
+환경변수나 fallback으로 이 결정을 우회하지 않는다. Codex와 Mock은 사용 가능하다.
+
+### HANDOFF-001-AC-01
+
+G-01~05: 신규·기존 task, fallback, GMS provider/probe가 네트워크·키·count 0회이며
+Codex/Mock 경로가 유지된다. 과거 테스트는 mock으로만 legacy 경계를 검증한다.
+
+## HANDOFF-001-REQ-02 중단과 로컬 보존
+
+backup은 ManagedStore의 task를 pause 요청하고 lease/pid가 해제된 PAUSED ACK를 확인한다.
+시간 제한 안에 ACK가 없으면 blocked다. repository lock과 HEAD/index/파일 재확인으로
+worker 경합·캡처 중 변경을 거부한다. 프로세스 트리 정리는 기존 worker 계약을 재사용한다.
+staged/unstaged/tracked/untracked/ignored 인벤토리와 제외 사유, 기준 HEAD,
+선택한 worktree/index 바이트·실행 mode를 content-addressed manifest v1로 보관한다.
+제품 테스트나 모델을 실행하지 않는다. 항상 unverified이며 원본 index를 쓰지 않는다.
+
+### HANDOFF-001-AC-02
+
+H-01~05,08,09: stop 미확인·중복 writer·HEAD/index/내용 변경·충돌 index·악성 경로·
+symlink/reparse point·비밀·DB/raw/runtime·파일 수/크기 초과를 거부한다.
+필요한 ignored 파일은 명시 include 및 같은 검사를 거치며, 빠진 필수 파일은 portable 성공 불가다.
+문법 오류 WIP도 보존하며 원본 staged/unstaged 상태와 인벤토리가 유지된다.
+
+## HANDOFF-001-REQ-03 승인된 별도 게시와 복원
+
+backup은 local_saved까지만 기록한다. publish는 Git 전담 주체가 명시 호출하며
+선택한 기존 remote의 base ref가 기준 SHA와 일치할 때만 orphan artifact branch에
+manifest와 검사한 blobs만 정상 git commit/push한다. 과거 source history는 push하지 않는다.
+원격 read-back 실패는 local_saved/PUSH_PENDING이며 동일 checkpoint로 재시도한다.
+backup ref는 refs/heads/codex/handoff/<checkpoint>; SHA 확인 전 portable_verified 금지다.
+누락된 in-scope 파일이 있으면 portable_verified를 부여하지 않는다.
+
+restore는 checkpoint/ref/expected SHA 및 base ref/SHA와 manifest/blob 해시·schema·크기·경로를
+검사하고 새 빈 전용 폴더에만 base를 checkout한다. 모든 payload를 검사한 뒤 적용한다.
+Git index와 worktree를 각각 재현하고 새 ManagedStore task/run ID와 새 lease 주기로 연결한다.
+새 작업은 PAUSED로 생성하며 실제 모델 재개는 명시 run이다. 이전 session/SQLite/Usage는 복원하지 않는다.
+같은 목적지 재요청은 결과 해시 일치 시만 멱등이며 수동 변경은 덮어쓰지 않는다.
+실패하면 복구 폴더를 보존하고 restore_incomplete/blocked로 출력한다.
+
+### HANDOFF-001-AC-03
+
+H-06~09: 실제 임시 bare remote와 독립 저장소에서 Git ref/SHA read-back, staged/unstaged/
+untracked roundtrip, 잘못된 SHA/manifest/경로/원격 거부/중복 요청/변조/한도 초과를 검증한다.
+local_saved, portable_verified, restore_verified, restore_incomplete, blocked를 구분한다.
+
+## HANDOFF-001-REQ-04 증거와 범위
+
+receipt v1은 checkpoint ID, manifest SHA, ref/commit, 상태, unverified, elapsed_seconds,
+고정 error code와 next_action만 제한해서 출력한다. 모델/API 호출은 0회다.
+환경 이동 속도와 검증 성공은 실제 실행한 환경에만 한정한다.
+Finish/Lean/새 계측/GGUF/Claude 확장은 후속이며 main 자동 병합은 없다.
+v5.4.1 추가 요청: [조건부 독립 검토·단일 템플릿](../harness/HANDOFF.md#조건부-독립-검토--v541)을
+재사용한다. 실제 backup은 리뷰를 기다리지 않지만 구현 후보의 Finish는 STRICT 독립 검토가
+없으면 independent_review_pending이다. no_findings는 별도 사람 승인·CI·AC를 대신하지 않는다.
+고정 reviewed_sha가 바뀌면 해당 검토 근거는 무효다. Chat API/자동 전송/새 검토 pack은 구현하지 않는다.
+
+### HANDOFF-001-AC-04
+
+H-10: 소규모 fixture의 실제 backup/restore 소요 시간을 기록한다. 목표 180초는
+측정 목표이며 실제 PC A→B 실행 전 물리 PC 간 성공이나 성능 달성을 주장하지 않는다.

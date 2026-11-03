@@ -42,7 +42,7 @@ def validate(body, root):
         if priority not in PRIORITIES:
             raise HarnessError("invalid_priority")
         execution = dict(body.get("execution", {}))
-        defaults = {"preferred_provider": "codex", "fallback_provider": "gms", "max_attempts": 2,
+        defaults = {"preferred_provider": "codex", "fallback_provider": "codex", "max_attempts": 2,
                     "timeout_seconds": 1800, "total_timeout_seconds": 3600, "sandbox": "workspace-write",
                     "allow_fallback": False}
         for k, v in defaults.items():
@@ -50,6 +50,8 @@ def validate(body, root):
         for key in ("preferred_provider", "fallback_provider"):
             if execution[key] not in {"codex", "gms", "mock"}:
                 raise HarnessError("unsupported_provider")
+            from .provider_policy import require_available
+            require_available(execution[key])
         for key, cap in (("max_attempts", 5), ("timeout_seconds", 7200), ("total_timeout_seconds", 14400)):
             if type(execution[key]) is not int or not 1 <= execution[key] <= cap:
                 raise HarnessError("invalid_execution_limit")
@@ -291,6 +293,8 @@ class ManagedStore:
                 body["priority"] = priority
             if provider is not None:
                 if provider not in {"codex", "gms", "mock"}: raise HarnessError("unsupported_provider")
+                from .provider_policy import require_available
+                require_available(provider)
                 body["execution"]["preferred_provider"] = provider
             c.execute("UPDATE managed_tasks SET body=?,hash=?,priority=? WHERE id=?", (encode(body), digest(body), PRIORITIES[body["priority"]], task))
             self.event(c, task, "configured", {"priority": body["priority"], "provider": body["execution"]["preferred_provider"]})
