@@ -9,6 +9,9 @@ description = "Evidence-grounded real-estate tool-calling MVP scaffold"
 requires-python = ">=3.11"
 dependencies = ["cryptography>=42", "openpyxl>=3.1", "keyring>=25; sys_platform == 'darwin'"]
 
+[project.optional-dependencies]
+pipeline = ["duckdb>=1.4,<2", "pyarrow>=20,<30", "psutil>=7,<8", "pandas>=2.2,<3"]
+
 [project.scripts]
 jipdam = "budongi.cli:main"
 budongi = "budongi.cli:main"

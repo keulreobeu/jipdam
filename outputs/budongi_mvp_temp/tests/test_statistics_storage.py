@@ -14,7 +14,7 @@ from pathlib import Path
 
 from openpyxl import Workbook
 
-from budongi.statistics_storage import StatisticsError, import_statistics, statistics_status
+from budongi.statistics_storage import StatisticsError, import_statistics, statistics_status, _xml_values, _rows, _profile, _registry, _json
 
 
 class StatisticsStorageTests(unittest.TestCase):
@@ -41,6 +41,24 @@ class StatisticsStorageTests(unittest.TestCase):
     def query(self, sql, args=()):
         with closing(sqlite3.connect(self.db)) as db:
             return db.execute(sql, args).fetchall()
+
+    def test_xml_numeric_values_preserve_precision_and_ignore_text(self):
+        path = self.workbook("PIR.xlsx", [["heading", 0, 12345.678901, None], ["text", -4, 2.5, "-"]])
+        self.assertEqual(_xml_values(path.read_bytes())["Synthetic statistics"],
+                         {"B1": "0", "C1": "12345.678901", "B2": "-4", "C2": "2.5"})
+
+    def test_raw_scalar_json_matches_canonical_values(self):
+        from openpyxl import load_workbook
+        path = self.workbook("아파트 매매평균가격.xlsx", [
+            ["지역명", "2026-01-01", "2026-02-01", "2026-03-01", "2026-04-01", "2026-05-01"],
+            ["서울", 0, -0.0, 1e-7, "-", None]])
+        parsed = list(_rows(path.read_bytes(), _profile(path, _registry())))[0][-1]
+        book = load_workbook(path)
+        try:
+            originals = [_json(cell.value) for cell in list(book.active.iter_rows(min_row=2, max_row=2))[0][1:]]
+        finally:
+            book.close()
+        self.assertEqual([cell[4] for cell in parsed], originals)
 
     def test_exact_source_cells_missing_zero_and_raw_archive(self):
         path = self.workbook("아파트 매매평균가격.xlsx", [

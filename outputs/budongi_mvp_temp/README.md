@@ -6,6 +6,12 @@
 
 사용자가 제공한 통계 엑셀 30개는 별도 `data/statistics/statistics.sqlite3`에 오프라인 보존·적재했습니다. `jipdam statistics import/status/audit`는 원본 셀 계보·기간·결측·재실행·심리 반올림 중복과 후속 메타데이터 근거를 관리합니다. [사용·조회·추가 자료 후보](docs/statistics-storage.md)와 [실제 수입 검증](docs/statistics-validation-20261013.md)을 따릅니다.
 
+## 오프라인 분석 파이프라인
+
+66개 메타데이터 항목을 보존하는 Catalog와 MOLIT XML·주택 통계 XLSX·공시가격 CSV·NEIS JSON의 오프라인 ETL을 추가했습니다. 별도 출력 공간의 typed Parquet·계보·격리 결과와 실행 측정을 제공합니다. 제품 폴더에서 선택 의존성 `python -m pip install -e '.[pipeline]'`을 설치한 뒤 `python -m budongi.cli pipeline --help`로 시작합니다.
+
+[CLI 사용 안내](docs/pipeline.md), [단계별 gstack 스킬·재개 절차](docs/plans/pipeline-m1.md), [실제 검증·남은 게이트](docs/tasks/pipeline-m1.md)를 따릅니다. 성능 목표 확정·최적화 검증 전 M1은 진행 중이며, Snowflake·dbt·Airflow는 후속 단계입니다.
+
 ## 개발 문서와 작업 순서
 
 다른 PC에서 필요할 때 Drive의 [공유 패키지](docs/shared-data.md)를 내려받아 원본으로 DB를 재구성할 수 있습니다. 다운로드 CLI는 파일별 크기와 SHA-256을 확인하며 ZIP/DB/원본은 Drive에, 코드·설정·수집 기록은 GitHub에 보관합니다. 재구성은 실제 검증 기록을 참고하세요.

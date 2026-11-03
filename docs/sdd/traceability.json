@@ -1,300 +1,301 @@
 {
   "schema_version": 1,
   "features": [
+    {"id":"PIPELINE-001","spec":"outputs/budongi_mvp_temp/docs/specs/27_pipeline_spec.md","requirements":[{"id":"PIPELINE-001-REQ-01","acs":[{"id":"PIPELINE-001-AC-01","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_catalog_revision_namespace_cells_and_unmeasured_zero"},{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_inventory_explicit_hash_missing_and_wrong_database"}]}]},{"id":"PIPELINE-001-REQ-02","acs":[{"id":"PIPELINE-001-AC-02","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_failed_values_not_published_and_writer_is_exclusive"},{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_crash_after_publish_recovers_receipt_and_before_publish_retries"}]}]},{"id":"PIPELINE-001-REQ-03","acs":[{"id":"PIPELINE-001-AC-03","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_statistics_one_input_row_many_cells_and_missing_zero"},{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_molit_existing_normalizer_scope_and_source_namespace"},{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_neis_known_rejections_preserved_and_incomplete_pages_fail"},{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_assessed_exact_values_replay_batch_conflict_and_output_tamper"}],"manual":[{"command":"Review actual source reconciliation and benchmark evidence","evidence":"outputs/budongi_mvp_temp/docs/tasks/pipeline-m1.md"}]}]},{"id":"PIPELINE-001-REQ-04","acs":[{"id":"PIPELINE-001-AC-04","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_measurements_comparison_refuses_changed_results_and_no_baseline"},{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_target_assessment_requires_distinct_anchored_runs_and_exact_outputs"}],"manual":[{"command":"Review actual source reconciliation and benchmark evidence","evidence":"outputs/budongi_mvp_temp/docs/tasks/pipeline-m1.md"}]}]},{"id":"PIPELINE-001-REQ-05","acs":[{"id":"PIPELINE-001-AC-05","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_pipeline.py","class":"PipelineTests","method":"test_cli_json_exit_codes_and_no_arbitrary_dispatch"}]}]}]},
     {
       "id": "META-INTEGRATE-001",
       "spec": "outputs/budongi_mvp_temp/docs/specs/31_metadata_integration_spec.md",
       "requirements": [
-        {
-          "id": "META-INTEGRATE-001-REQ-01",
-          "acs": [
-            {
-              "id": "META-INTEGRATE-001-AC-01",
-              "manual": [
-                {
-                  "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
-                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "META-INTEGRATE-001-REQ-02",
-          "acs": [
-            {
-              "id": "META-INTEGRATE-001-AC-02",
-              "manual": [
-                {
-                  "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
-                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "META-INTEGRATE-001-REQ-03",
-          "acs": [
-            {
-              "id": "META-INTEGRATE-001-AC-03",
-              "manual": [
-                {
-                  "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
-                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "META-INTEGRATE-001-REQ-04",
-          "acs": [
-            {
-              "id": "META-INTEGRATE-001-AC-04",
-              "manual": [
-                {
-                  "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
-                  "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
-                }
-              ]
-            }
-          ]
-        }
+       {
+         "id": "META-INTEGRATE-001-REQ-01",
+         "acs": [
+           {
+             "id": "META-INTEGRATE-001-AC-01",
+             "manual": [
+               {
+                 "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
+                 "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
+               }
+             ]
+           }
+         ]
+       },
+       {
+         "id": "META-INTEGRATE-001-REQ-02",
+         "acs": [
+           {
+             "id": "META-INTEGRATE-001-AC-02",
+             "manual": [
+               {
+                 "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
+                 "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
+               }
+             ]
+           }
+         ]
+       },
+       {
+         "id": "META-INTEGRATE-001-REQ-03",
+         "acs": [
+           {
+             "id": "META-INTEGRATE-001-AC-03",
+             "manual": [
+               {
+                 "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
+                 "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
+               }
+             ]
+           }
+         ]
+       },
+       {
+         "id": "META-INTEGRATE-001-REQ-04",
+         "acs": [
+           {
+             "id": "META-INTEGRATE-001-AC-04",
+             "manual": [
+               {
+                 "command": "Review KAN-32 workbook, source reconciliation and delivery evidence",
+                 "evidence": "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md"
+               }
+             ]
+           }
+         ]
+       }
       ]
     },
     {
       "id": "FACILITY-PACKAGE-001",
       "spec": "outputs/budongi_mvp_temp/docs/specs/29_facility_package_validation_spec.md",
       "requirements": [
-        {"id":"FACILITY-PACKAGE-001-REQ-01","acs":[{"id":"FACILITY-PACKAGE-001-AC-01","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_each_required_manifest_group"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_bad_manifest_types_version_and_unknown_dates"}]}]},
-        {"id":"FACILITY-PACKAGE-001-REQ-02","acs":[{"id":"FACILITY-PACKAGE-001-AC-02","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_file_hash_bytes_and_rows_are_independently_compared"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_missing_file_duplicate_and_escape_are_not_read"}]}]},
-        {"id":"FACILITY-PACKAGE-001-REQ-03","acs":[{"id":"FACILITY-PACKAGE-001-AC-03","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_facility_required_fields_and_source_codes"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_envelope_inheritance_and_explicit_identity_conflicts"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_optional_namespace_and_coordinates_remain_optional_but_paired"}]}]},
-        {"id":"FACILITY-PACKAGE-001-REQ-04","acs":[{"id":"FACILITY-PACKAGE-001-AC-04","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_valid_jsonl_counts_are_not_double_counted"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_count_equations_and_boolean_counts"}]}]},
-        {"id":"FACILITY-PACKAGE-001-REQ-05","acs":[{"id":"FACILITY-PACKAGE-001-AC-05","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_malformed_json_and_record_location"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_deterministic_errors_no_writes_or_sensitive_values"}]}]},
-        {"id":"FACILITY-PACKAGE-001-REQ-06","acs":[{"id":"FACILITY-PACKAGE-001-AC-06","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_deterministic_errors_no_writes_or_sensitive_values"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_cli_matches_api_and_exit_code"}]}]}
+       {"id":"FACILITY-PACKAGE-001-REQ-01","acs":[{"id":"FACILITY-PACKAGE-001-AC-01","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_each_required_manifest_group"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_bad_manifest_types_version_and_unknown_dates"}]}]},
+       {"id":"FACILITY-PACKAGE-001-REQ-02","acs":[{"id":"FACILITY-PACKAGE-001-AC-02","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_file_hash_bytes_and_rows_are_independently_compared"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_missing_file_duplicate_and_escape_are_not_read"}]}]},
+       {"id":"FACILITY-PACKAGE-001-REQ-03","acs":[{"id":"FACILITY-PACKAGE-001-AC-03","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_facility_required_fields_and_source_codes"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_envelope_inheritance_and_explicit_identity_conflicts"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_optional_namespace_and_coordinates_remain_optional_but_paired"}]}]},
+       {"id":"FACILITY-PACKAGE-001-REQ-04","acs":[{"id":"FACILITY-PACKAGE-001-AC-04","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_valid_jsonl_counts_are_not_double_counted"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_count_equations_and_boolean_counts"}]}]},
+       {"id":"FACILITY-PACKAGE-001-REQ-05","acs":[{"id":"FACILITY-PACKAGE-001-AC-05","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_malformed_json_and_record_location"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_deterministic_errors_no_writes_or_sensitive_values"}]}]},
+       {"id":"FACILITY-PACKAGE-001-REQ-06","acs":[{"id":"FACILITY-PACKAGE-001-AC-06","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_deterministic_errors_no_writes_or_sensitive_values"},{"file":"outputs/budongi_mvp_temp/tests/test_team_package_acceptance.py","class":"FacilityAcceptanceTests","method":"test_cli_matches_api_and_exit_code"}]}]}
       ]
     },
     {
       "id": "BENCH-CONTEXT-001",
       "spec": "outputs/budongi_mvp_temp/docs/specs/30_context_benchmark_spec.md",
       "requirements": [
-        {"id":"BENCH-CONTEXT-001-REQ-01","acs":[{"id":"BENCH-CONTEXT-001-AC-01","manual":[{"command":"CLI/ChatGPT preflight, official Usage smoke, sealed manifest read-back","evidence":"outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md"}]}]},
-        {"id":"BENCH-CONTEXT-001-REQ-02","acs":[{"id":"BENCH-CONTEXT-001-AC-02","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_managed_providers.py","class":"ObjectiveModeTests","method":"test_repeat_is_byte_compatible_and_once_removes_only_duplicate"},{"file":"outputs/budongi_mvp_temp/tests/test_managed_providers.py","class":"ObjectiveModeTests","method":"test_direct_calls_keep_the_goal_and_unknown_modes_fail"},{"file":"outputs/budongi_mvp_temp/tests/test_managed_harness.py","class":"ManagedHarnessTests","method":"test_objective_mode_is_explicit_and_existing_defaults_stay_compatible"}]}]},
-        {"id":"BENCH-CONTEXT-001-REQ-03","acs":[{"id":"BENCH-CONTEXT-001-AC-03","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_seal_is_repeatable_and_does_not_call_a_model"},{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_manifest_and_independent_evaluator_are_immutable"},{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_independent_acceptance_rejects_constant_true_and_false_implementations"}]}]},
-        {"id":"BENCH-CONTEXT-001-REQ-04","acs":[{"id":"BENCH-CONTEXT-001-AC-04","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_empty_results_do_not_report_a_saving"}],"manual":[{"command":"fixed C_SHA ABBA actual runs, independent review/approval and paired pilot report","evidence":"outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md"}]}]}
+       {"id":"BENCH-CONTEXT-001-REQ-01","acs":[{"id":"BENCH-CONTEXT-001-AC-01","manual":[{"command":"CLI/ChatGPT preflight, official Usage smoke, sealed manifest read-back","evidence":"outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md"}]}]},
+       {"id":"BENCH-CONTEXT-001-REQ-02","acs":[{"id":"BENCH-CONTEXT-001-AC-02","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_managed_providers.py","class":"ObjectiveModeTests","method":"test_repeat_is_byte_compatible_and_once_removes_only_duplicate"},{"file":"outputs/budongi_mvp_temp/tests/test_managed_providers.py","class":"ObjectiveModeTests","method":"test_direct_calls_keep_the_goal_and_unknown_modes_fail"},{"file":"outputs/budongi_mvp_temp/tests/test_managed_harness.py","class":"ManagedHarnessTests","method":"test_objective_mode_is_explicit_and_existing_defaults_stay_compatible"}]}]},
+       {"id":"BENCH-CONTEXT-001-REQ-03","acs":[{"id":"BENCH-CONTEXT-001-AC-03","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_seal_is_repeatable_and_does_not_call_a_model"},{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_manifest_and_independent_evaluator_are_immutable"},{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_independent_acceptance_rejects_constant_true_and_false_implementations"}]}]},
+       {"id":"BENCH-CONTEXT-001-REQ-04","acs":[{"id":"BENCH-CONTEXT-001-AC-04","tests":[{"file":"outputs/budongi_mvp_temp/tests/test_facility_benchmark.py","class":"FacilityBenchmarkTests","method":"test_empty_results_do_not_report_a_saving"}],"manual":[{"command":"fixed C_SHA ABBA actual runs, independent review/approval and paired pilot report","evidence":"outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md"}]}]}
       ]
     },
     {
       "id": "OBS-001",
       "spec": "outputs/budongi_mvp_temp/docs/specs/28_observability_spec.md",
       "requirements": [
-        {
-          "id": "OBS-001-REQ-01",
-          "acs": [{"id": "OBS-001-AC-01", "tests": [
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "NormalizationTests", "method": "test_codex_cache_and_reasoning_are_subsets"},
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "StreamingTests", "method": "test_middle_turns_survive_bounded_stdout_and_equal_counts"},
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_replay_conflict_and_explicit_correction"}
-          ]}]
-        },
-        {
-          "id": "OBS-001-REQ-02",
-          "acs": [{"id": "OBS-001-AC-02", "tests": [
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_retry_usage_survives_validation_failure"},
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_idle_pause_resume_cancel_update_metrics_and_suite_denominators"},
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_idle_state_read_and_append_are_serialized_with_other_management"},
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_collector_database_failure_preserves_execution_and_marks_partial"},
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_shadow_keeps_approval_semantics_and_reports_after_restart"}
-          ]}]
-        },
-        {
-          "id": "OBS-001-REQ-03",
-          "acs": [{"id": "OBS-001-AC-03", "tests": [
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_original_item_split_into_five_tasks_counts_once"},
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_approval_and_every_independent_gate_are_required"},
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_zero_success_and_unattempted_blocked_denominators"},
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_cloud_usage_missing_never_produces_token_efficiency"}
-          ]}]
-        },
-        {
-          "id": "OBS-001-REQ-04",
-          "acs": [{"id": "OBS-001-AC-04", "tests": [
-            {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_cli_and_parallel_agent_time_are_distinct"}
-          ], "manual": [{"command": "python -X utf8 scripts/verify_environment.py; wiki lifecycle and current-checkout applicability review", "evidence": "outputs/budongi_mvp_temp/docs/tasks/observability.md"}]}]
-        }
+       {
+         "id": "OBS-001-REQ-01",
+         "acs": [{"id": "OBS-001-AC-01", "tests": [
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "NormalizationTests", "method": "test_codex_cache_and_reasoning_are_subsets"},
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "StreamingTests", "method": "test_middle_turns_survive_bounded_stdout_and_equal_counts"},
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_replay_conflict_and_explicit_correction"}
+         ]}]
+       },
+       {
+         "id": "OBS-001-REQ-02",
+         "acs": [{"id": "OBS-001-AC-02", "tests": [
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_retry_usage_survives_validation_failure"},
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_idle_pause_resume_cancel_update_metrics_and_suite_denominators"},
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_idle_state_read_and_append_are_serialized_with_other_management"},
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_collector_database_failure_preserves_execution_and_marks_partial"},
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "ManagedObservationTests", "method": "test_shadow_keeps_approval_semantics_and_reports_after_restart"}
+         ]}]
+       },
+       {
+         "id": "OBS-001-REQ-03",
+         "acs": [{"id": "OBS-001-AC-03", "tests": [
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_original_item_split_into_five_tasks_counts_once"},
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_approval_and_every_independent_gate_are_required"},
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_zero_success_and_unattempted_blocked_denominators"},
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_cloud_usage_missing_never_produces_token_efficiency"}
+         ]}]
+       },
+       {
+         "id": "OBS-001-REQ-04",
+         "acs": [{"id": "OBS-001-AC-04", "tests": [
+           {"file": "outputs/budongi_mvp_temp/tests/test_observability.py", "class": "LedgerTests", "method": "test_cli_and_parallel_agent_time_are_distinct"}
+         ], "manual": [{"command": "python -X utf8 scripts/verify_environment.py; wiki lifecycle and current-checkout applicability review", "evidence": "outputs/budongi_mvp_temp/docs/tasks/observability.md"}]}]
+       }
       ]
     },
     {
       "id": "SDD-001",
       "spec": "docs/specs/sdd_workflow_spec.md",
       "requirements": [
-        {
-          "id": "SDD-001-REQ-01",
-          "acs": [
-            {
-              "id": "SDD-001-AC-01",
-              "tests": [
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_valid_baseline_and_approved_contracts"
-                },
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_duplicate_ids_and_invalid_metadata_are_rejected"
-                },
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_unapproved_spec_cannot_start_implementation"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "SDD-001-REQ-02",
-          "acs": [
-            {
-              "id": "SDD-001-AC-02",
-              "tests": [
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_broken_references_are_rejected"
-                },
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_unmapped_and_skipped_tests_are_rejected"
-                },
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_unsafe_paths_are_rejected"
-                },
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_new_metadata_documents_must_be_registered"
-                },
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_test_references_must_be_discovered_by_default_ci"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "SDD-001-REQ-03",
-          "acs": [
-            {
-              "id": "SDD-001-AC-03",
-              "tests": [
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_changed_code_requires_updated_task"
-                },
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_scope_and_task_state_are_enforced"
-                },
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_explanatory_docs_are_exempt_but_contracts_are_not"
-                },
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_changed_paths_cannot_escape_repository"
-                }
-              ]
-            },
-            {
-              "id": "SDD-001-AC-04",
-              "tests": [
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_verified_tasks_require_completed_acs_and_passed_evidence"
-                },
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_evidence_anchors_and_manual_checks_are_validated"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "SDD-001-REQ-04",
-          "acs": [
-            {
-              "id": "SDD-001-AC-05",
-              "tests": [
-                {
-                  "file": "tests/test_sdd.py",
-                  "class": "SDDContractTests",
-                  "method": "test_changed_files_handle_pr_push_and_renames"
-                }
-              ],
-              "manual": [
-                {
-                  "command": "python -X utf8 scripts/bootstrap.py --app-only",
-                  "evidence": "docs/sdd/validation.md#github-ci"
-                }
-              ]
-            },
-            {
-              "id": "SDD-001-AC-06",
-              "tests": [],
-              "manual": [
-                {
-                  "command": "gh api repos/keulreobeu/jipdam/branches/main/protection",
-                  "evidence": "docs/sdd/validation.md#main-protection"
-                }
-              ]
-            }
-          ]
-        }
+       {
+         "id": "SDD-001-REQ-01",
+         "acs": [
+           {
+             "id": "SDD-001-AC-01",
+             "tests": [
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_valid_baseline_and_approved_contracts"
+               },
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_duplicate_ids_and_invalid_metadata_are_rejected"
+               },
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_unapproved_spec_cannot_start_implementation"
+               }
+             ]
+           }
+         ]
+       },
+       {
+         "id": "SDD-001-REQ-02",
+         "acs": [
+           {
+             "id": "SDD-001-AC-02",
+             "tests": [
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_broken_references_are_rejected"
+               },
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_unmapped_and_skipped_tests_are_rejected"
+               },
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_unsafe_paths_are_rejected"
+               },
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_new_metadata_documents_must_be_registered"
+               },
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_test_references_must_be_discovered_by_default_ci"
+               }
+             ]
+           }
+         ]
+       },
+       {
+         "id": "SDD-001-REQ-03",
+         "acs": [
+           {
+             "id": "SDD-001-AC-03",
+             "tests": [
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_changed_code_requires_updated_task"
+               },
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_scope_and_task_state_are_enforced"
+               },
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_explanatory_docs_are_exempt_but_contracts_are_not"
+               },
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_changed_paths_cannot_escape_repository"
+               }
+             ]
+           },
+           {
+             "id": "SDD-001-AC-04",
+             "tests": [
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_verified_tasks_require_completed_acs_and_passed_evidence"
+               },
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_evidence_anchors_and_manual_checks_are_validated"
+               }
+             ]
+           }
+         ]
+       },
+       {
+         "id": "SDD-001-REQ-04",
+         "acs": [
+           {
+             "id": "SDD-001-AC-05",
+             "tests": [
+               {
+                 "file": "tests/test_sdd.py",
+                 "class": "SDDContractTests",
+                 "method": "test_changed_files_handle_pr_push_and_renames"
+               }
+             ],
+             "manual": [
+               {
+                 "command": "python -X utf8 scripts/bootstrap.py --app-only",
+                 "evidence": "docs/sdd/validation.md#github-ci"
+               }
+             ]
+           },
+           {
+             "id": "SDD-001-AC-06",
+             "tests": [],
+             "manual": [
+               {
+                 "command": "gh api repos/keulreobeu/jipdam/branches/main/protection",
+                 "evidence": "docs/sdd/validation.md#main-protection"
+               }
+             ]
+           }
+         ]
+       }
       ]
     },
     {
       "id": "EVAL-001",
       "spec": "outputs/budongi_mvp_temp/docs/specs/08_evaluation_spec.md",
       "requirements": [
-        {
-          "id": "EVAL-001-REQ-01",
-          "acs": [
-            {
-              "id": "EVAL-001-AC-01",
-              "tests": [
-                {
-                  "file": "outputs/budongi_mvp_temp/tests/test_required_facts.py",
-                  "class": "RequiredFactContractTests",
-                  "method": "test_units_money_and_tolerance_boundaries"
-                }
-              ]
-            },
-            {
-              "id": "EVAL-001-AC-02",
-              "tests": [
-                {
-                  "file": "outputs/budongi_mvp_temp/tests/test_required_facts.py",
-                  "class": "RequiredFactContractTests",
-                  "method": "test_text_and_date_normalization"
-                }
-              ]
-            }
-          ]
-        },
+       {
+         "id": "EVAL-001-REQ-01",
+         "acs": [
+           {
+             "id": "EVAL-001-AC-01",
+             "tests": [
+               {
+                 "file": "outputs/budongi_mvp_temp/tests/test_required_facts.py",
+                 "class": "RequiredFactContractTests",
+                 "method": "test_units_money_and_tolerance_boundaries"
+               }
+             ]
+           },
+           {
+             "id": "EVAL-001-AC-02",
+             "tests": [
+               {
+                 "file": "outputs/budongi_mvp_temp/tests/test_required_facts.py",
+                 "class": "RequiredFactContractTests",
+                 "method": "test_text_and_date_normalization"
+               }
+             ]
+           }
+         ]
+       },
         {
           "id": "EVAL-001-REQ-02",
           "acs": [
@@ -2703,6 +2704,7 @@
     }
   ],
   "tasks": [
+    "outputs/budongi_mvp_temp/docs/tasks/pipeline-m1.md",
     "outputs/budongi_mvp_temp/docs/tasks/metadata-integration-20261030.md",
     "outputs/budongi_mvp_temp/docs/tasks/facility-benchmark.md",
     "outputs/budongi_mvp_temp/docs/tasks/observability.md",

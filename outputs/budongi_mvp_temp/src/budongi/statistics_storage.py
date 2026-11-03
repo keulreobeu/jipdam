@@ -89,11 +89,14 @@ def _xml_values(payload: bytes) -> dict[str, dict[str, str]]:
             target = targets[sheet.attrib[f"{{{rel_ns}}}id"]]
             entry = target.lstrip("/") if target.startswith("/") else posixpath.normpath("xl/" + target)
             xml = ET.fromstring(archive.read(entry))
-            result[sheet.attrib["name"]] = {
-                c.attrib["r"]: c.find("m:v", ns).text
-                for c in xml.findall("m:sheetData/m:row/m:c", ns)
-                if c.attrib.get("t", "n") == "n" and c.find("m:v", ns) is not None
-            }
+            values = {}
+            value_tag = "{" + ns["m"] + "}v"
+            for cell in xml.findall("m:sheetData/m:row/m:c", ns):
+                if cell.attrib.get("t", "n") == "n":
+                    value = cell.find(value_tag)
+                    if value is not None:
+                        values[cell.attrib["r"]] = value.text
+            result[sheet.attrib["name"]] = values
         return result
 
 
@@ -129,6 +132,7 @@ def _rows(payload: bytes, profile: dict):
             periods = [_period(v, profile["frequency"]) for v in headers[width:]]
             if len(set(periods)) != len(periods) or periods != sorted(periods):
                 raise StatisticsError("Duplicate/unordered normalized periods")
+            raw_headers = tuple(str(value) for value in headers)
             parent, group = None, None
             for row in sheet.iter_rows(min_row=2):
                 labels = [c.value for c in row[:width]]
@@ -162,10 +166,15 @@ def _rows(payload: bytes, profile: dict):
                     raise StatisticsError("Ambiguous duplicate series within a sheet")
                 seen_series.add(sid)
                 values = []
-                for col, period in zip(row[width:], periods):
-                    state, exact, numeric = _number(col.value, xml_values[sheet.title].get(col.coordinate))
-                    values.append((period, str(headers[col.column - 1]), col.row, col.column,
-                                   _json(col.value), state, exact, numeric))
+                for col, period, raw_header in zip(row[width:], periods, raw_headers[width:]):
+                    cell_value = col.value
+                    state, exact, numeric = _number(cell_value, xml_values[sheet.title].get(col.coordinate))
+                    # _number has already rejected booleans, non-finite values,
+                    # formulas and arbitrary objects. These scalar encodings
+                    # match _json for the remaining numeric/missing cases.
+                    raw_json = "null" if cell_value is None else '"-"' if cell_value == "-" else repr(cell_value)
+                    values.append((period, raw_header, col.row, col.column,
+                                   raw_json, state, exact, numeric))
                 yield sheet.title, sid, dimensions, unit, values
     finally:
         workbook.close()

@@ -125,3 +125,5 @@ Evaluate each Golden `required_facts` item against its generated answer determin
 2026-10-20 [TASK-CLAUDE-GSTACK-001](../../../../docs/tasks/claude-gstack-support.md): Codex/Claude host별 gstack 설치 지원 및 검증.
 
 2026-10-30 [TASK-META-INTEGRATE-001](metadata-integration-20261030.md) / KAN-32: 4인 75항목 통합 메타데이터·수집자 검증 Jira·DB/PK 설계. [설계·분담](../metadata-db-design.md) / [재개](../plans/metadata-integration-20261030.md).
+
+2026-10-29 [TASK-PIPELINE-001](pipeline-m1.md) / Jira KAN-28: 66개 메타데이터 Catalog와 대표 4종 오프라인 ETL, 계보 및 성능 검증을 추적한다.
