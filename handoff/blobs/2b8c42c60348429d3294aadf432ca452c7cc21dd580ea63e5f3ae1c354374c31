@@ -1,0 +1,13 @@
+# KAN-41 실행 계획
+
+사용자 v5.4 착수 브리프의 당일 목표만 실행한다. [Spec](../specs/28_handoff_spec.md).
+1. DEFERRED_GMS를 task/실행/provider/CLI에 먼저 적용, 과거 원장·키는 보존.
+2. 기존 ManagedStore pause/lease, isolation lock과 Git hash를 재사용해 WIP capture.
+3. 별도 publish와 SHA 검증 restore, 모델 실행 없이 새 PAUSED 작업으로 연결.
+4. fixture 정상·악성/실패 회귀, SDD·기존 테스트. 실제 원격 결과와 로컬 실험은 구분.
+5. 고정 snapshot만 Git 전담 agent에게 인계. branch_only, main merge 금지.
+
+main@f29ad3d에서 분리 개발한다. 원래 backup checkout의 12개 미커밋 변경과 index는 보존한다.
+기존 Git lifecycle은 main에 없으므로 현재 PC의 기존 구현만 전달 도구로 사용하고 새 dependency로
+묵시 포함하지 않는다. 위키 장문 신규 게시·추가 AI planner/reviewer·벤치마크는 실행하지 않는다.
+물리 PC 간 검증은 후속 사용자 환경 증거로 남긴다.

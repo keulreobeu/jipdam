@@ -1,0 +1,23 @@
+# KAN-41 검증 기록 — 2026-11-03
+
+기준 main f29ad3d50215fdcd61f9bf034b1c049e06a0e2ac. 분리 development/publisher 사용.
+원래 checkout은 이전 백업 branch로 wiki_contracts import가 누락돼 CLI 시작 실패.
+최신 main의 CLI에는 해당 import가 없어 시작 가능하며 기존 checkout은 수정하지 않았다.
+Git lifecycle도 main에 없으므로 현재 PC 기존 모듈을 게시 도구로만 재사용한다.
+gstack investigate helper는 Git Bash NtCreateDirectoryObject 0xC0000022로 시작 실패;
+degraded 조사로 재현→원인 확인→분리 main에서 검증했다. 도구 재설치는 하지 않았다.
+
+## 실행 결과
+
+진행 중. 테스트/최종 검증의 실제 결과를 여기에 추가한다.
+기본 sandbox에서는 임시폴더 생성 WinError 5가 있어 같은 검증을 승인된 비격리 실행으로 수행한다.
+GMS/LLM 실호출은 0회. 과거 4건 실패/1,085,783토큰 원장은 변경하지 않는다.
+
+## 상태 한계
+
+임시 bare remote+독립 clone은 물리 PC A→B 시험이 아니다. 성능·복원 성공을 물리 PC 간 결과로
+보고하지 않는다. 실제 원격 branch read-back과 fixture 원격을 구분한다.
+필수 문서는 로컬 Spec/ADR/Task/운영 안내로 제공한다. 위키 판단: SKIP(사용자 v5.4는 추가
+장문 Confluence 자동 생성을 금지하며 이번 단계는 코드와 필수 로컬 계약 갱신이다).
+현재 main CLI에는 wiki 명령이 없고 이전 checkout의 wiki는 누락 모듈로 실행되지 않는다.
+원격 위키 게시/동기화가 성공했다고 주장하지 않는다. KAN-6은 변경하지 않는다.
