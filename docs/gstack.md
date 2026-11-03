@@ -19,9 +19,9 @@
 
 ## 팀원 설치와 검증
 
-루트 README의 필수 도구를 설치한 뒤 현재 작업 host를 지정해 `python -X utf8 scripts/bootstrap.py --host codex` 또는 `--host claude`를 실행한다. Windows의 `scripts/setup-gstack.ps1`, Linux/macOS의 `bash scripts/setup-gstack.sh`도 인자를 그대로 bootstrap에 전달한다. Python만으로 확인하려면 `--app-only`를 추가한다.
+루트 README의 필수 도구를 설치한 뒤 현재 작업 host를 지정해 `python -X utf8 scripts/bootstrap.py --host codex`, `--host claude` 또는 두 도구를 함께 쓰면 `--host both`를 실행한다. Windows의 `scripts/setup-gstack.ps1`, Linux/macOS의 `bash scripts/setup-gstack.sh`도 인자를 그대로 bootstrap에 전달한다. Python만으로 확인하려면 `--app-only`를 추가한다.
 
-bootstrap은 exact commit을 fetch하고 `VERSION`, 의존성 manifest, Bun lock을 확인한다. `bun install --frozen-lockfile` 뒤 선택한 host에 대해 upstream setup/render를 실행하고 그 host 스킬만 프로젝트 탐색 경로에 등록한다. Codex는 `.agents/skills/`, Claude Code는 `.claude/skills/`를 사용한다. 다른 host로 전환할 때 이 설치기가 만든 이전 gstack 등록본은 marker와 lock을 확인한 뒤 제거한다. 등록본은 전역 host 설정을 바꾸지 않으며 upstream 실행 파일·helper는 runtime checkout에 둔다. 원본·fixture·선택하지 않은 host용 스킬은 복사하지 않는다.
+bootstrap은 exact commit을 fetch하고 `VERSION`, 의존성 manifest, Bun lock을 확인한다. `bun install --frozen-lockfile` 뒤 선택한 host마다 upstream setup/render를 실행하고 각 host 탐색 경로에 등록한다. Codex는 `.agents/skills/`, Claude Code는 `.claude/skills/`를 사용한다. 한 host 설치는 다른 host의 등록본을 제거하지 않으므로 두 host가 함께 유지된다. 명시적 unregister는 marker와 lock이 일치하는 해당 host 등록본만 제거한다. 등록본은 전역 host 설정을 바꾸지 않으며 upstream 실행 파일·helper는 runtime checkout에 둔다. 원본·fixture와 upstream의 다른 host(kiro·factory 등)용 스킬은 복사하지 않는다.
 
 개인 전역 Codex 설정과 전역 스킬은 변경하지 않는다. 공식 setup 자체는 사용자 `~/.gstack/`에 설치 버전·welcome 표시 파일을 남길 수 있다. 프로젝트 상태는 telemetry off, auto-upgrade false, 외부 CLI 자동 리뷰 disabled로 시작한다. 전체 설치는 인터넷과 디스크 공간이 필요하다.
 
