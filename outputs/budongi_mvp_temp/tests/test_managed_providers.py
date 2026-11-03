@@ -144,6 +144,7 @@ else:
         self.assertEqual(provider.execute({**task, "_attempt": 2}, "", self.root, lambda: None).status, "success")
         self.assertEqual(provider.execute({**task, "_fallback": True}, "", self.root, lambda: None).status, "success")
 
+    @patch("jipdam_harness.provider_policy.GMS_DEFERRED", False)  # Historical offline fixture only.
     def test_gms_delegates_existing_runner_once_and_returns_draft(self):
         (self.root / "src").mkdir()
         (self.root / "src/example.py").write_text("print('safe')", encoding="utf-8")
@@ -166,6 +167,7 @@ else:
             self.assertNotIn("unselected", supplied["context"])
             self.assertIn("print('safe')", supplied["context"])
 
+    @patch("jipdam_harness.provider_policy.GMS_DEFERRED", False)  # Historical offline fixture only.
     def test_gms_failure_is_uncertain_and_does_not_retry(self):
         task = {"id": "TASK-CLI-001", "objective": "Draft", "acceptance_criteria": ["Valid"], "context_files": []}
         with patch("jipdam_harness.execution.LocalGMSWork") as runner, patch("jipdam_harness.execution.run_process") as child:
@@ -176,6 +178,7 @@ else:
             self.assertNotIn("SECRETVALUE", result.summary)
             runner.return_value.work.assert_called_once()
 
+    @patch("jipdam_harness.provider_policy.GMS_DEFERRED", False)  # Historical offline fixture only.
     def test_gms_stopped_dispatch_is_uncertain(self):
         task = {"id": "TASK-CLI-001", "objective": "Draft", "acceptance_criteria": ["Valid"], "context_files": []}
         with patch("jipdam_harness.execution.run_process", return_value=(-1, "", "", "paused")) as child:
@@ -183,6 +186,7 @@ else:
             self.assertEqual(result.error, "uncertain")
             child.assert_called_once()
 
+    @patch("jipdam_harness.provider_policy.GMS_DEFERRED", False)  # Historical offline fixture only.
     def test_gms_forbidden_context_prevents_dispatch(self):
         (self.root / "data").mkdir()
         (self.root / "data/secret.json").write_text("{}", encoding="utf-8")
@@ -192,6 +196,7 @@ else:
             self.assertEqual(GMSProvider().execute(task, "", self.root, lambda: None).status, "error")
             runner.assert_not_called()
 
+    @patch("jipdam_harness.provider_policy.GMS_DEFERRED", False)  # Historical offline fixture only.
     def test_gms_availability_only_reads_local_state_and_omits_credentials(self):
         with patch("jipdam_harness.execution.http.client.HTTPConnection") as connection:
             response = connection.return_value.getresponse.return_value
@@ -204,6 +209,7 @@ else:
                 headers={"Origin": "http://127.0.0.1:8786"})
             self.assertNotIn("private-id", json.dumps(state))
 
+    @patch("jipdam_harness.provider_policy.GMS_DEFERRED", False)  # Historical offline fixture only.
     def test_gms_real_child_utf8_local_http_roundtrip(self):
         from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
         import threading

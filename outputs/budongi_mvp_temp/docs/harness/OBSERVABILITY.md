@@ -1,5 +1,36 @@
 # 하네스 관측성 운영 — OBS-001 / KAN-30
 
+2026-11-03 KAN-42 Lean P0 추가: 기존 usage·suite·승인 계약을 유지하고 invocation purpose,
+관측 turn/verification 수와 failure bucket을 추가한다. [Spec](../specs/32_lean_foundations_spec.md),
+[Task](../tasks/lean-metrics.md). 아래 GMS·모델 실측 후속 내용은 현재 DEFERRED_GMS 정책을 우선한다.
+
+`provider_invocations`와 `model_turns_observed`, `verification_phases_observed`는 서로 다른 단위다.
+미확인 coverage에서 전체 turn 수는null이며 `known_completed_turn_events`는 관측된 하한이다.
+purpose는 initial/repair/retry/fallback/unknown이며 과거 purpose 누락 시 repair 횟수를0으로
+채우지 않는다. `known_repair_invocations`와 전체 `repair_invocations`를 구분한다.
+failure_buckets는 허용 provider 결과 코드만 보존한다. quota_block_events.provider_result와 수동 user_reported는
+다른 관측이며 계정 UI는 not_integrated다. 과거 error category 누락은unknown이다.
+
+수동 관측이 필요할 때만 기존 evidence hash·고정 SHA·Task scope를 재사용한다.
+
+```powershell
+python -m harness metrics review --request .local_runtime/obs/review.json
+python -m harness metrics quota-block --request .local_runtime/obs/quota.json
+```
+
+review 요청은 run_id/event_id/evidence_sha256/channel/risk/status/head_sha/scope와 선택 reason이다.
+channel은 chat_manual/native_in_host/human_manual, risk는 LIGHT/STANDARD/STRICT,
+status는 requested/invoked/skipped/incomplete/findings/no_findings다. 사유는 정해진 코드만 허용한다.
+STRICT skipped/incomplete는 independent_review_pending이며 no_findings도 승인 상태를 바꾸지 않는다.
+quota 요청은 run_id/event_id/evidence_sha256/reason(quota_ui 또는 user_limit_observed)만 받으며
+source는 항상user_reported다. 원문 대화/키/로그/계정 잔액을 넣지 않는다. 같은 event ID/내용은
+멱등이고 다른 내용 재전송은 conflict다. Chat 토큰은null, 자동 Chat/API 호출은 없다.
+수동 관측도 run revision에 포함되므로 최종 suite outcome 증명 전에 기록한다. 이후 기록을
+추가하면 이전 revision에 고정된 평가를 자동 재사용하지 않는다.
+
+위 manual metadata는 운영자가 제출한 관측이다. 실행/사람 승인/CI 검증을 자동 증명하지 않는다.
+기존 suite의 독립 평가·승인 gate와 과거 실패4건/1,085,783토큰은 변경하지 않는다.
+
 2026-10-30. [Spec](../specs/28_observability_spec.md) · [결정](../adr/ADR-026-observability.md) ·
 [Task/검증](../tasks/observability.md) · [Plan](../plans/observability.md).
 

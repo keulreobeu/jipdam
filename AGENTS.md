@@ -1,5 +1,15 @@
 # Codex workspace — 집담
 
+## 현재 운영 — 2026-11-03 DEFERRED_GMS
+
+사용자 v5.4 네 문서 반영 요청에 따라 GMS 신규 개발·키 조회·quote/count·실호출·fallback·
+실측을 무기한 보류한다. 아래 GMS 우선/최소 보존 지시는 과거 이력이다. 코드·원장·키는
+삭제하거나 초기화하지 않는다. 유효 키 + 명시 사용자 재승인 + 잔액/만료·예산/불확실 정산
+확인 + mock 회귀 전에는 재개하지 않는다. KAN-6은 임의 변경하지 않는다.
+현재 우선은 TASK-OPS-GMS-DEFER-001와 TASK-HANDOFF-001의 Python-only WIP 보존이다.
+추가 AI Planner/Reviewer·장문 Confluence·벤치마크를 자동 실행하지 않는다. 현재 전달은
+branch_only이며 main 병합은 별도 승인이다. 상세: 제품 docs/specs/28_handoff_spec.md.
+
 2026-10-13 공유 승인: 현재 사용자의 GitHub 브랜치 푸시·DB 원본 Drive 보관/재구성 요청은 PORTABLE-001/TASK-PORTABLE-001의 기존 MOLIT/제공 통계 원본 패키지 업로드와 코드의 새 브랜치 제출을 승인한다. 수집 Issue의 사전 결과/최종 ZIP 해시·후속 개별 링크 기록은 유지한다. 새 원격 수집·키 조회·매칭 확정 승인은 아니다.
 
 현재 개발 대상은 `outputs/budongi_mvp_temp/`다. 작업 전에 그 폴더의 `AGENTS.md`와 관련 Spec·ADR·Task를 읽는다. `work/source_archive/`는 이전 프로젝트의 참고 자료다.
