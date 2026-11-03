@@ -130,7 +130,9 @@ class LeanMetricsTests(unittest.TestCase):
         path.write_text(json.dumps(self.review_request(ids["run_id"])), encoding="utf-8")
         out = io.StringIO()
         with patch("jipdam_harness.execution.GMSProvider.execute") as gms, patch("jipdam_harness.execution.CodexCLIProvider.execute") as codex, redirect_stdout(out):
-            code = main(["--state-dir", ".local_runtime/metrics", "metrics", "review", "--request", str(path)], workspace=self.fixture.root)
+            # Windows TEMP may use an 8.3 alias; the CLI anchors absolute paths
+            # at the canonical workspace and deliberately rejects other roots.
+            code = main(["--state-dir", ".local_runtime/metrics", "metrics", "review", "--request", str(path.resolve())], workspace=self.fixture.root)
         self.assertEqual(code, 0, out.getvalue())
         self.assertFalse(json.loads(out.getvalue())["approval_granted"])
         gms.assert_not_called(); codex.assert_not_called()

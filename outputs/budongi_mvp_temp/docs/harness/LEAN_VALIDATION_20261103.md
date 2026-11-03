@@ -62,3 +62,24 @@ index 보존, credential 형태 파일명을 읽기 전 차단하는 회귀를 �
 최신 fixture version은 `input-check-boundaries-v2`, 정의 SHA256은
 `e23bdc632cc0c67ee0d5bd42d6a5979cb2b02ffe6bdcf56c7f8be17c5a3327c5`다.
 버전 표기만 갱신한 최종 source는 publisher 등록검사에서 다시 확인한다. 고정 SHA 독립 검토는 대기다.
+
+SHAfbecac44a78e9fde12b0b26370f02fffc55b422d 게시/read-back 및 등록6검사
+Input21/metrics10/OBS32/operations9/handoff23/SDD PASS. 세 finding 수정 delta만 독립 재검토한
+결과 no_findings였고 filename/check_id·pytest count·cached diff를 직접 pure/mocked로 확인했다.
+실제 pytest/stage/전체CI·별도 사람 승인은 해당 리뷰 범위 밖이다.
+
+## 원격 CI 실패 조사
+
+공식 GitHub 연결의 fetch/workflow job logs를 통해 push run을 직접 확인했다.
+- [KAN-41 SHA70f7408 Actions](https://github.com/keulreobeu/jipdam/actions/runs/41574411502):
+ 4 matrix failure, 마지막 push 범위에서 검증 문서 변경을 같은 commit의 갱신 Task가 덮지 못해 SDD 실패.
+- [KAN-42 SHA9a57bd3 Actions](https://github.com/keulreobeu/jipdam/actions/runs/41581663743):
+ 4 matrix failure. Ubuntu는 CRLF 보존 fixture의 git diff whitespace2건, Windows는 metrics CLI
+ fixture의 TEMP8.3 alias request 경로와 canonical workspace 불일치1건이다.
+
+실패를 숨기거나 CI 조건을 제거하지 않는다. 합성 handoff base에 CRLF whitespace attribute를
+명시하고 진짜 trailing spaces 거부 반례를 추가했다. metrics fixture는 canonical absolute path를
+전달한다. 사용자 Git 설정/restore bytes/파일 guard는 바꾸지 않았다. metrics10/5.365초,
+handoff24/102.212초 PASS. 별도 실제 Windows GetShortPathNameW 합성 재현에서 alias는
+REQUEST_UNAVAILABLE, 동일 파일 canonical absolute path는 accepted였다. 새 SHA CI는 후속
+확인하며 과거 CI failure를 PASS로 소급하지 않는다.

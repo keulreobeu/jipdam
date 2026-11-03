@@ -35,6 +35,8 @@ class HandoffTests(unittest.TestCase):
         (self.root / "src").mkdir()
         (self.root / "src/a.py").write_text("base = 1\n", encoding="utf-8")
         (self.root / ".gitignore").write_text(".local_runtime/\nsrc/generated.txt\n", encoding="utf-8")
+        # CRLF is intentional portable WIP; retain all normal whitespace checks.
+        (self.root / ".gitattributes").write_text("*.py whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol\n", encoding="utf-8")
         _git(self.root, "add", ".")
         _git(self.root, "commit", "-m", "fixture base")
         self.base = _text(self.root, "rev-parse", "HEAD")
@@ -89,6 +91,12 @@ class HandoffTests(unittest.TestCase):
         self.assertTrue(items["src/a.py"]["unstaged"])
         self.assertTrue(items["src/new.py"]["untracked"])
         self.assertEqual(items["unrelated.txt"]["reason"], "outside_task_scope")
+
+    def test_fixture_crlf_policy_still_rejects_trailing_spaces(self):
+        self.wip()
+        _git(self.root, "diff", "--check")
+        (self.root / "src/a.py").write_bytes(b"unfinished = (  \r\n")
+        with self.assertRaises(HarnessError): _git(self.root, "diff", "--check")
 
     def test_remote_independent_restore_new_task_and_manual_edit_protection(self):
         self.wip()

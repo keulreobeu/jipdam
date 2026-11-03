@@ -31,3 +31,8 @@ acs = ["LEAN-CORE-001-AC-01", "LEAN-CORE-001-AC-02", "LEAN-CORE-001-AC-03", "LEA
 source base70f7408/명시 선행 HANDOFF dependency. main merge/PR 생성/실모델 호출 없음.
 
 최신 전체 검증: 제품411/팀35/합성CLI passed. 독립 검토·최종 게시 전이라 status는 in_progress다.
+
+fbecac44a78e9fde12b0b26370f02fffc55b422d의 세 경계 수정 delta는 독립 pure/mocked 재검토
+no_findings였다. 해당 SHA 등록6검사21/10/32/9/23/SDD도 PASS. 전체 변경/CI/사람 승인과는
+별도 증거다. 앞선9a57bd3 원격 CI에서 다른 handoff/metrics fixture가 실패해 현재 보완 중이며
+최종 CI·최신 SHA 검토 전 완료로 표시하지 않는다.

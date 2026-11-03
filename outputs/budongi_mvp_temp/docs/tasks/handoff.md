@@ -42,3 +42,11 @@ handoff 19개 회귀를 통과했다. 코드 최종 게시·STRICT 독립 검토
 독립 검토 cfbce84259dcc8a9175700de412d49e9c9037037의 findings 4건을 수정했고 handoff23개,
 전체383/35를 통과했다. 원래 결과를 지우지 않고 KAN-41 댓글10196에 보존했다.
 새 후보 SHA에 재검토가 필요하다. CI/물리 PC 시험은 미확인이며 main 준비 완료로 표시하지 않는다.
+
+2026-11-03 CI 조회 정정: SHA70f7408의 Actions41574411502는 push 마지막 변경의
+검증 문서에 같은 commit에서 갱신한 Task가 없어 SDD 실패였다. --base origin/main 검사와
+push before..after 범위의 차이를 기록한다. 후속 KAN-42에 포함한 HANDOFF 회귀는 Ubuntu에서
+의도적 CRLF WIP를 diff whitespace 오류로 판정해2건 실패했다. 합성 base에 CRLF를 허용하되
+통상 trailing-space 검사는 유지하는 .gitattributes를 명시했고 진짜 trailing spaces 거부 반례를
+추가했다. runtime backup/restore나 사용자 Git whitespace 설정은 변경하지 않았다.
+CI/실제 물리 PC 게이트는 여전히 미완료이며 최신 결과는 KAN-42의 검증 기록을 따른다.

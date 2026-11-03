@@ -31,3 +31,7 @@ acs = ["LEAN-CORE-001-AC-07", "LEAN-CORE-001-AC-08", "LEAN-CORE-001-AC-09", "LEA
 합성 작업에3회를 명시해 검증했다. 최신 전체 회귀·고정 SHA 독립 검토/게시 전이다.
 
 최신 전체 검증: 제품411/팀35/합성CLI passed. 독립 검토·최종 게시 전이라 status는 in_progress다.
+
+원격9a57bd3의 Windows CI에서 metrics CLI fixture가 사용하는 TEMP의8.3 alias absolute path가
+canonical workspace와 달라 실패했다. fixture가 명시 canonical absolute path를 전달하도록
+수정했고 로컬10개5.365초 PASS. 경로·비밀 guard를 완화하지 않았다. CI는 새 SHA에서 재확인한다.
