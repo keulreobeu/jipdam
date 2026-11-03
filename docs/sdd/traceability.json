@@ -2626,7 +2626,7 @@
                 {
                   "file": "tests/test_host_gstack.py",
                   "class": "HostGstackTests",
-                  "method": "test_host_switch_keeps_only_selected_manifests_and_custom_skills"
+                  "method": "test_both_hosts_coexist_and_unregister_is_host_scoped"
                 },
                 {
                   "file": "tests/test_host_gstack.py",
@@ -2652,7 +2652,7 @@
                 {
                   "file": "tests/test_host_gstack.py",
                   "class": "HostGstackTests",
-                  "method": "test_host_switch_keeps_only_selected_manifests_and_custom_skills"
+                  "method": "test_both_hosts_coexist_and_unregister_is_host_scoped"
                 }
               ]
             }

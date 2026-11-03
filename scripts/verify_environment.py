@@ -42,20 +42,11 @@ def verify_gstack(host: str) -> None:
     actual = git(['rev-parse', 'HEAD'], cwd=WORKSPACE / SOURCE_RELATIVE, capture=True)
     if actual != load_lock()['commit']:
         raise RuntimeError('Installed gstack does not match the lock')
-    if host == 'codex':
+    # Codex and Claude registrations may coexist; verify each requested host.
+    if host in ('codex', 'both'):
         print(f'Pinned gstack and {validate_discovery()} Codex/project skill manifests verified', flush=True)
-        if _has_gstack_registration(WORKSPACE / '.claude/skills'):
-            raise RuntimeError('Claude gstack registrations are present in a Codex-only install')
-    else:
+    if host in ('claude', 'both'):
         print(f'Pinned gstack and {validate_claude_discovery()} Claude skill manifests verified', flush=True)
-        if _has_gstack_registration(WORKSPACE / '.agents/skills'):
-            raise RuntimeError('Codex gstack registrations are present in a Claude-only install')
-
-def _has_gstack_registration(skills_root: Path) -> bool:
-    return skills_root.is_dir() and any(
-        p.is_dir() and (p.name == 'gstack' or p.name.startswith('gstack-'))
-        for p in skills_root.iterdir()
-    )
 
 def verify_browser() -> None:
     binary = WORKSPACE / SOURCE_RELATIVE / ('browse/dist/browse.exe' if os.name == 'nt' else 'browse/dist/browse')
@@ -85,7 +76,7 @@ def verify_browser() -> None:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--gstack', action='store_true')
-    parser.add_argument('--host', choices=('codex', 'claude'), help='Host whose gstack registration should be verified')
+    parser.add_argument('--host', choices=('codex', 'claude', 'both'), help='Host(s) whose gstack registration should be verified')
     parser.add_argument('--browser', action='store_true')
     args = parser.parse_args()
     try:
@@ -93,7 +84,7 @@ if __name__ == '__main__':
         verify_base()
         if args.gstack or args.browser:
             if not args.host:
-                parser.error('--host codex or --host claude is required with --gstack/--browser')
+                parser.error('--host codex, claude or both is required with --gstack/--browser')
             verify_gstack(args.host)
         if args.browser:
             verify_browser()

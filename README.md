@@ -90,10 +90,10 @@ claude
 Claude Code에서 전체 gstack을 설치할 때는 다음 host를 지정한다.
 
 ```powershell
-python -X utf8 scripts/bootstrap.py --host claude
+python -X utf8 scripts/bootstrap.py --host both
 ```
 
-이 명령은 고정된 gstack commit에서 Claude host용 native skill만 생성해 프로젝트 `.claude/skills/`에 등록한다. Codex용 설치는 `--host codex`를 사용한다. host를 바꾸면 bootstrap이 자기 installer marker가 있는 이전 host의 gstack 등록본만 정리한다. 다른 host의 user-owned 파일은 그대로 둔다. gstack은 git/원격 작업 권한을 부여하거나 Claude Code의 권한 승인을 바꾸지 않는다. 일반 코드 작업·검증은 공통 명령으로 수행한다.
+이 명령은 고정된 gstack commit에서 Codex용(`.agents/skills/`)과 Claude host용(`.claude/skills/`) native skill을 함께 등록한다. `--host claude` 또는 `--host codex`는 그 host만 설치·갱신하며 다른 host의 등록본은 지우지 않는다. user-owned 파일은 덮어쓰지 않는다. gstack은 git/원격 작업 권한을 부여하거나 Claude Code의 권한 승인을 바꾸지 않는다. 일반 코드 작업·검증은 공통 명령으로 수행한다.
 
 ### Antigravity
 
@@ -128,9 +128,9 @@ python -X utf8 scripts/bootstrap.py --host claude
 python -X utf8 scripts/bootstrap.py --host codex
 ```
 
-Windows에서는 `./scripts/setup-gstack.ps1 --host codex`, Linux/macOS에서는 `bash scripts/setup-gstack.sh --host codex`도 같은 설치를 실행한다. Claude Code 사용자는 host 값을 `claude`로 지정한다. 고정된 commit의 gstack, Bun 의존성, Chromium을 다운로드하며 개인의 전역 host 설정을 변경하지 않는다. 전체 bootstrap에서는 `--host`가 필수다.
+Windows에서는 `./scripts/setup-gstack.ps1 --host codex`, Linux/macOS에서는 `bash scripts/setup-gstack.sh --host codex`도 같은 설치를 실행한다. Claude Code 사용자는 host 값을 `claude`, 두 도구를 함께 쓰면 `both`로 지정한다. 한 host 설치는 다른 host 등록본을 지우지 않는다. 고정된 commit의 gstack, Bun 의존성, Chromium을 다운로드하며 개인의 전역 host 설정을 변경하지 않는다. 전체 bootstrap에서는 `--host`가 필수다.
 
-Codex 선택 시 gstack 56개와 프로젝트 전용 스킬이 Codex 탐색 경로에 등록된다. Claude Code 선택 시 gstack 56개가 `.claude/skills/`에 등록된다. 도구에서 목록이 갱신되지 않으면 프로젝트를 다시 연다. 단순 코드 수정 때 전체 설치를 반복할 필요는 없다.
+Codex 선택 시 gstack 56개와 프로젝트 전용 스킬이 Codex 탐색 경로에 등록된다. Claude Code 선택 시 gstack 56개가 `.claude/skills/`에 등록되고, `both`는 두 경로 모두에 등록한다. 도구에서 목록이 갱신되지 않으면 프로젝트를 다시 연다. 단순 코드 수정 때 전체 설치를 반복할 필요는 없다.
 
 ```sh
 python -X utf8 scripts/verify_environment.py --gstack --browser --host codex
