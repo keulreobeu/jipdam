@@ -7,8 +7,13 @@ import subprocess
 import sys
 from team_tools import (WORKSPACE, SOURCE_RELATIVE, bash_executable, check_version,
                         git, load_lock, require_python, require_tool, run, runtime_env)
-from register_gstack import register, unregister, validate_discovery
-from register_claude_gstack import register_claude, unregister_claude, validate_claude_discovery
+from register_gstack import register, validate_discovery
+from register_claude_gstack import register_claude, validate_claude_discovery
+
+HOSTS = ('codex', 'claude')
+
+def selected_hosts(host: str) -> tuple[str, ...]:
+    return HOSTS if host == 'both' else (host,)
 
 def install_gstack(host: str) -> None:
     lock = load_lock()
@@ -48,34 +53,34 @@ def install_gstack(host: str) -> None:
     run(['bun', 'install', '--frozen-lockfile'], cwd=source, env=env)
     # The source lives in the ignored project-local runtime namespace. Setup
     # builds shared binaries/Chromium for either host without global registration.
-    run([bash, '--noprofile', '--norc', './setup', '--host', host, '--prefix',
-         '--no-team', '--no-plan-tune-hooks', '--no-timeline-stop-hook'], cwd=source, env=env)
-    if hashlib.sha256(bun_lock.read_bytes()).hexdigest() != before:
-        raise RuntimeError('Upstream setup changed bun.lock; installation is not reproducible')
-    if host == 'codex':
-        print(f'Registered {register()} pinned Codex gstack skills', flush=True)
-        removed = unregister_claude()
-        print(f'Removed {removed} installer-owned Claude skill registrations', flush=True)
-        print(f'Discovery: {validate_discovery()} unique Codex/project skills', flush=True)
-    else:
-        claude_render = WORKSPACE / '.local_runtime/gstack/render/claude'
-        run([require_tool('bun'), 'run', 'scripts/gen-skill-docs.ts', '--host', 'claude',
-             '--out-dir', str(claude_render)], cwd=source, env=env)
-        print(f'Registered {register_claude(WORKSPACE, claude_render)} pinned Claude gstack skills', flush=True)
-        removed = unregister()
-        print(f'Removed {removed} installer-owned Codex skill registrations', flush=True)
-        print(f'Claude discovery: {validate_claude_discovery()} unique skills', flush=True)
+    # Each host registers into its own discovery root; installing one host
+    # never removes the other host's registrations, so both can coexist.
+    for selected in selected_hosts(host):
+        run([bash, '--noprofile', '--norc', './setup', '--host', selected, '--prefix',
+             '--no-team', '--no-plan-tune-hooks', '--no-timeline-stop-hook'], cwd=source, env=env)
+        if hashlib.sha256(bun_lock.read_bytes()).hexdigest() != before:
+            raise RuntimeError('Upstream setup changed bun.lock; installation is not reproducible')
+        if selected == 'codex':
+            print(f'Registered {register()} pinned Codex gstack skills', flush=True)
+            print(f'Discovery: {validate_discovery()} unique Codex/project skills', flush=True)
+        else:
+            claude_render = WORKSPACE / '.local_runtime/gstack/render/claude'
+            run([require_tool('bun'), 'run', 'scripts/gen-skill-docs.ts', '--host', 'claude',
+                 '--out-dir', str(claude_render)], cwd=source, env=env)
+            print(f'Registered {register_claude(WORKSPACE, claude_render)} pinned Claude gstack skills', flush=True)
+            print(f'Claude discovery: {validate_claude_discovery()} unique skills', flush=True)
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--app-only', action='store_true', help='Only Python tests and synthetic CLI checks; no downloads')
-    parser.add_argument('--host', choices=('codex', 'claude'), help='Host whose gstack skills should be installed (required unless --app-only)')
+    parser.add_argument('--host', choices=(*HOSTS, 'both'),
+                        help='Host(s) whose gstack skills should be installed; other hosts are kept (required unless --app-only)')
     parser.add_argument('--skip-verify', action='store_true', help='Install without post-install verification')
     args = parser.parse_args()
     require_python()
     if not args.app_only:
         if not args.host:
-            parser.error('--host codex or --host claude is required for a full gstack installation')
+            parser.error('--host codex, claude or both is required for a full gstack installation')
         install_gstack(args.host)
     if not args.skip_verify:
         command = [sys.executable, '-X', 'utf8', str(WORKSPACE / 'scripts/verify_environment.py')]

@@ -1,4 +1,4 @@
-"""Register only Codex skills; keep upstream source and fixtures outside discovery."""
+"""Register Codex skills; keep upstream source and fixtures outside discovery."""
 from __future__ import annotations
 import argparse
 import json
@@ -103,7 +103,8 @@ fi'''
         note = ('\n\n## Team workspace upgrade override\n\n'
                 'This project pins gstack in `tooling/gstack.lock.json`. For an upgrade request, '
                 'preserve local source edits, select and record the new repository/commit/version '
-                f'in that lock, and run `python scripts/bootstrap.py --host {host}`. See `docs/gstack.md`. '
+                'in that lock, and run `python scripts/bootstrap.py --host both` '
+                f'(or `--host {host}` to refresh only this host). See `docs/gstack.md`. '
                 'The inline upgrade flow below is upstream reference; do not use it to bypass '
                 'the team lock or register global skills.\n')
         text = text[:end] + note + text[end:]

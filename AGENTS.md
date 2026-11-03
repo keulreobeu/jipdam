@@ -4,13 +4,13 @@
 
 현재 개발 대상은 `outputs/budongi_mvp_temp/`다. 작업 전에 그 폴더의 `AGENTS.md`와 관련 Spec·ADR·Task를 읽는다. `work/source_archive/`는 이전 프로젝트의 참고 자료다.
 
-이 파일과 개발 폴더의 `AGENTS.md`는 AI 도구에 관계없이 공통 계약이다. Claude Code는 루트 `CLAUDE.md`가 두 파일을 import하고, Antigravity는 `AGENTS.md`를 프로젝트 규칙으로 사용한다. gstack은 GitHub에 Codex·Claude Code 양쪽 지원을 보존하되, 로컬 bootstrap에서 현재 host 하나만 골라 설치한다. Antigravity의 gstack native skill 실행은 지원한다고 가정하지 않으며 공통 개발·검증 진입점은 루트 README를 따른다.
+이 파일과 개발 폴더의 `AGENTS.md`는 AI 도구에 관계없이 공통 계약이다. Claude Code는 루트 `CLAUDE.md`가 두 파일을 import하고, Antigravity는 `AGENTS.md`를 프로젝트 규칙으로 사용한다. gstack은 GitHub에 Codex·Claude Code 양쪽 지원을 보존하고, 로컬 bootstrap은 두 host를 함께(`--host both`) 또는 하나씩 등록할 수 있다. Antigravity의 gstack native skill 실행은 지원한다고 가정하지 않으며 공통 개발·검증 진입점은 루트 README를 따른다.
 
 ## 기본 스킬
 
 SDD 운영과 문서·Task·검증 계약은 [docs/sdd.md](docs/sdd.md)를 따른다. 코드·설정·계약 변경은 같은 변경에서 갱신한 영구 Task와 연결한다. 새 제품 요구는 사용자, 세부 구현과 AC별 증거 기반 완료는 담당자가 책임진다. `python -X utf8 scripts/verify_environment.py`는 SDD 검사도 실행한다. 기존 문서는 시범 적용 범위 밖까지 일괄 승인·전환하지 않는다.
 
-이 프로젝트는 [gstack](https://github.com/garrytan/gstack)을 기본 개발 스킬로 사용한다. Codex용 스킬은 `.agents/skills/gstack-*/SKILL.md`, Claude Code용 스킬은 `.claude/skills/gstack-*/SKILL.md`에 설치한다. GitHub에는 양쪽 지원 코드를 두지만 `python -X utf8 scripts/bootstrap.py --host codex|claude`는 선택한 한 host만 등록하고 installer 소유의 다른 host 등록본은 제거한다. 원본·템플릿·런타임은 탐색 경로 밖 `.local_runtime/tooling/.agents/skills/gstack/`에 있다. 원본 template와 fixture의 SKILL.md는 호출하지 않는다.
+이 프로젝트는 [gstack](https://github.com/garrytan/gstack)을 기본 개발 스킬로 사용한다. Codex용 스킬은 `.agents/skills/gstack-*/SKILL.md`, Claude Code용 스킬은 `.claude/skills/gstack-*/SKILL.md`에 설치한다. GitHub에는 양쪽 지원 코드를 두고 `python -X utf8 scripts/bootstrap.py --host codex|claude|both`는 선택한 host를 등록하며 다른 host의 기존 등록본은 유지한다. 두 도구를 함께 쓰면 `--host both`를 사용한다. 원본·템플릿·런타임은 탐색 경로 밖 `.local_runtime/tooling/.agents/skills/gstack/`에 있다. 원본 template와 fixture의 SKILL.md는 호출하지 않는다.
 
 - 모호한 제품 요청: `gstack-office-hours`, 필요하면 `gstack-plan-ceo-review`.
 - 구현 계획·구조·데이터 계약: `gstack-plan-eng-review`.

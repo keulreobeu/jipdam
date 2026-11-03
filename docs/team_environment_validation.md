@@ -174,3 +174,13 @@ main 기준의 별도 worktree에서 Claude/Codex 설치 지원만 분리했다.
 - `check_sdd.py --base origin/main`: 통과.
 
 합성 검증 결과이며 실제 데이터·모델 평가가 아니다. GitHub CI는 실행하지 않았다.
+
+## Dual-host gstack bootstrap 2026-11-03
+
+사용자 요청("codex용은 왜 지운거임 둘다 되도록 해야지")에 따라 CLAUDE-GSTACK-001 revision 3으로 바꿨다. `bootstrap.py`는 `--host codex|claude|both`를 받고 선택 host마다 upstream setup/render·등록을 실행하며 다른 host 등록본을 제거하지 않는다. `verify_environment.py --gstack --host both`는 두 host discovery를 함께 확인하고 반대 host 부재 검사를 없앴다. Gstack upgrade 안내는 `--host both`를 우선 안내한다. fixture 유출·user-owned/foreign marker·redirect 보호는 그대로다.
+
+- `python -X utf8 scripts/bootstrap.py --host both --skip-verify`: exit 0. Codex 56개 등록(Codex/project discovery 58), Claude 56개 등록(Claude discovery 56). 로그 `.local_runtime/bootstrap-both-20261103.log`.
+- `verify_gstack('both')`: Codex/project 58, Claude 56 manifest 확인.
+- `python -X utf8 -m unittest discover -s tests`: 42개 통과(`test_host_gstack.py` 9개 포함: 두 host 공존·재설치 불변·host 한정 unregister, bootstrap이 unregister를 import하지 않음).
+- 변경 13개 경로 대상 `check_sdd.validate`: passed. 전체 `verify_environment.py --gstack --host both`는 이 checkout의 범위 밖 미커밋 변경(`outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md`)의 SDD 게이트에서 중단돼 browser smoke는 이번에 재실행하지 않았다.
+

@@ -38,23 +38,35 @@ class HostGstackTests(unittest.TestCase):
             codex.mkdir(parents=True)
             (codex / 'SKILL.md').write_text(manifest(name), encoding='utf-8')
 
-    def test_host_switch_keeps_only_selected_manifests_and_custom_skills(self):
+    def test_both_hosts_coexist_and_unregister_is_host_scoped(self):
         custom = self.root / '.agents/skills/jipdam-workflow'
         custom.mkdir(parents=True)
         (custom / 'SKILL.md').write_text('---\nname: jipdam-workflow\ndescription: Mine.\n---\n', encoding='utf-8')
         register(self.root)
         register_claude(self.root)
+        # Installing one host keeps the other host's registrations.
+        self.assertEqual(validate_discovery(self.root), 3)
+        self.assertEqual(validate_claude_discovery(self.root), 2)
+        codex = {p.relative_to(self.root): p.read_bytes() for p in (self.root / '.agents/skills').rglob('SKILL.md')}
+        claude = {p.relative_to(self.root): p.read_bytes() for p in (self.root / '.claude/skills').rglob('SKILL.md')}
+        self.assertEqual(len(claude), 2)
+        register_claude(self.root)
+        register(self.root)
+        self.assertEqual(codex, {p.relative_to(self.root): p.read_bytes() for p in (self.root / '.agents/skills').rglob('SKILL.md')})
+        self.assertEqual(claude, {p.relative_to(self.root): p.read_bytes() for p in (self.root / '.claude/skills').rglob('SKILL.md')})
         self.assertEqual(unregister(self.root), 2)
         self.assertEqual(validate_claude_discovery(self.root), 2)
-        manifests = list((self.root / '.claude/skills').rglob('SKILL.md'))
-        self.assertEqual(len(manifests), 2)
-        first = {p.relative_to(self.root): p.read_bytes() for p in manifests}
-        register_claude(self.root)
-        self.assertEqual(first, {p.relative_to(self.root): p.read_bytes() for p in manifests})
         register(self.root)
         self.assertEqual(unregister_claude(self.root), 2)
         self.assertEqual(validate_discovery(self.root), 3)
         self.assertTrue((custom / 'SKILL.md').is_file())
+
+    def test_bootstrap_host_selection_never_unregisters_other_host(self):
+        import bootstrap
+        self.assertEqual(bootstrap.selected_hosts('both'), ('codex', 'claude'))
+        self.assertEqual(bootstrap.selected_hosts('claude'), ('claude',))
+        self.assertFalse(hasattr(bootstrap, 'unregister'))
+        self.assertFalse(hasattr(bootstrap, 'unregister_claude'))
 
     def test_generated_banner_without_marker_is_still_user_owned(self):
         for host, install in [('.claude', register_claude), ('.agents', register)]:
@@ -112,8 +124,9 @@ class HostGstackTests(unittest.TestCase):
         self.assertEqual(paths[2], paths[0] + '/browser/browse.json')
         self.assertEqual(paths[3], paths[0].removesuffix('/gstack') + '/playwright')
         upgrade = _adapt(manifest('upgrade'), 'gstack-upgrade', self.render)
-        self.assertIn('bootstrap.py --host claude', upgrade)
-        self.assertNotIn('bootstrap.py --host codex', upgrade)
+        self.assertIn('bootstrap.py --host both', upgrade)
+        self.assertIn('--host claude', upgrade)
+        self.assertNotIn('--host codex', upgrade)
 
     def test_normalized_duplicate_names_are_rejected_before_writes(self):
         (self.render / 'gstack-review').mkdir()
