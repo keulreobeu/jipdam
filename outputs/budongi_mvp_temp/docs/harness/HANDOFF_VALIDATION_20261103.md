@@ -86,3 +86,10 @@ SHA의 독립 검토/검증을 최신 합격으로 재사용하지 않는다. �
 CI commit-status connector는 statuses=[]로 반환해 성공을 증명하지 못했다. push workflow는
 존재하지만 gh fallback은 'gh auth login' 안내로 실행 불가였다. 토큰/키를 조회하거나 로그인
 설정을 바꾸지 않았으며 CI는 미확인이다. 최종 Finish/ready_for_main 합격으로 표시하지 않는다.
+
+추가 scanner 경계 확인에서 비 UTF-8 주석이 섞인 annotated secret이 UnicodeError 조기
+return으로 수락되는 반례를 순수 함수로 재현했다. 기존 scanner와 같은 replacement decode로
+정렬하고 기존 secret 회귀에 네 번째 입력으로 추가했다. 해당 테스트1개1.753초 OK.
+전체383/35 로그는 이 마지막2줄 보완 전이며, 이후 최종 SHA에서는 등록 handoff23/GMS3/SDD
+검증과 같은 P1의 재검토로 변경 범위를 확인한다. 이전 후보628bf2d3ef9d66c78c7cd6ec1cbab2e1b04eda60의
+23/GMS3/SDD도 passed였지만 그 결과를 마지막 보완의 검증으로 재사용하지 않는다.

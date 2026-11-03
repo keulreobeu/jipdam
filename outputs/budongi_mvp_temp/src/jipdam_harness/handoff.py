@@ -36,8 +36,8 @@ def scan_content(content, name=""):
     _legacy_scan_content(content, name)
     if Path(name).suffix != ".py": return
     import ast
-    try: tree = ast.parse(content.decode("utf-8"))
-    except (SyntaxError, UnicodeError): return  # Legacy scan already checked WIP.
+    try: tree = ast.parse(content.decode("utf-8", errors="replace"))
+    except SyntaxError: return  # Legacy scan already checked WIP syntax errors.
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign): targets = node.targets
         elif isinstance(node, (ast.AnnAssign, ast.NamedExpr)): targets = [node.target]

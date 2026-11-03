@@ -364,11 +364,12 @@ class HandoffTests(unittest.TestCase):
         self.assertEqual(_worktree_mode(executable, None, windows=True), "100644")
 
     def test_python_annotated_and_attribute_secrets_are_rejected_before_capture(self):
-        for text in ('password: str = "synthetic-review-value"\n',
-                     'settings.password = "synthetic-review-value"\n',
-                     'settings["access_token"] = "synthetic-review-value"\n'):
-            with self.subTest(form=text.split("=")[0]):
-                (self.root / "src/config.py").write_text(text, encoding="utf-8")
+        for content in (b'password: str = "synthetic-review-value"\n',
+                        b'settings.password = "synthetic-review-value"\n',
+                        b'settings["access_token"] = "synthetic-review-value"\n',
+                        b'# coding: cp1252\n# \xff\npassword: str = "synthetic-review-value"\n'):
+            with self.subTest(form=content.split(b"=")[0].decode("utf-8", errors="replace")):
+                (self.root / "src/config.py").write_bytes(content)
                 with self.assertRaisesRegex(HarnessError, "secret_in_commit"): self.saved()
                 self.assertFalse((self.handoff.directory / "checkpoints").exists())
 
