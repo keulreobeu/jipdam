@@ -1,0 +1,23 @@
+.local_runtime/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+node_modules/
+.env
+.env.*
+!.env.example
+.gstack/
+*.log
+work/
+outputs/team-share/
+# gstack is generated from tooling/gstack.lock.json, never vendored here.
+.agents/skills/gstack/
+.agents/skills/gstack-*/
+.claude/skills/gstack/
+.claude/skills/gstack-*/
+# Personal Claude Code overrides; shared project settings live in tracked files.
+.claude/settings.local.json
+# Personal metadata contains real source examples; keep the deliverable local.
+/outputs/personal_metadata_20261022_01a162be/
+/outputs/metadata-integration-20261030-kan32/

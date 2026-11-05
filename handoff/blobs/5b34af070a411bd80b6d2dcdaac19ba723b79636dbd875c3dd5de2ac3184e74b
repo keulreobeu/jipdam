@@ -1,0 +1,117 @@
+# TASK-PIPELINE-001 — M1 Catalog·오프라인 ETL·기준선
+
+```toml
+kind = "task"
+id = "TASK-PIPELINE-001"
+status = "in_progress"
+owner = "Codex"
+specs = ["outputs/budongi_mvp_temp/docs/specs/27_pipeline_spec.md"]
+scope = [".github/workflows/verify.yml", "outputs/budongi_mvp_temp/.gitignore", "outputs/budongi_mvp_temp/src/budongi/pipeline/", "outputs/budongi_mvp_temp/src/budongi/cli.py", "outputs/budongi_mvp_temp/src/budongi/statistics_storage.py", "outputs/budongi_mvp_temp/tests/test_statistics_storage.py", "outputs/budongi_mvp_temp/tests/test_pipeline.py", "outputs/budongi_mvp_temp/pyproject.toml", "outputs/budongi_mvp_temp/docs/specs/27_pipeline_spec.md", "outputs/budongi_mvp_temp/docs/plans/pipeline-m1.md", "outputs/budongi_mvp_temp/docs/adr/ADR-025-analysis-pipeline.md", "outputs/budongi_mvp_temp/docs/tasks/pipeline-m1.md", "outputs/budongi_mvp_temp/docs/tasks/current.md", "outputs/budongi_mvp_temp/docs/pipeline.md", "outputs/budongi_mvp_temp/docs/wiki/pages/", "outputs/budongi_mvp_temp/README.md", "docs/sdd/traceability.json"]
+acs = ["PIPELINE-001-AC-01", "PIPELINE-001-AC-02", "PIPELINE-001-AC-03", "PIPELINE-001-AC-04", "PIPELINE-001-AC-05"]
+```
+
+Jira: [KAN-28](https://kwulreobeu.atlassian.net/browse/KAN-28), 진행 중 / agent-codex. 2026-10-29 사용자 구현 승인. 기존 미커밋 변경은 이 작업의 소유가 아니다.
+
+## 완료 기준
+
+- [x] PIPELINE-001-AC-01 메타데이터 66개·원본·개정·입력 대사
+- [x] PIPELINE-001-AC-02 안전한 실행·반복·실패·게시·복구
+- [x] PIPELINE-001-AC-03 대표 4종 정확성·계보·실제 대사
+- [ ] PIPELINE-001-AC-04 동일조건 기준선·목표 확정·성능 검증
+- [x] PIPELINE-001-AC-05 CLI·회귀·SDD·문서·위키
+
+## 진행·검증
+
+시작: 새 브랜치 codex/pipeline-m1-20261029. 성능 목표는 실제 기준선 이후 사용자 확정 대기. Snowflake 계정/예산과 Linux 엔진 준비는 M2/M3 후속 조건이다. 아직 실제 성능이나 M1 완료를 주장하지 않는다.
+
+GMS 우선 경로: `harness providers`가 local_server_unavailable을 반환했고, 필요한 코드 초안만 명시한 TASK-PIPELINE-001 요청을 `gms-work --port 8786 --execute`로 시도했다. 로컬 설정 서버 연결 차단으로 count/생성은 실행하지 못했다. 키·보존 예산 우회 없이 로컬 구현으로 진행했다.
+
+2026-10-29 후속 사용자 요청: 구현 뒤 Plan에 단계별 적합 gstack 스킬·시작/완료 조건·검증 명령·재개 체크포인트를 미리 할당해 다른 채팅에서 이어갈 수 있게 한다.
+
+## 실제 검증 — 2026-10-29
+
+메타데이터 lee 48 / seo 11 / kim 7 = 66개 등록 항목과 원문 워크북을 보존했다. 등록 항목 수는 거래·고유 데이터셋 수가 아니다. 명시적인 복원 경로에서 1,106개 입력 파일을 SHA-256으로 등록했다. 나머지 등록 항목 전체의 원본 확보·품질·이용조건 검수 완료를 뜻하지 않는다.
+
+최종 코드의 `real-20261029-v2` 전체 실행과 보관 결과 대사:
+
+| 유형 | 입력 | 수용 | 제외 | 거부 | 출력 / 실제 대사 | 불일치 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| MOLIT 세 API | 384,211 | 374,892 | 9,319 | 0 | 374,892행 | 0 |
+| 통계 XLSX | 3,832 원본 계열행 | 3,832 | 0 | 0 | 530,556셀 | 0 |
+| NEIS JSON | 12,672 | 12,554 | 84 | 34 | 12,554행 | 0 |
+| 전국 공시가격 CSV → 서울 | 15,851,336 | 2,782,147 | 13,069,189 | 0 | 2,782,147행 | 0 |
+
+MOLIT는 모든 출력의 서비스별 원본 위치·핵심 정규화값, 통계는 모든 셀의 Decimal·결측·기간·단위·차원·source_view, 학교는 모든 수용행의 핵심 필드·위치와 118개 제외/거부 결과, 공시가격은 모든 서울 출력의 원 정수·면적·코드·이름·원본 행을 대사했다. 독립 대사는 기존 SQLite/JSONL을 읽기 전용으로 사용했다. 결과 동등성은 출처 자체의 정확성·좌표·관계 검수 승인이 아니다.
+
+| 유형 | 최종 전체 run_id |
+| --- | --- |
+| MOLIT | 2b7e3120fdcc4b4e845a10d058378dd6 |
+| 통계 | 1a7def6280eb421494409f1ba1b4717f |
+| 학교 | 663c188beef7426b919e99b386ddeb48 |
+| 공시가격 | 2da87ef637ee49f899f94f4815439fbf |
+
+명령·근거는 현재 PC의 ignored `.local_runtime/pipeline-work/prepare_real.py`, `run_current.py`, `real-runs-v2.json`, `real-comparison-v2.json`과 `data/pipeline/outputs/<run_id>/run.json`에 있다. 다른 PC에서는 검증된 원본을 별도로 복원·위치 등록해야 한다. 이 경로의 실제 데이터와 요청은 Git에 넣지 않는다.
+
+검사:
+
+- `python -X utf8 -m unittest discover -s outputs/budongi_mvp_temp/tests -p test_pipeline.py -v`: 17개 통과. 원/Decimal·namespace·1:N·같은 배치 충돌·변조·실패 비게시·복구·worker 생존/지연 기동·CLI 0/1/2를 검증했다.
+- `python -X utf8 scripts/verify_environment.py`: 제품 352개와 루트 35개 테스트, 모델 없는 합성 CLI smoke 통과. 기존 관련 34개 회귀를 포함한다. 근거 `.local_runtime/pipeline-work/environment-check-final.txt`. 첫 제한 실행의 로컬 소켓 WinError 10013은 권한을 허용한 전체 재실행에서 해소됐다.
+- `python -X utf8 scripts/check_sdd.py` 및 `--base origin/main`, `git diff --check`: 통과. 이후 문서 최종 변경도 재확인한다.
+- 실제 Windows 링크 생성 권한이 없어 링크 이탈 시험은 OS 링크 판정을 모의했다. 실제 junction 생성/강제 종료 OS 통합 시험과 다른 CI 플랫폼은 수행했다고 주장하지 않는다.
+
+## 리뷰와 문서 판단
+
+gstack-review의 native 적대적 검토에서 찾은 지역코드 검증 순서, 게시 영수증의 Catalog 해시 고정, 내부 출력 경로 링크, 살아 있는 worker와 지연 기동 경합, CLI 차단 종료코드를 수정하고 재현 회귀를 추가했다. 최종 후속 검토에서 해당 수정 범위의 추가 구체 결함은 보고되지 않았다. 같은 Codex 하네스 검토이며 외부 모델 검토가 아니다. 최초 helper 기동 실패로 저장형 gstack 리뷰의 정식 완료를 주장하지 않는다.
+
+문서 coverage: README의 시작 링크, pipeline.md의 참조/사용법, Plan의 구조·단계·재개, Spec/ADR의 계약·결정, 이 Task의 증거를 갱신했다. 신규 GUI·릴리스 버전·배포는 없다.
+
+위키 maintenance/catalog/ACTIVE 검색 및 지정 공간 목록 9개를 대조했다. 기존 보유 현황 DATA-CATALOG와 다른 실행 인터페이스 주제이므로 CREATE. `WIKI-A2670961AE008864` revision 1, [Confluence read-back](https://kwulreobeu.atlassian.net/wiki/spaces/~7120201d82685826914674999dcbf004921921/pages/1900545), remote version 1 / SHA-256 `8afc8e251492f58f62047e7603fba90208b7439883f0dee198b968369135e68f`. 공식 연결의 read-back으로 wiki/Jira outbox receipt를 기록했고 decision `TASK-PIPELINE-001-CONTRACT-20261029`는 DONE / blocking=false다. [Jira 기록](https://kwulreobeu.atlassian.net/browse/KAN-28?focusedCommentId=10143). 문서는 로컬 기능 브랜치 계약이며 M1 완료·main 배포로 게시하지 않았다.
+
+## 미완료와 다음 실행
+
+### 2026-11-02 다른 PC 복원과 계측 오류 조사
+
+기존 Drive 패키지의 ZIP/조각 SHA-256을 기록과 대조했다. 통계와 거래 DB는 새 경로에서 원본 해시·논리 테이블 digest를 대조하여 각 `rebuild-verification.json` status verified로 복원했다. 학교·공시가격 ZIP도 수집 Issue #12/#11의 최종 SHA-256을 확인했다. 새 Catalog에 66개 메타데이터와 통계 30개·학교 13개·공시가격 1개·거래 XML 1,062개를 등록했다. 거래 XML은 각 수집 manifest의 성공 페이지 SHA-256을 대조했다. 이 재등록은 성능 목표 충족이나 전체 결과 대사를 뜻하지 않는다.
+
+이 PC의 계약 검사에서 프로세스 종료 직후 `psutil.Process.children()`의 `NoSuchProcess`가 계측 오류로 기록되는 경합을 재현했다. 루트 worker가 실제 종료된 경우만 마지막 누락 샘플로 처리하고, 살아 있는 worker의 오류 및 접근 거부는 계속 오류로 기록하도록 수정했다. 표본이 0개라면 여전히 미측정이다. 종료 경합과 살아 있는 프로세스 오류의 회귀를 추가했고 workspace TEMP에서 pipeline 검사 20개가 통과했다. 원래 PC의 승인 기준선 파일과 성능 결과 원장은 복원되지 않았으며 새 PC 측정 결과로 대체하거나 목표 충족을 주장하지 않는다.
+
+복원된 학교 13페이지를 파이프라인에 실행한 결과 12,672 입력, 수용 12,554, 제외 84, 거부 34, 출력 12,554로 기존 기록의 건수와 일치했다. run ID `801566d47df5490f9cf7514ba5ad040a`; 이는 건수 대사이며 전체 필드별 독립 비교나 성능 수용 증거는 아니다.
+
+후속 독립 대사는 수용 12,554행의 원본 해시·행 번호를 기준으로 이름, 학교 ID/namespace, 지역, 주소, 학교 유형, 교육청 코드, 설립·개교기념·원천 적재 날짜와 좌표 값 12개 필드를 보관 JSONL과 대조해 누락·불일치 0건이다. 근거 `.local_runtime/kan28-restore/school-comparison.json`. 나머지 필드 전체 비교나 성능 수용으로 확대하지 않는다.
+
+복원된 통계 30개 원본의 전체 실행 `cb9c88519033495a959ff2016946496f`는 3,832 계열행과 530,556셀을 출력했다. 별도 비교 스크립트로 복원 SQLite의 전체 530,556개 셀에 대해 원본 해시·시트/행/열, series ID, 기간, 원문 헤더/값, 상태, Decimal 값, 차원, 단위 및 dataset을 대조하여 누락·불일치 0건이었다. 근거 `.local_runtime/kan28-restore/stats-comparison.json`; 이 단일 실행은 성능 목표 판정에 사용하지 않는다.
+
+공시가격 전체 실행 `16a3bc62ad244bd9b5e6a1ee2a34ea42`는 전국 15,851,336행 중 서울 2,782,147행을 수용하고 13,069,189행을 제외했다. 별도 비교로 서울 출력 전 행의 원본 행 번호, 원 단위 금액, 면적, 출처 식별자, 단지명과 법정동/시군구 코드를 기존 JSONL과 대조하여 불일치 0건이었다. 근거 `.local_runtime/kan28-restore/price-comparison.json`; 이는 실측 성능 수용이 아니다.
+
+거래 전체 실행 `d108672b03eb4523bbe05847095ae0b0`은 입력 384,211행, 수용 374,892행, 기간 제외 9,319행이다. 복원된 관측 DB에 대해 서비스·원본 파일·SHA·행 번호로 연결해 수용 전체의 구 코드, 단지명, 계약일, 면적과 전월세/매매 금액을 대조한 결과 누락·불일치 0건이었다. 근거 `.local_runtime/kan28-restore/molit-comparison.json`. canonical 복원 전체 검증과 성능 수용은 별도다.
+
+2026-11-02 사용자 승인: 원래 PC의 기준선 원장이 없으므로 이 PC에서 새로 실행한 5회 기준선을 고정해 비교한다. 통계 전체 중앙시간 기준 18,382.1798ms의 80% 이하와 이전 절대 상한 20,730.73976ms를 모두 유지하고, 학교 전체·공시가격 100,000행·거래 10,000행은 각각 시간 110% 이내, 네 유형 최대 RSS는 각각 110% 이내이며 결과 바이트가 동일해야 한다. 최초 기준선 결과는 통계 18,382.1798ms/226,861,056B, 학교 1,343.069ms/176,074,752B, 공시가격 표본 4,221.2373ms/175,579,136B, 거래 표본 1,213.2188ms/190,590,976B다. 이 수치는 새 PC의 계측 기준이며 이전 PC와 직접 개선율을 계산하지 않는다. 네 기준선의 실제 run/영수증은 `.local_runtime/kan28-pipeline/benchmarks/`에 보존하고 후보 측정 전 해시를 검증한다. 기존 목표 미달 이력은 유지한다.
+
+| 기준 | benchmark ID | 기준선 파일 SHA-256 |
+| --- | --- | --- |
+| 통계 전체 | 221b00d027b146a7b472bd708940c32d | d54d9d852593ec78a78123f572fa29a38304a77dcff7042007e4d195c7c88125 |
+| 학교 전체 | b21f90990d8a48cb98eb6af3e9e40771 | 9cbb8b12832a5e23bc8599139d3c6e49a822e9a2b7ec6ee1f00a463ea82cae67 |
+| 공시가격 10만 행 | 60ae95d7758d4347a7c897b49a8c61c5 | 7526a6a30394ab82cc733d7db6e5e2aba7aae4d35125f452903a1058185a9c67 |
+| 거래 1만 행 | 427037ddcbfd4a69b962b60939be088b | 88556655099ce4f5c97645589726dc4e35c9522be532240fc177930f31e46a13 |
+
+후보 관찰: JSONEncoder 재사용 후보 `3ce35aed27d14e9f9090166dd030dcca`는 통계 출력 Parquet/격리 바이트 동일, RSS 225,808,384B로 허용 범위였으나 중앙시간 33,952.5541ms로 목표 미달(`stats-encoder-candidate`, not_met)이었다. 동시 작업 등 환경 부하가 시간에 미친 영향은 확인되지 않았다. 이 후보는 되돌렸으며 성공이나 개선으로 주장하지 않는다. 별도 프로파일은 `Output.emit` 직렬화와 `statistics_storage._rows`의 XLSX 읽기가 주요 비용임을 보여준다.
+
+통계 전용 고정 스키마 직렬화 후보는 단위 검사 21개와 출력 바이트 동일성, 메모리 조건을 충족했지만 5회 중앙시간 33,761.324ms로 여전히 목표 미달(`stats-fast-candidate`, not_met)이어서 되돌렸다. 읽기 전용 openpyxl의 단일 탐색도 결과 digest/Parquet가 같았으나 32.706초였고 직후 기존 방식 단일 실행 31.320초보다 빨라지지 않았다. 이는 두 방식의 비공식 탐색이며 승인된 5회 비교가 아니다. 두 후보의 실패 결과는 삭제하지 않는다.
+
+후속 대조군 `66a77cc029094b608bd60599e663a480`: 최적화 후보를 철회한 뒤 동일 통계 입력을 5회 다시 실행해 중앙시간 35,656.3472ms, 최대 RSS 224,100,352B, 최초 기준선과 동일한 결과 digest를 기록했다. 최초 18,382.1798ms 대비 실행시간 변동이 크며 원인은 미확인이다. 이 대조군 측정 시 코드 차이는 adapters.py의 빈 줄뿐으로 확인하고 이후 제거했다. 기준선 교체나 목표 완화를 하지 않으며 실행 환경 원인을 조사한다.
+
+추가 확인: 빈 줄 제거 후 현재 구현 서명은 최초 기준선과 완전히 같았다(`c3aea8ec391e49a160aa823fbb8c99ab2ba38e2bb8687504a0e9f63f868e73a3`). 별도 단일 worker 탐색의 경과시간은 35.846초, 프로세스 CPU 시간은 35.344초였다. 이 관찰은 대기보다 CPU 계산 비중이 컸음을 보여주지만 최초 측정과의 속도 차이 원인이나 목표 달성을 입증하지 않는다.
+
+숫자 XML의 중복 탐색을 없앤 후보는 30개 실제 XLSX의 숫자 맵 전부가 기존과 같았고 해당 추출 탐색의 누적 시간은 1.954초에서 0.750초였다. 통계 저장소 9개 및 파이프라인 20개 검사가 통과했다. 전체 통계 5회는 중앙시간 15,683.5513ms, 최대 RSS 225,091,584B이며 출력 Parquet/격리 파일은 동일했다. `stats-xml-candidate`는 메모리 조건을 충족하지만 새 목표 14,705.74384ms보다 느려 not_met이다. 다른 유형 및 최종 성능 수용은 아직 실행하지 않았다.
+
+XML과 두 직렬화 개선을 결합한 `stats-combined-candidate`는 중앙시간 15,738.0617ms, 최대 RSS 226,238,464B, 출력 바이트 동일이나 시간 목표 미달이다. 직렬화 변경은 XML 단독보다 개선 근거가 없어 되돌리고 XML 개선만 보존했다. 성능 증거는 특정 실행 조건의 관측치이며 목표 충족으로 표시하지 않는다.
+
+추가 최적화: 반복 헤더·원문 scalar 변환 및 통계 셀의 행별 출처 locator 직렬화 캐시는 원문 Decimal/결측과 정렬 JSON 바이트를 유지한다. 저장소 검사 10개·파이프라인 검사 21개 통과. `stats-locator-candidate`의 5회 중앙시간은 15,164.1289ms, 최대 RSS 226,365,440B이고 Parquet/격리 바이트는 기준선과 동일하나 목표 14,705.74384ms에 미달했다. 출력 필드 목록을 캐시한 `stats-fields-candidate`는 중앙 15,383.324ms, 최대 RSS 227,225,600B, 결과 바이트 동일이나 목표 미달이며 성능 개선 근거가 없어 해당 추가 변경은 철회했다. 기준·후보·실패 평가는 보존하고 KAN-28은 진행 중이다.
+
+2026-11-03 내부 JSON 인코더 재사용 후보 `stats-cencoder-candidate`: 관련 검사 22개 통과, 바이트 동일, 최대 RSS 225,701,888B였지만 5회 중앙 27,988.187ms로 목표 미달이다. 비공개 CPython API 사용 부담과 개선 근거 부재로 철회했다. 측정 조건의 시간 변동 원인은 여전히 미확인이다.
+
+같은 날 locator 캐시와 고정 스키마 JSON 조합 `stats-locator-json-candidate`는 중앙 25,059.5414ms, 최대 RSS 226,811,904B, 출력 바이트 동일이었으나 목표 미달이다. 직렬화 추가 변경을 철회했고 현재 구현 서명이 `stats-locator-candidate` 당시와 일치함을 확인했다. 결과는 환경 변동을 포함하며 어느 변경의 단독 효과로 단정하지 않는다.
+
+성능 기준선은 현재 계측 어댑터로 동일 범위 5회씩 측정한다. 거래·공시가격의 표본과 통계·학교의 전체 범위를 구분하며 과거 미계측 코드의 속도를 소급하지 않는다. 사용자 성능 목표/허용 회귀 미확정 때문에 AC-04와 M1은 미완료, KAN-28은 진행 중이다. 다음 담당자는 Plan의 Phase 2 배정 스킬을 사용해 기준선·목표를 확정한 뒤 결과 동등성을 유지하는 최적화를 이어간다.
+
+Snowflake/dbt/Airflow 및 나머지 유형 ETL은 후속 Task다. 계정·예산·Linux 엔진 준비, 이용조건·좌표·관계 검수와 추천 연결을 자동 완료하지 않는다.

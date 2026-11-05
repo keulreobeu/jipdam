@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Install Claude Code with Anthropic's official native installer (macOS, Linux, WSL).
+# Does not change Claude credentials, global settings, permissions or Codex configuration.
+set -euo pipefail
+
+find_claude() {
+  if command -v claude >/dev/null 2>&1; then command -v claude; return; fi
+  if [ -x "$HOME/.local/bin/claude" ]; then echo "$HOME/.local/bin/claude"; return; fi
+}
+
+claude_bin="$(find_claude || true)"
+if [ -n "$claude_bin" ]; then
+  echo "Claude Code is already installed: $claude_bin"
+else
+  echo 'Installing Claude Code (https://claude.ai/install.sh)...'
+  curl -fsSL https://claude.ai/install.sh | bash
+  claude_bin="$(find_claude || true)"
+  [ -n "$claude_bin" ] || { echo 'claude was installed but not found; open a new shell and check PATH.' >&2; exit 1; }
+fi
+
+"$claude_bin" --version
+echo 'Next: open a new shell at the repository root, run `claude`, log in, then run /mcp to authorize Atlassian.'

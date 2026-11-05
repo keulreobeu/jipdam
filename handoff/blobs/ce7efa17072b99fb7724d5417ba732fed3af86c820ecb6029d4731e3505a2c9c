@@ -1,0 +1,60 @@
+# TASK-CLAUDE-ENV-001
+
+```toml
+kind = "task"
+id = "TASK-CLAUDE-ENV-001"
+status = "verified"
+owner = "keulreobeu"
+specs = ["docs/specs/claude_code_environment_spec.md"]
+scope = [".mcp.json", ".gitignore", ".claude/agents/", ".claude/skills/jipdam-workflow/", ".claude/skills/jipdam-harness/", "scripts/sync_claude_env.py", "scripts/install_claude_cli.ps1", "scripts/install_claude_cli.sh", "tests/test_claude_environment.py", "CLAUDE.md", "README.md", "docs/gstack-subagents.md", "docs/specs/claude_code_environment_spec.md", "docs/tasks/claude-code-environment.md", "docs/sdd/traceability.json"]
+acs = ["CLAUDE-ENV-001-AC-01", "CLAUDE-ENV-001-AC-02", "CLAUDE-ENV-001-AC-03", "CLAUDE-ENV-001-AC-04"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s tests -p test_claude_environment.py -v; python -X utf8 scripts/sync_claude_env.py --check"
+result = "passed"
+evidence = "docs/tasks/claude-code-environment.md#validation-2026-11-03"
+acs = ["CLAUDE-ENV-001-AC-01", "CLAUDE-ENV-001-AC-02", "CLAUDE-ENV-001-AC-03"]
+
+[[verification]]
+command = "powershell -File scripts/install_claude_cli.ps1"
+result = "passed"
+evidence = "docs/tasks/claude-code-environment.md#validation-2026-11-03"
+acs = ["CLAUDE-ENV-001-AC-04"]
+```
+
+Jira: KAN-43 (`agent-claude`).
+
+- [x] CLAUDE-ENV-001-AC-01 `.mcp.json` declares only the official Atlassian HTTP MCP server.
+- [x] CLAUDE-ENV-001-AC-02 Every Codex role has a generated Claude subagent; read-only roles lack edit tools; drift and user-owned files are handled.
+- [x] CLAUDE-ENV-001-AC-03 Shared project skills have Claude pointers; gstack skills do not.
+- [x] CLAUDE-ENV-001-AC-04 The install script prints `claude --version` on a team machine.
+
+## 배경
+
+Codex 중심 구성에서 Claude Code로 같은 계약을 따르려면 다음이 빠져 있었다.
+
+- README·AGENTS·`jipdam-workflow`가 참조하는 루트 `.mcp.json`이 `af274a2` 백업 커밋에서 삭제되어 Claude Code에 Jira 연결이 없었다. `9857e44`의 원래 내용으로 복구했다.
+- AGENTS.md는 Claude도 Git 게시를 native 하위 에이전트(`gstack_committer` 역할)에 넘기라고 하지만 `.claude/agents/`가 없었다. Codex 역할 10개를 생성기로 옮겼다.
+- `jipdam-workflow`, `jipdam-harness`는 `.agents/skills/`에만 있어 Claude Code 스킬 목록에 나타나지 않았다.
+- Codex용 `install_codex_cli.ps1`에 대응하는 Claude Code 설치 스크립트가 없었다.
+
+gstack은 CLAUDE-GSTACK-001 revision 3에 따라 Codex와 Claude host를 함께 등록할 수 있다(`python -X utf8 scripts/bootstrap.py --host both`). 생성 서브에이전트는 `.agents/skills/gstack-*`가 없으면 `.claude/skills/gstack-*`를 읽도록 안내한다.
+
+## Validation 2026-11-03
+
+- 원격 Linux 사본(Python 3.13)에서 `tests/test_claude_environment.py` 6개 통과, `scripts/sync_claude_env.py --check` 차이 없음(생성본 12개), `scripts/check_sdd.py` 통과.
+- AC-04: 사용자가 이 대화에서 Windows에 Claude Code CLI를 설치했다고 알렸으나 `install_claude_cli.ps1` 실행 결과와 `claude --version` 출력은 확인하지 못했다. 팀 머신에서 실행해 결과를 기록한 뒤 이 Task를 verified로 바꾼다.
+- 사용자 PC의 연결 VM은 Python 3.10·오프라인이라 그곳에서 검증을 실행하지 않았다.
+- GMS·유료 공급자·키·실데이터 수집을 사용하지 않았다. 커밋·push는 하지 않았다.
+
+### 사용자 Windows 재검증 2026-11-03
+
+- `.mcp.json`을 `git show 9857e44:.mcp.json`으로 복구(index 미변경). 내용은 Atlassian HTTP 서버 1개.
+- `sync_claude_env.py`로 `.claude/agents/` 10개·`.claude/skills/jipdam-*` 2개 생성, `--check` 차이 없음.
+- Windows Python 3.12.10: `test_claude_environment.py` 6개 통과, 루트 `tests/` 41개 통과(PowerShell 실행; Git Bash에서는 `bash_executable()`이 `mingw64/bin/git`을 따라가 기존 테스트 1개가 오류).
+- AC-04: `install_claude_cli.ps1` 실행 → `C:\Users\SSAFY\.local\bin\claude.exe` 설치 확인, `claude --version` = `2.1.317 (Claude Code)`.
+- `check_sdd.py`는 이 Task 범위 밖 기존 미커밋 변경(`outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md`)으로 실패했다. 이 Task 변경이 원인은 아니다.
+- 남은 수동 단계: 새 `claude` 세션에서 `/mcp` Atlassian OAuth와 `/agents` 표시 확인, KAN-43 종료.
+- `check_sdd.py` 실패 원인 변경은 Codex의 진행 중 작업(TASK-PIPELINE-001 in_progress, KAN-28/41/42 worktree 2026-11-03)이라 손대지 않았다.
+- Wiki 단계 SYNC_PENDING: 이 checkout(`codex/suspended-work-backup2-20261030`)의 `python -m harness`는 `jipdam_harness.wiki_contracts` 누락(백업 branch에만 존재)으로 import 실패하고, `origin/main`에는 `wiki` 명령이 없어 maintenance/catalog/search/event를 실행하지 못했다. 원래 판단 후보는 기존 Claude/gstack 문서 UPDATE.
+- 이 Claude 세션에는 Atlassian MCP가 연결되지 않아 KAN-43을 열린 상태로 둔다.

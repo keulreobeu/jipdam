@@ -1,0 +1,46 @@
+# Claude Code 프로젝트 실행 환경
+
+```toml
+kind = "spec"
+id = "CLAUDE-ENV-001"
+status = "approved"
+owner = "keulreobeu"
+revision = 1
+approved_by = "사용자"
+approved_at = "2026-11-03"
+approval_ref = "현재 대화(KAN-43): Codex 중심 저장소가 Claude Code로도 돌아가도록 환경을 점검하고 빠진 부분을 잡아 달라는 요청과 Jira 이슈 생성 승인"
+```
+
+Codex와 Claude Code가 같은 계약·역할·Jira 연결로 작업하도록 Claude Code 쪽 프로젝트 파일을 정의한다. Codex 정의(`.codex/`, `tooling/codex-agents/`, `.agents/skills/`)가 원본이며 Claude 파일은 생성본이다. gstack host별 등록은 [CLAUDE-GSTACK-001](claude_gstack_spec.md)을 따른다.
+
+## CLAUDE-ENV-001-REQ-01 Jira용 Atlassian MCP 프로젝트 설정
+
+루트 `.mcp.json`은 공식 Atlassian 원격 MCP 서버만 HTTP로 등록한다. 토큰·계정·자격 증명을 저장하지 않으며 인증은 각 사용자가 Claude Code `/mcp` OAuth로 수행한다.
+
+### CLAUDE-ENV-001-AC-01
+
+`.mcp.json`은 `atlassian` 서버 하나를 `type = http`, `url = https://mcp.atlassian.com/v2/mcp/`로만 선언한다.
+
+## CLAUDE-ENV-001-REQ-02 Codex 역할과 같은 Claude 서브에이전트
+
+`scripts/sync_claude_env.py`는 `.codex/config.toml`에 등록된 역할과 `.codex/agents/*.toml`을 읽어 같은 이름·설명·지침의 `.claude/agents/<역할>.md`를 생성한다. 읽기 전용 역할에는 편집 도구를 주지 않는다. `--check`는 쓰기 없이 차이와 남은 생성본을 보고한다. 생성 marker가 없는 사용자 소유 파일은 덮어쓰거나 지우지 않는다. 서브에이전트는 Claude Code의 권한·Git 승인 설정을 넓히지 않는다.
+
+### CLAUDE-ENV-001-AC-02
+
+모든 Codex 역할에 이름·설명·지침이 같은 Claude 서브에이전트가 있고, 읽기 전용 역할은 `Read, Grep, Glob, Bash`만 가지며, 저장소 생성본은 `--check`에서 차이가 없다. 원본 변경과 남은 생성본은 `--check`가 보고하고 사용자 소유 파일은 거부된다.
+
+## CLAUDE-ENV-001-REQ-03 공통 프로젝트 스킬 발견
+
+`.agents/skills/`의 gstack이 아닌 공통 스킬(`jipdam-workflow`, `jipdam-harness`)은 `.claude/skills/<이름>/SKILL.md` 포인터로 Claude Code에서 발견된다. 포인터는 같은 이름·설명을 갖고 원본 파일을 읽도록 지시하며 내용을 복제하지 않는다.
+
+### CLAUDE-ENV-001-AC-03
+
+공통 스킬마다 이름·설명이 같은 Claude 포인터가 있고 gstack 스킬에는 포인터를 만들지 않는다.
+
+## CLAUDE-ENV-001-REQ-04 Claude Code CLI 설치
+
+`scripts/install_claude_cli.ps1`(Windows)과 `scripts/install_claude_cli.sh`(macOS·Linux·WSL)는 이미 설치된 CLI를 재사용하고, 없으면 Anthropic 공식 native installer로 설치한 뒤 `claude --version`을 확인한다. 자격 증명·전역 설정·Codex 설정을 바꾸지 않는다.
+
+### CLAUDE-ENV-001-AC-04
+
+설치 스크립트 실행 뒤 `claude --version`이 버전을 출력한다.

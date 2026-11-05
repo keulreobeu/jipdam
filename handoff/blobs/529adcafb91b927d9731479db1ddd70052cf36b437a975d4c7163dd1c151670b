@@ -1,0 +1,29 @@
+# Install Claude Code with Anthropic's official native installer.
+# Does not change Claude credentials, global settings, permissions or Codex configuration.
+$ErrorActionPreference = 'Stop'
+
+function Find-Claude {
+    $command = Get-Command claude -ErrorAction SilentlyContinue
+    if ($command) { return $command.Source }
+    $native = Join-Path $env:USERPROFILE '.local\bin\claude.exe'
+    if (Test-Path $native) { return $native }
+    return $null
+}
+
+$claude = Find-Claude
+if ($claude) {
+    Write-Host "Claude Code is already installed: $claude"
+} else {
+    Write-Host 'Installing Claude Code (https://claude.ai/install.ps1)...'
+    Invoke-RestMethod https://claude.ai/install.ps1 | Invoke-Expression
+    $claude = Find-Claude
+    if (-not $claude) { throw 'Claude Code was installed but claude.exe was not found; open a new terminal and check PATH.' }
+}
+
+& $claude --version
+if ($LASTEXITCODE -ne 0) { throw 'Claude Code version check failed.' }
+
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    Write-Warning 'Git for Windows is recommended so Claude Code can use Git Bash for its Bash tool.'
+}
+Write-Host 'Next: open a new terminal at the repository root, run `claude`, log in, then run /mcp to authorize Atlassian.'
