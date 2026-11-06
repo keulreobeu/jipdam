@@ -1,5 +1,8 @@
 # 집담 (Jipdam)
 
+2026-11-06 작업 재개: [브랜치·분리 현황](docs/workspace-recovery-20261106.md) · [Codex/Claude 스킬](docs/development-skills.md).
+
+
 서울 아파트 전월세 단지 후보를 예산·직장 위치·생활시설 조건으로 추천하고 이유와 포기할 조건을 비교하는 프로젝트다. 승인된 [RENT-001](outputs/budongi_mvp_temp/docs/specs/10_rental_recommendation_spec.md)과 [전환 Plan](outputs/budongi_mvp_temp/docs/plans/rental-recommendation-mvp.md)을 따른다. 기존 Python·SQLite 역사 조회·로컬 모델·합성 추천/평가와 키 보관함을 보존하면서, 실제 canonical DB read-only serving, 대화형 검색과 니즈/상세 화면을 추가했다. 실제 확정 단지 연결은 아직 없어 결과는 `data_not_ready`다. [MVP 실행 안내](outputs/budongi_mvp_temp/README.md#대화형-db-전월세-mvp)와 [검증 기록](outputs/budongi_mvp_temp/docs/rental-mvp-validation-20261013.md)을 참고한다.
 
 팀원은 **Codex, Claude Code, Antigravity 중 익숙한 도구**로 작업할 수 있다. 같은 코드·Spec·ADR·Task·검증 명령을 공유한다. GitHub에는 Codex와 Claude Code용 gstack 지원을 함께 보관하지만, bootstrap에서는 작업 host 하나만 선택해 설치한다.

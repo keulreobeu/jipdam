@@ -6,7 +6,7 @@ id = "TASK-CLAUDE-GSTACK-001"
 status = "verified"
 owner = "keulreobeu"
 specs = ["docs/specs/claude_gstack_spec.md"]
-scope = ["scripts/bootstrap.py", "scripts/register_gstack.py", "scripts/register_claude_gstack.py", "scripts/verify_environment.py", ".gitignore", "README.md", "AGENTS.md", "CLAUDE.md", "docs/gstack.md", "docs/team_environment_spec.md", "docs/specs/claude_gstack_spec.md", "docs/tasks/claude-gstack-support.md", "docs/team_environment_validation.md", "docs/sdd/traceability.json", "tests/test_host_gstack.py", "outputs/budongi_mvp_temp/docs/tasks/current.md"]
+scope = ["docs/development-skills.md", "docs/workspace-recovery-20261106.md", "scripts/bootstrap.py", "scripts/register_gstack.py", "scripts/register_claude_gstack.py", "scripts/verify_environment.py", ".gitignore", "README.md", "AGENTS.md", "CLAUDE.md", "docs/gstack.md", "docs/team_environment_spec.md", "docs/specs/claude_gstack_spec.md", "docs/tasks/claude-gstack-support.md", "docs/team_environment_validation.md", "docs/sdd/traceability.json", "tests/test_host_gstack.py", "outputs/budongi_mvp_temp/docs/tasks/current.md"]
 acs = ["CLAUDE-GSTACK-001-AC-01", "CLAUDE-GSTACK-001-AC-02", "CLAUDE-GSTACK-001-AC-03"]
 
 [[verification]]
@@ -32,6 +32,13 @@ command = "python -X utf8 scripts/bootstrap.py --host both --skip-verify; python
 result = "passed"
 evidence = "docs/team_environment_validation.md#dual-host-gstack-bootstrap-2026-11-03"
 acs = ["CLAUDE-GSTACK-001-AC-01", "CLAUDE-GSTACK-001-AC-03"]
+
+[[verification]]
+command = "python -X utf8 -m unittest discover -s tests -p test_host_gstack.py -q"
+result = "passed"
+evidence = "docs/workspace-recovery-20261106.md"
+acs = ["CLAUDE-GSTACK-001-AC-01", "CLAUDE-GSTACK-001-AC-02", "CLAUDE-GSTACK-001-AC-03"]
+
 ```
 
 - [x] CLAUDE-GSTACK-001-AC-01 Register 56 host-native Claude skills with no nested or duplicate manifests.
@@ -41,3 +48,5 @@ acs = ["CLAUDE-GSTACK-001-AC-01", "CLAUDE-GSTACK-001-AC-03"]
 2026-10-20 제출 범위: 사용자가 Claude/Codex gstack 설치 지원만 main에 반영하도록 선택했다. Jira·부동산 데이터 변경은 포함하지 않는다. 독립 검토의 중첩 manifest, fresh Claude runtime 누락, 경로/소유 보호, helper 환경 경로 및 host별 upgrade 안내를 보완했다.
 GMS는 기존 Task에 기록된 만료(2026-10-16 18:00 KST) 이후이며 이번 작업에서 새 유효 정책을 확인하지 않았으므로 호출하지 않았다. 키·공급자·예산을 우회하지 않았다.
 2026-11-03 revision 3: 사용자 요청으로 두 host 동시 등록(`--host both`, 한 host 설치가 다른 host를 지우지 않음)으로 변경했다. Jira는 Atlassian MCP 미인증으로 이 작업에 연결하지 못했다.
+
+2026-11-06 컴퓨터 이동 후 복구: 8fa7754를 Windows bootstrap 수정 위에 cherry-pick했다. README와 검증 기록은 양쪽 내용을 보존했다. 상세 branch·스킬·실제 검증은 [복구 기록](../workspace-recovery-20261106.md)을 따른다. Claude의 GMS 작업은 통합하지 않았다.
