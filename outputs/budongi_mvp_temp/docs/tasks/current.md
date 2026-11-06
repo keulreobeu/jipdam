@@ -1,5 +1,7 @@
 # Current Tasks — 전월세 제품 전환과 보존된 평가 기록
 
+2026-11-06 [TASK-ENV-WIN-TOOLS-001](../../../../docs/tasks/windows-bootstrap-tools.md): Windows bootstrap의 Git Bash 탐지와 npm Bun 호출 실패 수정. 제품 코드·데이터 변경 없음.
+
 2026-10-30 [TASK-BENCH-FACILITY-001](facility-benchmark.md): KAN-31. 시설 제출 패키지 검증기·고정 독립 평가·실제 Codex Baseline/반복과 Objective 중복 제거 pilot. 실제 숫자는 [실측 보고](../harness/FACILITY_BENCHMARK.md)에 기록한다.
 
 2026-10-30 [TASK-OBS-001](observability.md): KAN-30. 관측성 v2.3의 Codex-first shadow Usage·불변 원장·원본 과제 품질 집계 적용. [운영/적용 표](../harness/OBSERVABILITY.md). 실제 Baseline·절감률·Cloud/Claude 측정은 별도 게이트.
