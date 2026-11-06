@@ -4,10 +4,11 @@ import json
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 from register_gstack import adapt, register, validate_discovery
-from team_tools import SOURCE_RELATIVE
+from team_tools import SOURCE_RELATIVE, find_git_bash, run
 
 SAMPLE = '''---
 name: review
@@ -21,6 +22,41 @@ GSTACK_ROOT="$HOME/.codex/skills/gstack"
 name: example-inside-the-body
 ```
 '''
+
+class WindowsToolResolutionTests(unittest.TestCase):
+    def make_git_install(self, root, git_relative):
+        git = root / git_relative
+        bash = root / 'bin/bash.exe'
+        for path in (git, bash):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(b'')
+        return git, bash
+
+    def test_git_bash_is_found_from_cmd_and_mingw64_git(self):
+        for git_relative in ('cmd/git.exe', 'mingw64/bin/git.exe'):
+            with self.subTest(git_relative), tempfile.TemporaryDirectory() as directory:
+                git, bash = self.make_git_install(Path(directory), git_relative)
+                self.assertEqual(find_git_bash(git), bash.resolve())
+
+    def test_git_without_git_bash_is_not_resolved(self):
+        with tempfile.TemporaryDirectory() as directory:
+            git = Path(directory) / 'tools/mingw64/bin/git.exe'
+            git.parent.mkdir(parents=True)
+            git.write_bytes(b'')
+            self.assertIsNone(find_git_bash(git))
+
+    def test_run_resolves_bare_tool_from_the_given_path(self):
+        completed = mock.Mock(stdout='')
+        with mock.patch('team_tools.shutil.which', return_value='C:/npm/bun.CMD') as which,                 mock.patch('team_tools.subprocess.run', return_value=completed) as process:
+            run(['bun', 'install'], env={'PATH': 'C:/npm'})
+        which.assert_called_once_with('bun', path='C:/npm')
+        self.assertEqual(process.call_args.args[0], ['C:/npm/bun.CMD', 'install'])
+
+    def test_run_keeps_unresolved_tool_for_the_process_error(self):
+        completed = mock.Mock(stdout='')
+        with mock.patch('team_tools.shutil.which', return_value=None),                 mock.patch('team_tools.subprocess.run', return_value=completed) as process:
+            run(['missing-tool', '--version'])
+        self.assertEqual(process.call_args.args[0], ['missing-tool', '--version'])
 
 class TeamSetupTests(unittest.TestCase):
     def make_workspace(self, root):

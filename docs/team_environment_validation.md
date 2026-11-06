@@ -163,3 +163,14 @@ main 기준의 별도 worktree에서 Claude/Codex 설치 지원만 분리했다.
 ### Final verification 2026-10-20
 
 `python -X utf8 scripts/verify_environment.py --gstack --browser --host codex`는 exit 0이었다. 전체 제품/팀 unittest, SDD, 합성 CLI, Codex/project manifest 58개, Chromium 탐색·클릭·DOM·스크린샷·종료를 통과했다. `python -X utf8 scripts/check_sdd.py --base origin/main`은 변경 16개 경로가 TASK-CLAUDE-GSTACK-001에 연결됨을 확인했다. 독립 읽기 전용 재검토의 최종 actionable finding은 0개다.
+
+## Windows bootstrap tools 2026-11-06
+
+[TASK-ENV-WIN-TOOLS-001](tasks/windows-bootstrap-tools.md). Windows 11, Python 3.12.10, Node 24.18.0, npm으로 설치한 Bun 1.4.4, Git 2.55.0, 고정 gstack commit `96764e80a641e28141ec8297223768029f5bf483`로 확인했다.
+
+- 수정 전: Git Bash의 `bootstrap.py --host claude`는 Git Bash 탐지 오류로, PowerShell은 `bun install` 호출의 `WinError 2`로 실패했다. Git Bash의 기본 검증도 `test_claude_helpers_export_relocatable_project_state` 1건이 같은 탐지 오류로 실패했다.
+- 수정 후 Git Bash: `bootstrap.py --host claude` exit 0. 팀 테스트 39개, 앱 테스트, SDD, 합성 CLI, Claude 스킬 56개, 브라우저 smoke가 통과했다.
+- 수정 후 PowerShell: `bun.exe`가 PATH에 없는 상태에서 `bootstrap.py --host claude` exit 0. 같은 검증 항목이 통과했다.
+- `check_sdd.py --base origin/main`: 통과.
+
+합성 검증 결과이며 실제 데이터·모델 평가가 아니다. GitHub CI는 실행하지 않았다.

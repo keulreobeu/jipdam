@@ -2743,6 +2743,7 @@
     "docs/tasks/claude-gstack-support.md",
     "docs/tasks/credential-server-launcher.md",
     "docs/tasks/server-launcher.md",
-    "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md"
+    "outputs/budongi_mvp_temp/docs/tasks/mac-launcher.md",
+    "docs/tasks/windows-bootstrap-tools.md"
   ]
 }

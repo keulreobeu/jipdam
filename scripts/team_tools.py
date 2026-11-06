@@ -33,6 +33,9 @@ def runtime_env(root: Path = WORKSPACE) -> dict[str, str]:
     return env
 
 def run(args: list[str], *, cwd: Path = WORKSPACE, env: dict | None = None, capture: bool = False) -> str:
+    # CreateProcess ignores PATHEXT, so a bare name would miss shims such as npm's bun.cmd.
+    search_path = (os.environ if env is None else env).get('PATH')
+    args = [shutil.which(args[0], path=search_path) or args[0], *args[1:]]
     result = subprocess.run(args, cwd=cwd, env=env, check=True, text=True, encoding='utf-8',
                             errors='replace', stdout=subprocess.PIPE if capture else None)
     return result.stdout.strip() if capture else ''
@@ -47,15 +50,21 @@ def require_tool(name: str) -> str:
         raise RuntimeError(f'Required tool is missing: {name}. See README.md.')
     return path
 
+def find_git_bash(git_executable: Path) -> Path | None:
+    # git resolves to <root>/cmd from PowerShell and <root>/mingw64/bin from Git Bash.
+    for root in git_executable.resolve().parents[1:3]:
+        for candidate in (root / 'bin/bash.exe', root / 'usr/bin/bash.exe'):
+            if candidate.is_file():
+                return candidate
+    return None
+
 def bash_executable() -> str:
     if os.name != 'nt':
         return require_tool('bash')
     executable = shutil.which('git')
-    if executable:
-        root = Path(executable).resolve().parents[1]
-        for candidate in (root / 'bin/bash.exe', root / 'usr/bin/bash.exe'):
-            if candidate.is_file():
-                return str(candidate)
+    bash = find_git_bash(Path(executable)) if executable else None
+    if bash:
+        return str(bash)
     raise RuntimeError('Install Git for Windows including Git Bash; WSL bash.exe is not used.')
 
 def check_version(name: str, minimum: str) -> str:
