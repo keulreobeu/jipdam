@@ -183,4 +183,3 @@ main 기준의 별도 worktree에서 Claude/Codex 설치 지원만 분리했다.
 - `verify_gstack('both')`: Codex/project 58, Claude 56 manifest 확인.
 - `python -X utf8 -m unittest discover -s tests`: 42개 통과(`test_host_gstack.py` 9개 포함: 두 host 공존·재설치 불변·host 한정 unregister, bootstrap이 unregister를 import하지 않음).
 - 변경 13개 경로 대상 `check_sdd.validate`: passed. 전체 `verify_environment.py --gstack --host both`는 이 checkout의 범위 밖 미커밋 변경(`outputs/budongi_mvp_temp/docs/harness/FACILITY_BENCHMARK.md`)의 SDD 게이트에서 중단돼 browser smoke는 이번에 재실행하지 않았다.
-
